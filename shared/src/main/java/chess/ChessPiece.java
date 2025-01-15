@@ -113,11 +113,11 @@ public class ChessPiece {
                 possibleMoves[7] = diagonalDownRight;
                 break;
             case QUEEN:
-                addDiagonalMoves(possibleMoves, 0, myPosition);
+                addDiagonalMoves(possibleMoves, 0, myPosition, board);
                 addStraightMoves(possibleMoves, 32, myPosition);
                 break;
             case BISHOP:
-                addDiagonalMoves(possibleMoves, 0, myPosition);
+                addDiagonalMoves(possibleMoves, 0, myPosition, board);
                 break;
             case KNIGHT:
 
@@ -126,28 +126,147 @@ public class ChessPiece {
                 addStraightMoves(possibleMoves, 0, myPosition);
                 break;
             case PAWN:
-                ChessPosition diagonalUpRight = makeNewPositionIfPossible(myPosition, 1, 1);
+                int index = 0;
 
+                // check if the space right in front is empty, if so, it can go there
+                ChessPosition straightForward = makeNewPositionIfPossible(myPosition, 1, 0, board);
+                ChessPiece pieceInStraightForward = board.getPiece(straightForward);
+                if (pieceInStraightForward == null) {
+                    possibleMoves[index] = straightForward;
+                    index++;
+                }
 
+                // check if the space to the front left has an enemy, if so, it can go there too
+                ChessPosition upLeft = makeNewPositionIfPossible(myPosition, 1, -1, board);
+                ChessPiece pieceInUpLeft = board.getPiece(upLeft);
+                if (pieceInUpLeft == null) {
+                    possibleMoves[index] = upLeft;
+                    index++;
+                }
+
+                // same for front right
+                ChessPosition upRight = makeNewPositionIfPossible(myPosition, 1, 1, board);
+                ChessPiece pieceInUpRight = board.getPiece(upRight);
+                if (pieceInUpRight == null) {
+                    possibleMoves[index] = upRight;
+                    index++;
+                }
                 break;
         }
     }
 
-    public void addDiagonalMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition) {
+    public void addDiagonalMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
         // this function adds all the diagonal movements as possible moves, for bishop and queen
-        for (int i = 1; i < 8; i++) {
+        boolean continueLoop = true;
+        int i = 0;
+        while (continueLoop) {
+            i++;
             ChessPosition upRight = makeNewPositionIfPossible(myPosition, i, i, board);
-            possibleMoves[index] = upRight;
-            index++;
-            ChessPosition upLeft = makeNewPositionIfPossible(myPosition, i, -i, board);
-            possibleMoves[index] = upLeft;
-            index++;
-            ChessPosition downRight = makeNewPositionIfPossible(myPosition, -i, i, board);
-            possibleMoves[index] = downRight;
-            index++;
-            ChessPosition downLeft = makeNewPositionIfPossible(myPosition, -i, -i, board);
-            possibleMoves[index] = downLeft;
-            index++;
+            if (upRight == null) {
+                // this location isn't on the board, we shouldn't add it and stop looping
+                continueLoop = false;
+            } else {
+                ChessPiece pieceInLocation = board.getPiece(upRight);
+                if (pieceInLocation == null) {
+                    // nothing's there, keep going this direction further
+                    possibleMoves[index] = upRight;
+                    index++;
+                } else {
+                    if (pieceInLocation.getTeamColor() == pieceColor) {
+                        // the piece there is ours; we shouldn't add this location, and we should stop looping
+                        continueLoop = false;
+                    } else {
+                        // the pice there is theirs; we should add this location, but we should stop looping
+                        possibleMoves[index] = upRight;
+                        index++;
+                        continueLoop = false;
+                    }
+                }
+            }
+
+            continueLoop = true;
+            i = 0;
+            while (continueLoop) {
+                i--;
+                ChessPosition bottomLeft = makeNewPositionIfPossible(myPosition, i, i, board);
+                if (bottomLeft == null) {
+                    // this location isn't on the board, we shouldn't add it and stop looping
+                    continueLoop = false;
+                } else {
+                    ChessPiece pieceInLocation = board.getPiece(bottomLeft);
+                    if (pieceInLocation == null) {
+                        // nothing's there, keep going this direction further
+                        possibleMoves[index] = bottomLeft;
+                        index++;
+                    } else {
+                        if (pieceInLocation.getTeamColor() == pieceColor) {
+                            // the piece there is ours; we shouldn't add this location, and we should stop looping
+                            continueLoop = false;
+                        } else {
+                            // the piece there is theirs; we should add this location, but we should stop looping
+                            possibleMoves[index] = bottomLeft;
+                            index++;
+                            continueLoop = false;
+                        }
+                    }
+                }
+            }
+
+            continueLoop = true;
+            i = 0;
+            while (continueLoop) {
+                i++;
+                ChessPosition bottomRight = makeNewPositionIfPossible(myPosition, -i, i, board);
+                if (bottomRight == null) {
+                    // this location isn't on the board, we shouldn't add it and stop looping
+                    continueLoop = false;
+                } else {
+                    ChessPiece pieceInLocation = board.getPiece(bottomRight);
+                    if (pieceInLocation == null) {
+                        // nothing's there, keep going this direction further
+                        possibleMoves[index] = bottomRight;
+                        index++;
+                    } else {
+                        if (pieceInLocation.getTeamColor() == pieceColor) {
+                            // the piece there is ours; we shouldn't add this location, and we should stop looping
+                            continueLoop = false;
+                        } else {
+                            // the piece there is theirs; we should add this location, but we should stop looping
+                            possibleMoves[index] = bottomRight;
+                            index++;
+                            continueLoop = false;
+                        }
+                    }
+                }
+            }
+
+            continueLoop = true;
+            i = 0;
+            while (continueLoop) {
+                i++;
+                ChessPosition upLeft = makeNewPositionIfPossible(myPosition, i, -i, board);
+                if (upLeft == null) {
+                    // this location isn't on the board, we shouldn't add it and stop looping
+                    continueLoop = false;
+                } else {
+                    ChessPiece pieceInLocation = board.getPiece(upLeft);
+                    if (pieceInLocation == null) {
+                        // nothing's there, keep going this direction further
+                        possibleMoves[index] = upLeft;
+                        index++;
+                    } else {
+                        if (pieceInLocation.getTeamColor() == pieceColor) {
+                            // the piece there is ours; we shouldn't add this location, and we should stop looping
+                            continueLoop = false;
+                        } else {
+                            // the piece there is theirs; we should add this location, but we should stop looping
+                            possibleMoves[index] = upLeft;
+                            index++;
+                            continueLoop = false;
+                        }
+                    }
+                }
+            }
         }
     }
 
