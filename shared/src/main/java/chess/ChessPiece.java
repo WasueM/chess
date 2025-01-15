@@ -87,25 +87,34 @@ public class ChessPiece {
         int newPositionRow = currentPositionRow + upDown;
         int newPositionColumn = currentPositionColumn + leftRight;
 
+        ChessPosition newPosition = new ChessPosition(newPositionRow, newPositionColumn);
+
         // check if its actually on the board
         if (newPositionRow < 1 || newPositionRow > 8 || newPositionColumn < 1 || newPositionColumn > 8) {
+            System.out.println("NOT ON BOARD");
             return null;
         }
 
         // check if there's a same-team piece in there
-        if (isSameTeamPieceThere(position, board)) {
+        if (isSameTeamPieceThere(newPosition, board)) {
+            System.out.println("SAME TEAM PIECE THERE");
             return null;
         }
 
         // look's like it's a possible position!
-        return new ChessPosition(newPositionRow, newPositionColumn);
+        System.out.println("Possible position");
+        return newPosition;
     }
 
     public boolean isSameTeamPieceThere(ChessPosition position, ChessBoard board) {
         ChessPiece pieceInPlace = board.getPiece(position);
         if (pieceInPlace == null) {
+            System.out.println("Piece in place is null");
             return false;
         } else {
+            System.out.println("Piece in place is not null");
+            System.out.println("Piece in place color: " + pieceInPlace.getTeamColor());
+            System.out.println("Piece in place type: " + pieceInPlace.getPieceType());
             if (pieceInPlace.getTeamColor() == this.getTeamColor()) {
                 return true;
             } else {
@@ -129,6 +138,12 @@ public class ChessPiece {
         switch (this.pieceType) {
             case KING:
                 addKingMoves(possiblePositions, 0, myPosition, board);
+                System.out.println("King moves");
+                for (int i = 0; i < possiblePositions.length; i++) {
+                    if (possiblePositions[i] != null) {
+                        System.out.println(possiblePositions[i].toString());
+                    }
+                }
                 break;
             case QUEEN:
                 addDiagonalMoves(possiblePositions, 0, myPosition, board);
@@ -317,6 +332,13 @@ public class ChessPiece {
         ChessPosition diagonalDownRight = makeNewPositionIfPossible(myPosition, -1, 1, board);
         possibleMoves[index] = diagonalDownRight;
         index++;
+
+        System.out.println("King moves in function");
+        for (int i = 0; i < possibleMoves.length; i++) {
+            if (possibleMoves[i] != null) {
+                System.out.println(possibleMoves[i].toString());
+            }
+        }
     }
 
     public void addPawnMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
