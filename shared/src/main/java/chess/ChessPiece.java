@@ -135,7 +135,7 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         // we will store possible moves here
-        ChessPosition[] possiblePositions = new ChessPosition[32]; // not sure if 32 is the right size but it'll be big enough for sure
+        ChessPosition[] possiblePositions = new ChessPosition[64]; // not sure if 32 is the right size but it'll be big enough for sure
 
         // so I guess we'll do a switch statement for each possible piece that this could be to organize it?
         switch (this.pieceType) {
