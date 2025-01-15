@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -88,29 +89,170 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         // we will store possible moves here
-        ChessPosition[] possibleMoves = new ChessPosition[32]; // not sure if 32 is the right size but it'll be big enough for sure
+        ChessPosition[] possiblePositions = new ChessPosition[32]; // not sure if 32 is the right size but it'll be big enough for sure
 
         // so I guess we'll do a switch statement for each possible piece that this could be to organize it?
         switch (this.pieceType) {
             case KING:
-                addKingMoves(possibleMoves, 0, myPosition, board);
+                addKingMoves(possiblePositions, 0, myPosition, board);
                 break;
             case QUEEN:
-                addDiagonalMoves(possibleMoves, 0, myPosition, board);
-                addStraightMoves(possibleMoves, 32, myPosition, board);
+                addDiagonalMoves(possiblePositions, 0, myPosition, board);
+                addStraightMoves(possiblePositions, 32, myPosition, board);
                 break;
             case BISHOP:
-                addDiagonalMoves(possibleMoves, 0, myPosition, board);
+                addDiagonalMoves(possiblePositions, 0, myPosition, board);
                 break;
             case KNIGHT:
-
+                addKnightMoves(possiblePositions, 0, myPosition, board);
                 break;
             case ROOK:
-                addStraightMoves(possibleMoves, 0, myPosition, board);
+                addStraightMoves(possiblePositions, 0, myPosition, board);
                 break;
             case PAWN:
-                addPawnMoves(possibleMoves, 0, myPosition, board);
+                addPawnMoves(possiblePositions, 0, myPosition, board);
                 break;
+        }
+
+        // count how many non-null there are
+        int numNonNull = 0;
+        for (int i = 0; i < possiblePositions.length; i++) {
+            if (possiblePositions[i] != null) {
+                numNonNull++;
+            }
+        }
+
+        // turn the chess positions (that aren't null) into chess moves
+        Collection<ChessMove> possibleMoves = new ArrayList<>();
+        for (int i = 0; i < possiblePositions.length; i++) {
+            if (possiblePositions[i] != null) {
+                ChessMove move = new ChessMove(myPosition, possiblePositions[i], null);
+                possibleMoves.add(move);
+            }
+        }
+
+        return possibleMoves;
+    }
+
+    public void addKnightMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
+        // add two up and one left
+        ChessPosition topLeft = makeNewPositionIfPossible(myPosition, 2, -1, board);
+        if (topLeft != null) { // so this location is on the board
+            ChessPiece pieceInLocation = board.getPiece(topLeft);
+            if (pieceInLocation == null) {
+                // nothing's there, so we can add this location
+                possibleMoves[index] = topLeft;
+                index++;
+            } else if (pieceInLocation.getTeamColor() != pieceColor) {
+                // the piece there is theirs; we should add this location
+                possibleMoves[index] = topLeft;
+                index++;
+            }
+        }
+
+        // add two up and one right
+        ChessPosition topRight = makeNewPositionIfPossible(myPosition, 2, 1, board);
+        if (topRight != null) { // so this location is on the board
+            ChessPiece pieceInLocation = board.getPiece(topRight);
+            if (pieceInLocation == null) {
+                // nothing's there, so we can add this location
+                possibleMoves[index] = topRight;
+                index++;
+            } else if (pieceInLocation.getTeamColor() != pieceColor) {
+                // the piece there is theirs; we should add this location
+                possibleMoves[index] = topRight;
+                index++;
+            }
+        }
+
+        // add two left one up
+        ChessPosition leftTop = makeNewPositionIfPossible(myPosition, 1, -2, board);
+        if (leftTop != null) { // so this location is on the board
+            ChessPiece pieceInLocation = board.getPiece(leftTop);
+            if (pieceInLocation == null) {
+                // nothing's there, so we can add this location
+                possibleMoves[index] = leftTop;
+                index++;
+            } else if (pieceInLocation.getTeamColor() != pieceColor) {
+                // the piece there is theirs; we should add this location
+                possibleMoves[index] = leftTop;
+                index++;
+            }
+        }
+
+        // add two left one down
+        ChessPosition leftBottom = makeNewPositionIfPossible(myPosition, -1, -2, board);
+        if (leftBottom != null) { // so this location is on the board
+            ChessPiece pieceInLocation = board.getPiece(leftBottom);
+            if (pieceInLocation == null) {
+                // nothing's there, so we can add this location
+                possibleMoves[index] = leftBottom;
+                index++;
+            } else if (pieceInLocation.getTeamColor() != pieceColor) {
+                // the piece there is theirs; we should add this location
+                possibleMoves[index] = leftBottom;
+                index++;
+            }
+        }
+
+        // add two down and one left
+        ChessPosition bottomLeft = makeNewPositionIfPossible(myPosition, -2, -1, board);
+        if (bottomLeft != null) { // so this location is on the board
+            ChessPiece pieceInLocation = board.getPiece(bottomLeft);
+            if (pieceInLocation == null) {
+                // nothing's there, so we can add this location
+                possibleMoves[index] = bottomLeft;
+                index++;
+            } else if (pieceInLocation.getTeamColor() != pieceColor) {
+                // the piece there is theirs; we should add this location
+                possibleMoves[index] = bottomLeft;
+                index++;
+            }
+        }
+
+        // add two down and one right
+        ChessPosition bottomRight = makeNewPositionIfPossible(myPosition, -2, 1, board);
+        if (bottomRight != null) { // so this location is on the board
+            ChessPiece pieceInLocation = board.getPiece(bottomRight);
+            if (pieceInLocation == null) {
+                // nothing's there, so we can add this location
+                possibleMoves[index] = bottomRight;
+                index++;
+            } else if (pieceInLocation.getTeamColor() != pieceColor) {
+                // the piece there is theirs; we should add this location
+                possibleMoves[index] = bottomRight;
+                index++;
+            }
+        }
+
+        // add two right and one down
+        ChessPosition rightBottom = makeNewPositionIfPossible(myPosition, -1, 2, board);
+        if (rightBottom != null) { // so this location is on the board
+            ChessPiece pieceInLocation = board.getPiece(rightBottom);
+            if (pieceInLocation == null) {
+                // nothing's there, so we can add this location
+                possibleMoves[index] = rightBottom;
+                index++;
+            } else if (pieceInLocation.getTeamColor() != pieceColor) {
+                // the piece there is theirs; we should add this location
+                possibleMoves[index] = rightBottom;
+                index++;
+            }
+        }
+
+        // add two right and one up
+        ChessPosition rightUp = makeNewPositionIfPossible(myPosition, 1, 2, board);
+        if (rightUp != null) { // so this location is on the board
+            ChessPiece pieceInLocation = board.getPiece(rightUp);
+            if (pieceInLocation == null) {
+                // nothing's there, so we can add this location
+                possibleMoves[index] = rightUp;
+                index++;
+            } else if (pieceInLocation.getTeamColor() != pieceColor) {
+                // the piece there is theirs; we should add this location
+                possibleMoves[index] = rightUp;
+                index++;
+            }
         }
     }
 
