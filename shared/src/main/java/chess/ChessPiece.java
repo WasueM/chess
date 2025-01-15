@@ -596,7 +596,7 @@ public class ChessPiece {
         i = 0;
         while (continueLoop) {
             i++;
-            ChessPosition up = makeNewPositionIfPossible(myPosition, 0, -i, board);
+            ChessPosition up = makeNewPositionIfPossible(myPosition, 0, i, board);
             if (up == null) {
                 // this location isn't on the board, we shouldn't add it and stop looping
                 continueLoop = false;
