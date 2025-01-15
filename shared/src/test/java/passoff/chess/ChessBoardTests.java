@@ -32,13 +32,9 @@ public class ChessBoardTests {
     @DisplayName("Reset Board")
     public void defaultGameBoard() {
         var expectedBoard = TestUtilities.defaultBoard();
-        // print the expected board
-        System.out.println(expectedBoard);
 
         var actualBoard = new ChessBoard();
         actualBoard.resetBoard();
-        // print the acutal board
-        System.out.println(actualBoard);
 
         Assertions.assertEquals(expectedBoard, actualBoard);
     }
