@@ -363,22 +363,31 @@ public class ChessPiece {
             colorMultiplier = -1;
         }
 
-        // if its on the second row (in the case of WHITE) or the seventh row (in the case of BLACK), it check about moving two in front as well
-        if ((pieceColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) || (pieceColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7)) {
-            ChessPosition twoForward = makeNewPositionIfPossible(myPosition, 2 * colorMultiplier, 0, board);
-            ChessPiece pieceInStraightForward = board.getPiece(twoForward);
-            if (pieceInStraightForward == null) {
-                possibleMoves[index] = twoForward;
-                index++;
-            }
-        }
-
         // check if the space right in front is empty, if so, it can go there
         ChessPosition straightForward = makeNewPositionIfPossible(myPosition, 1 * colorMultiplier, 0, board);
-        ChessPiece pieceInStraightForward = board.getPiece(straightForward);
-        if (pieceInStraightForward == null) {
-            possibleMoves[index] = straightForward;
-            index++;
+        if (straightForward != null) {
+            ChessPiece pieceInStraightForward = board.getPiece(straightForward);
+            System.out.println("Straight forward piece is ");
+            System.out.println(pieceInStraightForward);
+            if (pieceInStraightForward == null) {
+                possibleMoves[index] = straightForward;
+                index++;
+
+                System.out.println("Straight forward is null");
+
+                // if its on the second row (in the case of WHITE) or the seventh row (in the case of BLACK), it check about moving two in front as well
+                if ((pieceColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) || (pieceColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7)) {
+                    ChessPosition twoForward = makeNewPositionIfPossible(myPosition, 2 * colorMultiplier, 0, board);
+                    ChessPiece pieceInTwoForward = board.getPiece(twoForward);
+                    if (pieceInTwoForward == null) {
+
+                        System.out.println("Two forward is null");
+
+                        possibleMoves[index] = twoForward;
+                        index++;
+                    }
+                }
+            }
         }
 
         // check if the space to the front left has an enemy, if so, it can go there too
