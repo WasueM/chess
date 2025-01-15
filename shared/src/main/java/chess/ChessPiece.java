@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -17,6 +18,39 @@ public class ChessPiece {
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.pieceType = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && pieceType == that.pieceType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, pieceType);
+    }
+
+    @Override
+    public String toString() {
+        switch (this.pieceType) {
+            case KING:
+                return "K";
+            case QUEEN:
+                return "Q";
+            case BISHOP:
+                return "B";
+            case KNIGHT:
+                return "K";
+            case ROOK:
+                return "R";
+            case PAWN:
+                return "P";
+        }
+        return "FAILED";
     }
 
     /**
@@ -427,115 +461,113 @@ public class ChessPiece {
 
     public void addStraightMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
         // the same thing but for the rook and queen's straight moves
-        for (int i = 1; i < 8; i++) {
-            boolean continueLoop = true;
-            int i = 0;
-            while (continueLoop) {
-                i++;
-                ChessPosition up = makeNewPositionIfPossible(myPosition, i, 0, board);
-                if (up == null) {
-                    // this location isn't on the board, we shouldn't add it and stop looping
-                    continueLoop = false;
+        boolean continueLoop = true;
+        int i = 0;
+        while (continueLoop) {
+            i++;
+            ChessPosition up = makeNewPositionIfPossible(myPosition, i, 0, board);
+            if (up == null) {
+                // this location isn't on the board, we shouldn't add it and stop looping
+                continueLoop = false;
+            } else {
+                ChessPiece pieceInLocation = board.getPiece(up);
+                if (pieceInLocation == null) {
+                    // nothing's there, keep going this direction further
+                    possibleMoves[index] = up;
+                    index++;
                 } else {
-                    ChessPiece pieceInLocation = board.getPiece(up);
-                    if (pieceInLocation == null) {
-                        // nothing's there, keep going this direction further
+                    if (pieceInLocation.getTeamColor() == pieceColor) {
+                        // the piece there is ours; we shouldn't add this location, and we should stop looping
+                        continueLoop = false;
+                    } else {
+                        // the piece there is theirs; we should add this location, but we should stop looping
                         possibleMoves[index] = up;
                         index++;
-                    } else {
-                        if (pieceInLocation.getTeamColor() == pieceColor) {
-                            // the piece there is ours; we shouldn't add this location, and we should stop looping
-                            continueLoop = false;
-                        } else {
-                            // the piece there is theirs; we should add this location, but we should stop looping
-                            possibleMoves[index] = up;
-                            index++;
-                            continueLoop = false;
-                        }
+                        continueLoop = false;
                     }
                 }
             }
+        }
 
-            continueLoop = true;
-            i = 0;
-            while (continueLoop) {
-                i++;
-                ChessPosition up = makeNewPositionIfPossible(myPosition, -i, 0, board);
-                if (up == null) {
-                    // this location isn't on the board, we shouldn't add it and stop looping
-                    continueLoop = false;
+        continueLoop = true;
+        i = 0;
+        while (continueLoop) {
+            i++;
+            ChessPosition up = makeNewPositionIfPossible(myPosition, -i, 0, board);
+            if (up == null) {
+                // this location isn't on the board, we shouldn't add it and stop looping
+                continueLoop = false;
+            } else {
+                ChessPiece pieceInLocation = board.getPiece(up);
+                if (pieceInLocation == null) {
+                    // nothing's there, keep going this direction further
+                    possibleMoves[index] = up;
+                    index++;
                 } else {
-                    ChessPiece pieceInLocation = board.getPiece(up);
-                    if (pieceInLocation == null) {
-                        // nothing's there, keep going this direction further
+                    if (pieceInLocation.getTeamColor() == pieceColor) {
+                        // the piece there is ours; we shouldn't add this location, and we should stop looping
+                        continueLoop = false;
+                    } else {
+                        // the piece there is theirs; we should add this location, but we should stop looping
                         possibleMoves[index] = up;
                         index++;
-                    } else {
-                        if (pieceInLocation.getTeamColor() == pieceColor) {
-                            // the piece there is ours; we shouldn't add this location, and we should stop looping
-                            continueLoop = false;
-                        } else {
-                            // the piece there is theirs; we should add this location, but we should stop looping
-                            possibleMoves[index] = up;
-                            index++;
-                            continueLoop = false;
-                        }
+                        continueLoop = false;
                     }
                 }
             }
+        }
 
-            continueLoop = true;
-            i = 0;
-            while (continueLoop) {
-                i++;
-                ChessPosition up = makeNewPositionIfPossible(myPosition, 0, -i, board);
-                if (up == null) {
-                    // this location isn't on the board, we shouldn't add it and stop looping
-                    continueLoop = false;
+        continueLoop = true;
+        i = 0;
+        while (continueLoop) {
+            i++;
+            ChessPosition up = makeNewPositionIfPossible(myPosition, 0, -i, board);
+            if (up == null) {
+                // this location isn't on the board, we shouldn't add it and stop looping
+                continueLoop = false;
+            } else {
+                ChessPiece pieceInLocation = board.getPiece(up);
+                if (pieceInLocation == null) {
+                    // nothing's there, keep going this direction further
+                    possibleMoves[index] = up;
+                    index++;
                 } else {
-                    ChessPiece pieceInLocation = board.getPiece(up);
-                    if (pieceInLocation == null) {
-                        // nothing's there, keep going this direction further
+                    if (pieceInLocation.getTeamColor() == pieceColor) {
+                        // the piece there is ours; we shouldn't add this location, and we should stop looping
+                        continueLoop = false;
+                    } else {
+                        // the piece there is theirs; we should add this location, but we should stop looping
                         possibleMoves[index] = up;
                         index++;
-                    } else {
-                        if (pieceInLocation.getTeamColor() == pieceColor) {
-                            // the piece there is ours; we shouldn't add this location, and we should stop looping
-                            continueLoop = false;
-                        } else {
-                            // the piece there is theirs; we should add this location, but we should stop looping
-                            possibleMoves[index] = up;
-                            index++;
-                            continueLoop = false;
-                        }
+                        continueLoop = false;
                     }
                 }
             }
+        }
 
-            continueLoop = true;
-            i = 0;
-            while (continueLoop) {
-                i++;
-                ChessPosition up = makeNewPositionIfPossible(myPosition, 0, -i, board);
-                if (up == null) {
-                    // this location isn't on the board, we shouldn't add it and stop looping
-                    continueLoop = false;
+        continueLoop = true;
+        i = 0;
+        while (continueLoop) {
+            i++;
+            ChessPosition up = makeNewPositionIfPossible(myPosition, 0, -i, board);
+            if (up == null) {
+                // this location isn't on the board, we shouldn't add it and stop looping
+                continueLoop = false;
+            } else {
+                ChessPiece pieceInLocation = board.getPiece(up);
+                if (pieceInLocation == null) {
+                    // nothing's there, keep going this direction further
+                    possibleMoves[index] = up;
+                    index++;
                 } else {
-                    ChessPiece pieceInLocation = board.getPiece(up);
-                    if (pieceInLocation == null) {
-                        // nothing's there, keep going this direction further
+                    if (pieceInLocation.getTeamColor() == pieceColor) {
+                        // the piece there is ours; we shouldn't add this location, and we should stop looping
+                        continueLoop = false;
+                    } else {
+                        // the piece there is theirs; we should add this location, but we should stop looping
                         possibleMoves[index] = up;
                         index++;
-                    } else {
-                        if (pieceInLocation.getTeamColor() == pieceColor) {
-                            // the piece there is ours; we shouldn't add this location, and we should stop looping
-                            continueLoop = false;
-                        } else {
-                            // the piece there is theirs; we should add this location, but we should stop looping
-                            possibleMoves[index] = up;
-                            index++;
-                            continueLoop = false;
-                        }
+                        continueLoop = false;
                     }
                 }
             }
