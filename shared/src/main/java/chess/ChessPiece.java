@@ -93,28 +93,11 @@ public class ChessPiece {
         // so I guess we'll do a switch statement for each possible piece that this could be to organize it?
         switch (this.pieceType) {
             case KING:
-                // can go any direction straight and diagonal on space, add these
-                // calculate and add each to that array
-                ChessPosition straightUp = makeNewPositionIfPossible(myPosition, 1, 0, board);
-                possibleMoves[0] = straightUp;
-                ChessPosition straightDown = makeNewPositionIfPossible(myPosition, -1, 0, board);
-                possibleMoves[1] = straightDown;
-                ChessPosition straightLeft = makeNewPositionIfPossible(myPosition, 0, -1, board);
-                possibleMoves[2] = straightLeft;
-                ChessPosition straightRight = makeNewPositionIfPossible(myPosition, 0, 1, board);
-                possibleMoves[3] = straightRight;
-                ChessPosition diagonalUpLeft = makeNewPositionIfPossible(myPosition, 1, -1, board);
-                possibleMoves[4] = diagonalUpLeft;
-                ChessPosition diagonalUpRight = makeNewPositionIfPossible(myPosition, 1, 1, board);
-                possibleMoves[5] = diagonalUpRight;
-                ChessPosition diagonalDownLeft = makeNewPositionIfPossible(myPosition, -1, -1, board);
-                possibleMoves[6] = diagonalDownLeft;
-                ChessPosition diagonalDownRight = makeNewPositionIfPossible(myPosition, -1, 1, board);
-                possibleMoves[7] = diagonalDownRight;
+                addKingMoves(possibleMoves, 0, myPosition, board);
                 break;
             case QUEEN:
                 addDiagonalMoves(possibleMoves, 0, myPosition, board);
-                addStraightMoves(possibleMoves, 32, myPosition);
+                addStraightMoves(possibleMoves, 32, myPosition, board);
                 break;
             case BISHOP:
                 addDiagonalMoves(possibleMoves, 0, myPosition, board);
@@ -123,35 +106,65 @@ public class ChessPiece {
 
                 break;
             case ROOK:
-                addStraightMoves(possibleMoves, 0, myPosition);
+                addStraightMoves(possibleMoves, 0, myPosition, board);
                 break;
             case PAWN:
-                int index = 0;
-
-                // check if the space right in front is empty, if so, it can go there
-                ChessPosition straightForward = makeNewPositionIfPossible(myPosition, 1, 0, board);
-                ChessPiece pieceInStraightForward = board.getPiece(straightForward);
-                if (pieceInStraightForward == null) {
-                    possibleMoves[index] = straightForward;
-                    index++;
-                }
-
-                // check if the space to the front left has an enemy, if so, it can go there too
-                ChessPosition upLeft = makeNewPositionIfPossible(myPosition, 1, -1, board);
-                ChessPiece pieceInUpLeft = board.getPiece(upLeft);
-                if (pieceInUpLeft == null) {
-                    possibleMoves[index] = upLeft;
-                    index++;
-                }
-
-                // same for front right
-                ChessPosition upRight = makeNewPositionIfPossible(myPosition, 1, 1, board);
-                ChessPiece pieceInUpRight = board.getPiece(upRight);
-                if (pieceInUpRight == null) {
-                    possibleMoves[index] = upRight;
-                    index++;
-                }
+                addPawnMoves(possibleMoves, 0, myPosition, board);
                 break;
+        }
+    }
+
+    public void addKingMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
+        // can go any direction straight and diagonal on space, add these
+        // calculate and add each to that array
+        ChessPosition straightUp = makeNewPositionIfPossible(myPosition, 1, 0, board);
+        possibleMoves[index] = straightUp;
+        index++;
+        ChessPosition straightDown = makeNewPositionIfPossible(myPosition, -1, 0, board);
+        possibleMoves[index] = straightDown;
+        index++;
+        ChessPosition straightLeft = makeNewPositionIfPossible(myPosition, 0, -1, board);
+        possibleMoves[index] = straightLeft;
+        index++;
+        ChessPosition straightRight = makeNewPositionIfPossible(myPosition, 0, 1, board);
+        possibleMoves[index] = straightRight;
+        index++;
+        ChessPosition diagonalUpLeft = makeNewPositionIfPossible(myPosition, 1, -1, board);
+        possibleMoves[index] = diagonalUpLeft;
+        index++;
+        ChessPosition diagonalUpRight = makeNewPositionIfPossible(myPosition, 1, 1, board);
+        possibleMoves[index] = diagonalUpRight;
+        index++;
+        ChessPosition diagonalDownLeft = makeNewPositionIfPossible(myPosition, -1, -1, board);
+        possibleMoves[index] = diagonalDownLeft;
+        index++;
+        ChessPosition diagonalDownRight = makeNewPositionIfPossible(myPosition, -1, 1, board);
+        possibleMoves[index] = diagonalDownRight;
+        index++;
+    }
+
+    public void addPawnMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
+        // check if the space right in front is empty, if so, it can go there
+        ChessPosition straightForward = makeNewPositionIfPossible(myPosition, 1, 0, board);
+        ChessPiece pieceInStraightForward = board.getPiece(straightForward);
+        if (pieceInStraightForward == null) {
+            possibleMoves[index] = straightForward;
+            index++;
+        }
+
+        // check if the space to the front left has an enemy, if so, it can go there too
+        ChessPosition upLeft = makeNewPositionIfPossible(myPosition, 1, -1, board);
+        ChessPiece pieceInUpLeft = board.getPiece(upLeft);
+        if (pieceInUpLeft == null) {
+            possibleMoves[index] = upLeft;
+            index++;
+        }
+
+        // same for front right
+        ChessPosition upRight = makeNewPositionIfPossible(myPosition, 1, 1, board);
+        ChessPiece pieceInUpRight = board.getPiece(upRight);
+        if (pieceInUpRight == null) {
+            possibleMoves[index] = upRight;
         }
     }
 
@@ -270,21 +283,120 @@ public class ChessPiece {
         }
     }
 
-    public void addStraightMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition) {
+    public void addStraightMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
         // the same thing but for the rook and queen's straight moves
         for (int i = 1; i < 8; i++) {
-            ChessPosition up = makeNewPositionIfPossible(myPosition, i, 0);
-            possibleMoves[index] = up;
-            index++;
-            ChessPosition down = makeNewPositionIfPossible(myPosition, -i, 0);
-            possibleMoves[index] = down;
-            index++;
-            ChessPosition left = makeNewPositionIfPossible(myPosition, 0, i);
-            possibleMoves[index] = left;
-            index++;
-            ChessPosition right = makeNewPositionIfPossible(myPosition, 0, -i);
-            possibleMoves[index] = right;
-            index++;
+            boolean continueLoop = true;
+            int i = 0;
+            while (continueLoop) {
+                i++;
+                ChessPosition up = makeNewPositionIfPossible(myPosition, i, 0, board);
+                if (up == null) {
+                    // this location isn't on the board, we shouldn't add it and stop looping
+                    continueLoop = false;
+                } else {
+                    ChessPiece pieceInLocation = board.getPiece(up);
+                    if (pieceInLocation == null) {
+                        // nothing's there, keep going this direction further
+                        possibleMoves[index] = up;
+                        index++;
+                    } else {
+                        if (pieceInLocation.getTeamColor() == pieceColor) {
+                            // the piece there is ours; we shouldn't add this location, and we should stop looping
+                            continueLoop = false;
+                        } else {
+                            // the piece there is theirs; we should add this location, but we should stop looping
+                            possibleMoves[index] = up;
+                            index++;
+                            continueLoop = false;
+                        }
+                    }
+                }
+            }
+
+            continueLoop = true;
+            i = 0;
+            while (continueLoop) {
+                i++;
+                ChessPosition up = makeNewPositionIfPossible(myPosition, -i, 0, board);
+                if (up == null) {
+                    // this location isn't on the board, we shouldn't add it and stop looping
+                    continueLoop = false;
+                } else {
+                    ChessPiece pieceInLocation = board.getPiece(up);
+                    if (pieceInLocation == null) {
+                        // nothing's there, keep going this direction further
+                        possibleMoves[index] = up;
+                        index++;
+                    } else {
+                        if (pieceInLocation.getTeamColor() == pieceColor) {
+                            // the piece there is ours; we shouldn't add this location, and we should stop looping
+                            continueLoop = false;
+                        } else {
+                            // the piece there is theirs; we should add this location, but we should stop looping
+                            possibleMoves[index] = up;
+                            index++;
+                            continueLoop = false;
+                        }
+                    }
+                }
+            }
+
+            continueLoop = true;
+            i = 0;
+            while (continueLoop) {
+                i++;
+                ChessPosition up = makeNewPositionIfPossible(myPosition, 0, -i, board);
+                if (up == null) {
+                    // this location isn't on the board, we shouldn't add it and stop looping
+                    continueLoop = false;
+                } else {
+                    ChessPiece pieceInLocation = board.getPiece(up);
+                    if (pieceInLocation == null) {
+                        // nothing's there, keep going this direction further
+                        possibleMoves[index] = up;
+                        index++;
+                    } else {
+                        if (pieceInLocation.getTeamColor() == pieceColor) {
+                            // the piece there is ours; we shouldn't add this location, and we should stop looping
+                            continueLoop = false;
+                        } else {
+                            // the piece there is theirs; we should add this location, but we should stop looping
+                            possibleMoves[index] = up;
+                            index++;
+                            continueLoop = false;
+                        }
+                    }
+                }
+            }
+
+            continueLoop = true;
+            i = 0;
+            while (continueLoop) {
+                i++;
+                ChessPosition up = makeNewPositionIfPossible(myPosition, 0, -i, board);
+                if (up == null) {
+                    // this location isn't on the board, we shouldn't add it and stop looping
+                    continueLoop = false;
+                } else {
+                    ChessPiece pieceInLocation = board.getPiece(up);
+                    if (pieceInLocation == null) {
+                        // nothing's there, keep going this direction further
+                        possibleMoves[index] = up;
+                        index++;
+                    } else {
+                        if (pieceInLocation.getTeamColor() == pieceColor) {
+                            // the piece there is ours; we shouldn't add this location, and we should stop looping
+                            continueLoop = false;
+                        } else {
+                            // the piece there is theirs; we should add this location, but we should stop looping
+                            possibleMoves[index] = up;
+                            index++;
+                            continueLoop = false;
+                        }
+                    }
+                }
+            }
         }
     }
 }
