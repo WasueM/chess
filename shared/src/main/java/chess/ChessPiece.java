@@ -45,17 +45,37 @@ public class ChessPiece {
     }
 
     // a function which takes in a chess position and a modification to it, and returns the new place on the board or null if its off the board
-    public ChessPosition makeNewPositionIfPossible(ChessPosition position, int upDown, int leftRight) {
+    public ChessPosition makeNewPositionIfPossible(ChessPosition position, int upDown, int leftRight, ChessBoard board) {
         int currentPositionRow = position.getRow();
         int currentPositionColumn = position.getColumn();
 
         int newPositionRow = currentPositionRow + upDown;
         int newPositionColumn = currentPositionColumn + leftRight;
 
+        // check if its actually on the board
         if (newPositionRow < 1 || newPositionRow > 8 || newPositionColumn < 1 || newPositionColumn > 8) {
             return null;
+        }
+
+        // check if there's a same-team piece in there
+        if (isSameTeamPieceThere(position, board)) {
+            return null;
+        }
+
+        // look's like it's a possible position!
+        return new ChessPosition(newPositionRow, newPositionColumn);
+    }
+
+    public boolean isSameTeamPieceThere(ChessPosition position, ChessBoard board) {
+        ChessPiece pieceInPlace = board.getPiece(position);
+        if (pieceInPlace == null) {
+            return false;
         } else {
-            return new ChessPosition(newPositionRow, newPositionColumn);
+            if (pieceInPlace.getTeamColor() == this.getTeamColor()) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -75,46 +95,77 @@ public class ChessPiece {
             case KING:
                 // can go any direction straight and diagonal on space, add these
                 // calculate and add each to that array
-                ChessPosition straightUp = makeNewPositionIfPossible(myPosition, 1, 0);
+                ChessPosition straightUp = makeNewPositionIfPossible(myPosition, 1, 0, board);
                 possibleMoves[0] = straightUp;
-                ChessPosition straightDown = makeNewPositionIfPossible(myPosition, -1, 0);
+                ChessPosition straightDown = makeNewPositionIfPossible(myPosition, -1, 0, board);
                 possibleMoves[1] = straightDown;
-                ChessPosition straightLeft = makeNewPositionIfPossible(myPosition, 0, -1);
+                ChessPosition straightLeft = makeNewPositionIfPossible(myPosition, 0, -1, board);
                 possibleMoves[2] = straightLeft;
-                ChessPosition straightRight = makeNewPositionIfPossible(myPosition, 0, 1);
+                ChessPosition straightRight = makeNewPositionIfPossible(myPosition, 0, 1, board);
                 possibleMoves[3] = straightRight;
-                ChessPosition diagonalUpLeft = makeNewPositionIfPossible(myPosition, 1, -1);
+                ChessPosition diagonalUpLeft = makeNewPositionIfPossible(myPosition, 1, -1, board);
                 possibleMoves[4] = diagonalUpLeft;
-                ChessPosition diagonalUpRight = makeNewPositionIfPossible(myPosition, 1, 1);
+                ChessPosition diagonalUpRight = makeNewPositionIfPossible(myPosition, 1, 1, board);
                 possibleMoves[5] = diagonalUpRight;
-                ChessPosition diagonalDownLeft = makeNewPositionIfPossible(myPosition, -1, -1);
+                ChessPosition diagonalDownLeft = makeNewPositionIfPossible(myPosition, -1, -1, board);
                 possibleMoves[6] = diagonalDownLeft;
-                ChessPosition diagonalDownRight = makeNewPositionIfPossible(myPosition, -1, 1);
+                ChessPosition diagonalDownRight = makeNewPositionIfPossible(myPosition, -1, 1, board);
                 possibleMoves[7] = diagonalDownRight;
                 break;
             case QUEEN:
-
+                addDiagonalMoves(possibleMoves, 0, myPosition);
+                addStraightMoves(possibleMoves, 32, myPosition);
                 break;
             case BISHOP:
-
+                addDiagonalMoves(possibleMoves, 0, myPosition);
                 break;
             case KNIGHT:
 
                 break;
             case ROOK:
-
+                addStraightMoves(possibleMoves, 0, myPosition);
                 break;
             case PAWN:
+                ChessPosition diagonalUpRight = makeNewPositionIfPossible(myPosition, 1, 1);
+
 
                 break;
         }
+    }
 
-        // loop through them and remove them if they are null or occupied by a piece of the same color
-        for (ChessPosition possibleMove : possibleMoves) {
-            ChessPiece possibleMovePiece = board.getPiece(possibleMove);
-            if (possibleMovePiece.getTeamColor() != this.pieceColor) {
-                possibleMove = null; // set to null so we know we can't move there
-            }
+    public void addDiagonalMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition) {
+        // this function adds all the diagonal movements as possible moves, for bishop and queen
+        for (int i = 1; i < 8; i++) {
+            ChessPosition upRight = makeNewPositionIfPossible(myPosition, i, i, board);
+            possibleMoves[index] = upRight;
+            index++;
+            ChessPosition upLeft = makeNewPositionIfPossible(myPosition, i, -i, board);
+            possibleMoves[index] = upLeft;
+            index++;
+            ChessPosition downRight = makeNewPositionIfPossible(myPosition, -i, i, board);
+            possibleMoves[index] = downRight;
+            index++;
+            ChessPosition downLeft = makeNewPositionIfPossible(myPosition, -i, -i, board);
+            possibleMoves[index] = downLeft;
+            index++;
+        }
+    }
+
+    public void addStraightMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition) {
+        // the same thing but for the rook and queen's straight moves
+        for (int i = 1; i < 8; i++) {
+            ChessPosition up = makeNewPositionIfPossible(myPosition, i, 0);
+            possibleMoves[index] = up;
+            index++;
+            ChessPosition down = makeNewPositionIfPossible(myPosition, -i, 0);
+            possibleMoves[index] = down;
+            index++;
+            ChessPosition left = makeNewPositionIfPossible(myPosition, 0, i);
+            possibleMoves[index] = left;
+            index++;
+            ChessPosition right = makeNewPositionIfPossible(myPosition, 0, -i);
+            possibleMoves[index] = right;
+            index++;
         }
     }
 }
