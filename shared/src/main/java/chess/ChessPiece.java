@@ -152,14 +152,6 @@ public class ChessPiece {
                 break;
         }
 
-        // count how many non-null there are
-        int numNonNull = 0;
-        for (int i = 0; i < possiblePositions.length; i++) {
-            if (possiblePositions[i] != null) {
-                numNonNull++;
-            }
-        }
-
         // turn the chess positions (that aren't null) into chess moves
         Collection<ChessMove> possibleMoves = new ArrayList<>();
         for (int i = 0; i < possiblePositions.length; i++) {
@@ -185,143 +177,45 @@ public class ChessPiece {
     }
 
     public void addLinearPositionIfPossible(ChessPosition[] possibleMoves, ChessBoard board, ChessPosition myPosition, int upDown, int leftRight) {
-        ChessPosition topLeft = makeNewPositionIfPossible(myPosition, upDown, leftRight, board);
-        if (topLeft != null) { // so this location is on the board
-            ChessPiece pieceInLocation = board.getPiece(topLeft);
+        ChessPosition newPosition = makeNewPositionIfPossible(myPosition, upDown, leftRight, board);
+        if (newPosition != null) { // so this location is on the board
+            ChessPiece pieceInLocation = board.getPiece(newPosition);
             if (pieceInLocation == null) {
                 // nothing's there, so we can add this location
-                possibleMoves[this.nextIndexToAdd] = topLeft;
+                possibleMoves[this.nextIndexToAdd] = newPosition;
                 this.nextIndexToAdd++;
             } else if (pieceInLocation.getTeamColor() != pieceColor) {
                 // the piece there is theirs; we should add this location
-                possibleMoves[this.nextIndexToAdd] = topLeft;
+                possibleMoves[this.nextIndexToAdd] = newPosition;
                 this.nextIndexToAdd++;
             }
         }
     }
 
     public void addKnightMoves(ChessPosition[] possibleMoves, ChessPosition myPosition, ChessBoard board) {
-        //addLinearPositionIfPossible(possibleMoves, board, myPosition, 1, 2);
-
         // add two up and one left
-        ChessPosition topLeft = makeNewPositionIfPossible(myPosition, 2, -1, board);
-        if (topLeft != null) { // so this location is on the board
-            ChessPiece pieceInLocation = board.getPiece(topLeft);
-            if (pieceInLocation == null) {
-                // nothing's there, so we can add this location
-                possibleMoves[this.nextIndexToAdd] = topLeft;
-                this.nextIndexToAdd++;
-            } else if (pieceInLocation.getTeamColor() != pieceColor) {
-                // the piece there is theirs; we should add this location
-                possibleMoves[this.nextIndexToAdd] = topLeft;
-                this.nextIndexToAdd++;
-            }
-        }
+        addLinearPositionIfPossible(possibleMoves, board, myPosition, 2, -1);
 
         // add two up and one right
-        ChessPosition topRight = makeNewPositionIfPossible(myPosition, 2, 1, board);
-        if (topRight != null) { // so this location is on the board
-            ChessPiece pieceInLocation = board.getPiece(topRight);
-            if (pieceInLocation == null) {
-                // nothing's there, so we can add this location
-                possibleMoves[this.nextIndexToAdd] = topRight;
-                this.nextIndexToAdd++;
-            } else if (pieceInLocation.getTeamColor() != pieceColor) {
-                // the piece there is theirs; we should add this location
-                possibleMoves[this.nextIndexToAdd] = topRight;
-                this.nextIndexToAdd++;
-            }
-        }
+        addLinearPositionIfPossible(possibleMoves, board, myPosition, 2, 1);
 
         // add two left one up
-        ChessPosition leftTop = makeNewPositionIfPossible(myPosition, 1, -2, board);
-        if (leftTop != null) { // so this location is on the board
-            ChessPiece pieceInLocation = board.getPiece(leftTop);
-            if (pieceInLocation == null) {
-                // nothing's there, so we can add this location
-                possibleMoves[this.nextIndexToAdd] = leftTop;
-                this.nextIndexToAdd++;
-            } else if (pieceInLocation.getTeamColor() != pieceColor) {
-                // the piece there is theirs; we should add this location
-                possibleMoves[this.nextIndexToAdd] = leftTop;
-                this.nextIndexToAdd++;
-            }
-        }
+        addLinearPositionIfPossible(possibleMoves, board, myPosition, 1, -2);
 
         // add two left one down
-        ChessPosition leftBottom = makeNewPositionIfPossible(myPosition, -1, -2, board);
-        if (leftBottom != null) { // so this location is on the board
-            ChessPiece pieceInLocation = board.getPiece(leftBottom);
-            if (pieceInLocation == null) {
-                // nothing's there, so we can add this location
-                possibleMoves[this.nextIndexToAdd] = leftBottom;
-                this.nextIndexToAdd++;
-            } else if (pieceInLocation.getTeamColor() != pieceColor) {
-                // the piece there is theirs; we should add this location
-                possibleMoves[this.nextIndexToAdd] = leftBottom;
-                this.nextIndexToAdd++;
-            }
-        }
+        addLinearPositionIfPossible(possibleMoves, board, myPosition, -1, -2);
 
         // add two down and one left
-        ChessPosition bottomLeft = makeNewPositionIfPossible(myPosition, -2, -1, board);
-        if (bottomLeft != null) { // so this location is on the board
-            ChessPiece pieceInLocation = board.getPiece(bottomLeft);
-            if (pieceInLocation == null) {
-                // nothing's there, so we can add this location
-                possibleMoves[this.nextIndexToAdd] = bottomLeft;
-                this.nextIndexToAdd++;
-            } else if (pieceInLocation.getTeamColor() != pieceColor) {
-                // the piece there is theirs; we should add this location
-                possibleMoves[this.nextIndexToAdd] = bottomLeft;
-                this.nextIndexToAdd++;
-            }
-        }
+        addLinearPositionIfPossible(possibleMoves, board, myPosition, -2, -1);
 
         // add two down and one right
-        ChessPosition bottomRight = makeNewPositionIfPossible(myPosition, -2, 1, board);
-        if (bottomRight != null) { // so this location is on the board
-            ChessPiece pieceInLocation = board.getPiece(bottomRight);
-            if (pieceInLocation == null) {
-                // nothing's there, so we can add this location
-                possibleMoves[this.nextIndexToAdd] = bottomRight;
-                this.nextIndexToAdd++;
-            } else if (pieceInLocation.getTeamColor() != pieceColor) {
-                // the piece there is theirs; we should add this location
-                possibleMoves[this.nextIndexToAdd] = bottomRight;
-                this.nextIndexToAdd++;
-            }
-        }
+        addLinearPositionIfPossible(possibleMoves, board, myPosition, -2, 1);
 
         // add two right and one down
-        ChessPosition rightBottom = makeNewPositionIfPossible(myPosition, -1, 2, board);
-        if (rightBottom != null) { // so this location is on the board
-            ChessPiece pieceInLocation = board.getPiece(rightBottom);
-            if (pieceInLocation == null) {
-                // nothing's there, so we can add this location
-                possibleMoves[this.nextIndexToAdd] = rightBottom;
-                this.nextIndexToAdd++;
-            } else if (pieceInLocation.getTeamColor() != pieceColor) {
-                // the piece there is theirs; we should add this location
-                possibleMoves[this.nextIndexToAdd] = rightBottom;
-                this.nextIndexToAdd++;
-            }
-        }
+        addLinearPositionIfPossible(possibleMoves, board, myPosition, -1, 2);
 
         // add two right and one up
-        ChessPosition rightUp = makeNewPositionIfPossible(myPosition, 1, 2, board);
-        if (rightUp != null) { // so this location is on the board
-            ChessPiece pieceInLocation = board.getPiece(rightUp);
-            if (pieceInLocation == null) {
-                // nothing's there, so we can add this location
-                possibleMoves[this.nextIndexToAdd] = rightUp;
-                this.nextIndexToAdd++;
-            } else if (pieceInLocation.getTeamColor() != pieceColor) {
-                // the piece there is theirs; we should add this location
-                possibleMoves[this.nextIndexToAdd] = rightUp;
-                this.nextIndexToAdd++;
-            }
-        }
+        addLinearPositionIfPossible(possibleMoves, board, myPosition, 1, 2);
     }
 
     public void addKingMoves(ChessPosition[] possibleMoves, ChessPosition myPosition, ChessBoard board) {
