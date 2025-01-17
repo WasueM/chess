@@ -87,37 +87,27 @@ public class ChessPiece {
         int newPositionRow = currentPositionRow + upDown;
         int newPositionColumn = currentPositionColumn + leftRight;
 
-        System.out.println("Current position: " + currentPositionRow + ", " + currentPositionColumn);
-        System.out.println("New position: " + newPositionRow + ", " + newPositionColumn);
-
         ChessPosition newPosition = new ChessPosition(newPositionRow, newPositionColumn);
 
         // check if its actually on the board
         if (newPositionRow < 1 || newPositionRow > 8 || newPositionColumn < 1 || newPositionColumn > 8) {
-            System.out.println("NOT ON BOARD");
             return null;
         }
 
         // check if there's a same-team piece in there
         if (isSameTeamPieceThere(newPosition, board)) {
-            System.out.println("SAME TEAM PIECE THERE");
             return null;
         }
 
         // look's like it's a possible position!
-        System.out.println("Possible position");
         return newPosition;
     }
 
     public boolean isSameTeamPieceThere(ChessPosition position, ChessBoard board) {
         ChessPiece pieceInPlace = board.getPiece(position);
         if (pieceInPlace == null) {
-            System.out.println("Piece in place is null");
             return false;
         } else {
-            System.out.println("Piece in place is not null");
-            System.out.println("Piece in place color: " + pieceInPlace.getTeamColor());
-            System.out.println("Piece in place type: " + pieceInPlace.getPieceType());
             if (pieceInPlace.getTeamColor() == this.getTeamColor()) {
                 return true;
             } else {
@@ -141,12 +131,6 @@ public class ChessPiece {
         switch (this.pieceType) {
             case KING:
                 addKingMoves(possiblePositions, 0, myPosition, board);
-                System.out.println("King moves");
-                for (int i = 0; i < possiblePositions.length; i++) {
-                    if (possiblePositions[i] != null) {
-                        System.out.println(possiblePositions[i].toString());
-                    }
-                }
                 break;
             case QUEEN:
                 addDiagonalMoves(possiblePositions, 0, myPosition, board);
@@ -197,6 +181,8 @@ public class ChessPiece {
 
         return possibleMoves;
     }
+
+
 
     public void addKnightMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
         // add two up and one left
@@ -347,13 +333,6 @@ public class ChessPiece {
         ChessPosition diagonalDownRight = makeNewPositionIfPossible(myPosition, -1, 1, board);
         possibleMoves[index] = diagonalDownRight;
         index++;
-
-        System.out.println("King moves in function");
-        for (int i = 0; i < possibleMoves.length; i++) {
-            if (possibleMoves[i] != null) {
-                System.out.println(possibleMoves[i].toString());
-            }
-        }
     }
 
     public void addPawnMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
@@ -367,21 +346,15 @@ public class ChessPiece {
         ChessPosition straightForward = makeNewPositionIfPossible(myPosition, 1 * colorMultiplier, 0, board);
         if (straightForward != null) {
             ChessPiece pieceInStraightForward = board.getPiece(straightForward);
-            System.out.println("Straight forward piece is ");
-            System.out.println(pieceInStraightForward);
             if (pieceInStraightForward == null) {
                 possibleMoves[index] = straightForward;
                 index++;
-
-                System.out.println("Straight forward is null");
 
                 // if its on the second row (in the case of WHITE) or the seventh row (in the case of BLACK), it check about moving two in front as well
                 if ((pieceColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) || (pieceColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7)) {
                     ChessPosition twoForward = makeNewPositionIfPossible(myPosition, 2 * colorMultiplier, 0, board);
                     ChessPiece pieceInTwoForward = board.getPiece(twoForward);
                     if (pieceInTwoForward == null) {
-
-                        System.out.println("Two forward is null");
 
                         possibleMoves[index] = twoForward;
                         index++;
@@ -417,13 +390,11 @@ public class ChessPiece {
         boolean continueLoop = true;
         int i = 0;
         while (continueLoop) {
-            System.out.println("Going up and right");
             i++;
             ChessPosition upRight = makeNewPositionIfPossible(myPosition, i, i, board);
             if (upRight == null) {
                 // this location isn't on the board, we shouldn't add it and stop looping
                 continueLoop = false;
-                System.out.println("Not added because its not on the board");
             } else {
                 ChessPiece pieceInLocation = board.getPiece(upRight);
                 if (pieceInLocation == null) {
@@ -431,18 +402,15 @@ public class ChessPiece {
                     possibleMoves[index] = upRight;
                     index++;
                     continueLoop = true;
-                    System.out.println("All good for this one and keep going farther");
                 } else {
                     if (pieceInLocation.getTeamColor() == pieceColor) {
                         // the piece there is ours; we shouldn't add this location, and we should stop looping
                         continueLoop = false;
-                        System.out.println("Same team is there, not adding it, stopping progressions");
                     } else {
                         // the pice there is theirs; we should add this location, but we should stop looping
                         possibleMoves[index] = upRight;
                         index++;
                         continueLoop = false;
-                        System.out.println("Different team is there, adding it, stopping progressions");
                     }
                 }
             }

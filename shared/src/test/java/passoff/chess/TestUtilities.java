@@ -28,14 +28,14 @@ public class TestUtilities {
         actual.sort(comparator);
 
         // print the expected and actual
-        System.out.println("Expected:");
-        for(ChessMove move : expected) {
-            System.out.println(move.getStartPosition() + " -> " + move.getEndPosition());
-        }
-        System.out.println("Actual:");
-        for(ChessMove move : actual) {
-            System.out.println(move.getStartPosition() + " -> " + move.getEndPosition());
-        }
+//        System.out.println("Expected:");
+//        for(ChessMove move : expected) {
+//            System.out.println(move.getStartPosition() + " -> " + move.getEndPosition());
+//        }
+//        System.out.println("Actual:");
+//        for(ChessMove move : actual) {
+//            System.out.println(move.getStartPosition() + " -> " + move.getEndPosition());
+//        }
 
         Assertions.assertEquals(expected, actual, "Wrong moves");
     }
