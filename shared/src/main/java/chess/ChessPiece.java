@@ -14,10 +14,12 @@ public class ChessPiece {
 
     ChessGame.TeamColor pieceColor;
     PieceType pieceType;
+    int nextIndexToAdd;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.pieceType = type;
+        this.nextIndexToAdd = 0;
     }
 
     @Override
@@ -130,23 +132,23 @@ public class ChessPiece {
         // so I guess we'll do a switch statement for each possible piece that this could be to organize it?
         switch (this.pieceType) {
             case KING:
-                addKingMoves(possiblePositions, 0, myPosition, board);
+                addKingMoves(possiblePositions, myPosition, board);
                 break;
             case QUEEN:
-                addDiagonalMoves(possiblePositions, 0, myPosition, board);
-                addStraightMoves(possiblePositions, 32, myPosition, board);
+                addDiagonalMoves(possiblePositions, myPosition, board);
+                addStraightMoves(possiblePositions, myPosition, board);
                 break;
             case BISHOP:
-                addDiagonalMoves(possiblePositions, 0, myPosition, board);
+                addDiagonalMoves(possiblePositions, myPosition, board);
                 break;
             case KNIGHT:
-                addKnightMoves(possiblePositions, 0, myPosition, board);
+                addKnightMoves(possiblePositions, myPosition, board);
                 break;
             case ROOK:
-                addStraightMoves(possiblePositions, 0, myPosition, board);
+                addStraightMoves(possiblePositions, myPosition, board);
                 break;
             case PAWN:
-                addPawnMoves(possiblePositions, 0, myPosition, board);
+                addPawnMoves(possiblePositions, myPosition, board);
                 break;
         }
 
@@ -182,21 +184,37 @@ public class ChessPiece {
         return possibleMoves;
     }
 
+    public void addLinearPositionIfPossible(ChessPosition[] possibleMoves, ChessBoard board, ChessPosition myPosition, int upDown, int leftRight) {
+        ChessPosition topLeft = makeNewPositionIfPossible(myPosition, upDown, leftRight, board);
+        if (topLeft != null) { // so this location is on the board
+            ChessPiece pieceInLocation = board.getPiece(topLeft);
+            if (pieceInLocation == null) {
+                // nothing's there, so we can add this location
+                possibleMoves[this.nextIndexToAdd] = topLeft;
+                this.nextIndexToAdd++;
+            } else if (pieceInLocation.getTeamColor() != pieceColor) {
+                // the piece there is theirs; we should add this location
+                possibleMoves[this.nextIndexToAdd] = topLeft;
+                this.nextIndexToAdd++;
+            }
+        }
+    }
 
+    public void addKnightMoves(ChessPosition[] possibleMoves, ChessPosition myPosition, ChessBoard board) {
+        //addLinearPositionIfPossible(possibleMoves, board, myPosition, 1, 2);
 
-    public void addKnightMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
         // add two up and one left
         ChessPosition topLeft = makeNewPositionIfPossible(myPosition, 2, -1, board);
         if (topLeft != null) { // so this location is on the board
             ChessPiece pieceInLocation = board.getPiece(topLeft);
             if (pieceInLocation == null) {
                 // nothing's there, so we can add this location
-                possibleMoves[index] = topLeft;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = topLeft;
+                this.nextIndexToAdd++;
             } else if (pieceInLocation.getTeamColor() != pieceColor) {
                 // the piece there is theirs; we should add this location
-                possibleMoves[index] = topLeft;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = topLeft;
+                this.nextIndexToAdd++;
             }
         }
 
@@ -206,12 +224,12 @@ public class ChessPiece {
             ChessPiece pieceInLocation = board.getPiece(topRight);
             if (pieceInLocation == null) {
                 // nothing's there, so we can add this location
-                possibleMoves[index] = topRight;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = topRight;
+                this.nextIndexToAdd++;
             } else if (pieceInLocation.getTeamColor() != pieceColor) {
                 // the piece there is theirs; we should add this location
-                possibleMoves[index] = topRight;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = topRight;
+                this.nextIndexToAdd++;
             }
         }
 
@@ -221,12 +239,12 @@ public class ChessPiece {
             ChessPiece pieceInLocation = board.getPiece(leftTop);
             if (pieceInLocation == null) {
                 // nothing's there, so we can add this location
-                possibleMoves[index] = leftTop;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = leftTop;
+                this.nextIndexToAdd++;
             } else if (pieceInLocation.getTeamColor() != pieceColor) {
                 // the piece there is theirs; we should add this location
-                possibleMoves[index] = leftTop;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = leftTop;
+                this.nextIndexToAdd++;
             }
         }
 
@@ -236,12 +254,12 @@ public class ChessPiece {
             ChessPiece pieceInLocation = board.getPiece(leftBottom);
             if (pieceInLocation == null) {
                 // nothing's there, so we can add this location
-                possibleMoves[index] = leftBottom;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = leftBottom;
+                this.nextIndexToAdd++;
             } else if (pieceInLocation.getTeamColor() != pieceColor) {
                 // the piece there is theirs; we should add this location
-                possibleMoves[index] = leftBottom;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = leftBottom;
+                this.nextIndexToAdd++;
             }
         }
 
@@ -251,12 +269,12 @@ public class ChessPiece {
             ChessPiece pieceInLocation = board.getPiece(bottomLeft);
             if (pieceInLocation == null) {
                 // nothing's there, so we can add this location
-                possibleMoves[index] = bottomLeft;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = bottomLeft;
+                this.nextIndexToAdd++;
             } else if (pieceInLocation.getTeamColor() != pieceColor) {
                 // the piece there is theirs; we should add this location
-                possibleMoves[index] = bottomLeft;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = bottomLeft;
+                this.nextIndexToAdd++;
             }
         }
 
@@ -266,12 +284,12 @@ public class ChessPiece {
             ChessPiece pieceInLocation = board.getPiece(bottomRight);
             if (pieceInLocation == null) {
                 // nothing's there, so we can add this location
-                possibleMoves[index] = bottomRight;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = bottomRight;
+                this.nextIndexToAdd++;
             } else if (pieceInLocation.getTeamColor() != pieceColor) {
                 // the piece there is theirs; we should add this location
-                possibleMoves[index] = bottomRight;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = bottomRight;
+                this.nextIndexToAdd++;
             }
         }
 
@@ -281,12 +299,12 @@ public class ChessPiece {
             ChessPiece pieceInLocation = board.getPiece(rightBottom);
             if (pieceInLocation == null) {
                 // nothing's there, so we can add this location
-                possibleMoves[index] = rightBottom;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = rightBottom;
+                this.nextIndexToAdd++;
             } else if (pieceInLocation.getTeamColor() != pieceColor) {
                 // the piece there is theirs; we should add this location
-                possibleMoves[index] = rightBottom;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = rightBottom;
+                this.nextIndexToAdd++;
             }
         }
 
@@ -296,46 +314,46 @@ public class ChessPiece {
             ChessPiece pieceInLocation = board.getPiece(rightUp);
             if (pieceInLocation == null) {
                 // nothing's there, so we can add this location
-                possibleMoves[index] = rightUp;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = rightUp;
+                this.nextIndexToAdd++;
             } else if (pieceInLocation.getTeamColor() != pieceColor) {
                 // the piece there is theirs; we should add this location
-                possibleMoves[index] = rightUp;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = rightUp;
+                this.nextIndexToAdd++;
             }
         }
     }
 
-    public void addKingMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
+    public void addKingMoves(ChessPosition[] possibleMoves, ChessPosition myPosition, ChessBoard board) {
         // can go any direction straight and diagonal on space, add these
         // calculate and add each to that array
         ChessPosition straightUp = makeNewPositionIfPossible(myPosition, 1, 0, board);
-        possibleMoves[index] = straightUp;
-        index++;
+        possibleMoves[this.nextIndexToAdd] = straightUp;
+        this.nextIndexToAdd++;
         ChessPosition straightDown = makeNewPositionIfPossible(myPosition, -1, 0, board);
-        possibleMoves[index] = straightDown;
-        index++;
+        possibleMoves[this.nextIndexToAdd] = straightDown;
+        this.nextIndexToAdd++;
         ChessPosition straightLeft = makeNewPositionIfPossible(myPosition, 0, -1, board);
-        possibleMoves[index] = straightLeft;
-        index++;
+        possibleMoves[this.nextIndexToAdd] = straightLeft;
+        this.nextIndexToAdd++;
         ChessPosition straightRight = makeNewPositionIfPossible(myPosition, 0, 1, board);
-        possibleMoves[index] = straightRight;
-        index++;
+        possibleMoves[this.nextIndexToAdd] = straightRight;
+        this.nextIndexToAdd++;
         ChessPosition diagonalUpLeft = makeNewPositionIfPossible(myPosition, 1, -1, board);
-        possibleMoves[index] = diagonalUpLeft;
-        index++;
+        possibleMoves[this.nextIndexToAdd] = diagonalUpLeft;
+        this.nextIndexToAdd++;
         ChessPosition diagonalUpRight = makeNewPositionIfPossible(myPosition, 1, 1, board);
-        possibleMoves[index] = diagonalUpRight;
-        index++;
+        possibleMoves[this.nextIndexToAdd] = diagonalUpRight;
+        this.nextIndexToAdd++;
         ChessPosition diagonalDownLeft = makeNewPositionIfPossible(myPosition, -1, -1, board);
-        possibleMoves[index] = diagonalDownLeft;
-        index++;
+        possibleMoves[this.nextIndexToAdd] = diagonalDownLeft;
+        this.nextIndexToAdd++;
         ChessPosition diagonalDownRight = makeNewPositionIfPossible(myPosition, -1, 1, board);
-        possibleMoves[index] = diagonalDownRight;
-        index++;
+        possibleMoves[this.nextIndexToAdd] = diagonalDownRight;
+        this.nextIndexToAdd++;
     }
 
-    public void addPawnMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
+    public void addPawnMoves(ChessPosition[] possibleMoves, ChessPosition myPosition, ChessBoard board) {
         // based on the color, flip the directions
         int colorMultiplier = 1;
         if (pieceColor == ChessGame.TeamColor.BLACK) {
@@ -347,8 +365,8 @@ public class ChessPiece {
         if (straightForward != null) {
             ChessPiece pieceInStraightForward = board.getPiece(straightForward);
             if (pieceInStraightForward == null) {
-                possibleMoves[index] = straightForward;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = straightForward;
+                this.nextIndexToAdd++;
 
                 // if its on the second row (in the case of WHITE) or the seventh row (in the case of BLACK), it check about moving two in front as well
                 if ((pieceColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) || (pieceColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7)) {
@@ -356,8 +374,8 @@ public class ChessPiece {
                     ChessPiece pieceInTwoForward = board.getPiece(twoForward);
                     if (pieceInTwoForward == null) {
 
-                        possibleMoves[index] = twoForward;
-                        index++;
+                        possibleMoves[this.nextIndexToAdd] = twoForward;
+                        this.nextIndexToAdd++;
                     }
                 }
             }
@@ -369,8 +387,8 @@ public class ChessPiece {
         if (pieceInUpLeft != null) {
             if (pieceInUpLeft.getTeamColor() != pieceColor) {
                 // enemy piece
-                possibleMoves[index] = upLeft;
-                index++;
+                possibleMoves[this.nextIndexToAdd] = upLeft;
+                this.nextIndexToAdd++;
             }
         }
 
@@ -380,12 +398,12 @@ public class ChessPiece {
         if (pieceInUpRight != null) {
             if (pieceInUpRight.getTeamColor() != pieceColor) {
                 // enemy piece
-                possibleMoves[index] = upRight;
+                possibleMoves[this.nextIndexToAdd] = upRight;
             }
         }
     }
 
-    public void addDiagonalMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
+    public void addDiagonalMoves(ChessPosition[] possibleMoves, ChessPosition myPosition, ChessBoard board) {
         // this function adds all the diagonal movements as possible moves, for bishop and queen
         boolean continueLoop = true;
         int i = 0;
@@ -399,8 +417,8 @@ public class ChessPiece {
                 ChessPiece pieceInLocation = board.getPiece(upRight);
                 if (pieceInLocation == null) {
                     // nothing's there, keep going this direction further
-                    possibleMoves[index] = upRight;
-                    index++;
+                    possibleMoves[this.nextIndexToAdd] = upRight;
+                    this.nextIndexToAdd++;
                     continueLoop = true;
                 } else {
                     if (pieceInLocation.getTeamColor() == pieceColor) {
@@ -408,8 +426,8 @@ public class ChessPiece {
                         continueLoop = false;
                     } else {
                         // the pice there is theirs; we should add this location, but we should stop looping
-                        possibleMoves[index] = upRight;
-                        index++;
+                        possibleMoves[this.nextIndexToAdd] = upRight;
+                        this.nextIndexToAdd++;
                         continueLoop = false;
                     }
                 }
@@ -428,16 +446,16 @@ public class ChessPiece {
                 ChessPiece pieceInLocation = board.getPiece(bottomLeft);
                 if (pieceInLocation == null) {
                     // nothing's there, keep going this direction further
-                    possibleMoves[index] = bottomLeft;
-                    index++;
+                    possibleMoves[this.nextIndexToAdd] = bottomLeft;
+                    this.nextIndexToAdd++;
                 } else {
                     if (pieceInLocation.getTeamColor() == pieceColor) {
                         // the piece there is ours; we shouldn't add this location, and we should stop looping
                         continueLoop = false;
                     } else {
                         // the piece there is theirs; we should add this location, but we should stop looping
-                        possibleMoves[index] = bottomLeft;
-                        index++;
+                        possibleMoves[this.nextIndexToAdd] = bottomLeft;
+                        this.nextIndexToAdd++;
                         continueLoop = false;
                     }
                 }
@@ -456,16 +474,16 @@ public class ChessPiece {
                 ChessPiece pieceInLocation = board.getPiece(bottomRight);
                 if (pieceInLocation == null) {
                     // nothing's there, keep going this direction further
-                    possibleMoves[index] = bottomRight;
-                    index++;
+                    possibleMoves[this.nextIndexToAdd] = bottomRight;
+                    this.nextIndexToAdd++;
                 } else {
                     if (pieceInLocation.getTeamColor() == pieceColor) {
                         // the piece there is ours; we shouldn't add this location, and we should stop looping
                         continueLoop = false;
                     } else {
                         // the piece there is theirs; we should add this location, but we should stop looping
-                        possibleMoves[index] = bottomRight;
-                        index++;
+                        possibleMoves[this.nextIndexToAdd] = bottomRight;
+                        this.nextIndexToAdd++;
                         continueLoop = false;
                     }
                 }
@@ -484,16 +502,16 @@ public class ChessPiece {
                 ChessPiece pieceInLocation = board.getPiece(upLeft);
                 if (pieceInLocation == null) {
                     // nothing's there, keep going this direction further
-                    possibleMoves[index] = upLeft;
-                    index++;
+                    possibleMoves[this.nextIndexToAdd] = upLeft;
+                    this.nextIndexToAdd++;
                 } else {
                     if (pieceInLocation.getTeamColor() == pieceColor) {
                         // the piece there is ours; we shouldn't add this location, and we should stop looping
                         continueLoop = false;
                     } else {
                         // the piece there is theirs; we should add this location, but we should stop looping
-                        possibleMoves[index] = upLeft;
-                        index++;
+                        possibleMoves[this.nextIndexToAdd] = upLeft;
+                        this.nextIndexToAdd++;
                         continueLoop = false;
                     }
                 }
@@ -502,7 +520,7 @@ public class ChessPiece {
 
     }
 
-    public void addStraightMoves(ChessPosition[] possibleMoves, int index, ChessPosition myPosition, ChessBoard board) {
+    public void addStraightMoves(ChessPosition[] possibleMoves, ChessPosition myPosition, ChessBoard board) {
         // the same thing but for the rook and queen's straight moves
         boolean continueLoop = true;
         int i = 0;
@@ -516,16 +534,16 @@ public class ChessPiece {
                 ChessPiece pieceInLocation = board.getPiece(up);
                 if (pieceInLocation == null) {
                     // nothing's there, keep going this direction further
-                    possibleMoves[index] = up;
-                    index++;
+                    possibleMoves[this.nextIndexToAdd] = up;
+                    this.nextIndexToAdd++;
                 } else {
                     if (pieceInLocation.getTeamColor() == pieceColor) {
                         // the piece there is ours; we shouldn't add this location, and we should stop looping
                         continueLoop = false;
                     } else {
                         // the piece there is theirs; we should add this location, but we should stop looping
-                        possibleMoves[index] = up;
-                        index++;
+                        possibleMoves[this.nextIndexToAdd] = up;
+                        this.nextIndexToAdd++;
                         continueLoop = false;
                     }
                 }
@@ -544,16 +562,16 @@ public class ChessPiece {
                 ChessPiece pieceInLocation = board.getPiece(up);
                 if (pieceInLocation == null) {
                     // nothing's there, keep going this direction further
-                    possibleMoves[index] = up;
-                    index++;
+                    possibleMoves[this.nextIndexToAdd] = up;
+                    this.nextIndexToAdd++;
                 } else {
                     if (pieceInLocation.getTeamColor() == pieceColor) {
                         // the piece there is ours; we shouldn't add this location, and we should stop looping
                         continueLoop = false;
                     } else {
                         // the piece there is theirs; we should add this location, but we should stop looping
-                        possibleMoves[index] = up;
-                        index++;
+                        possibleMoves[this.nextIndexToAdd] = up;
+                        this.nextIndexToAdd++;
                         continueLoop = false;
                     }
                 }
@@ -572,16 +590,16 @@ public class ChessPiece {
                 ChessPiece pieceInLocation = board.getPiece(up);
                 if (pieceInLocation == null) {
                     // nothing's there, keep going this direction further
-                    possibleMoves[index] = up;
-                    index++;
+                    possibleMoves[this.nextIndexToAdd] = up;
+                    this.nextIndexToAdd++;
                 } else {
                     if (pieceInLocation.getTeamColor() == pieceColor) {
                         // the piece there is ours; we shouldn't add this location, and we should stop looping
                         continueLoop = false;
                     } else {
                         // the piece there is theirs; we should add this location, but we should stop looping
-                        possibleMoves[index] = up;
-                        index++;
+                        possibleMoves[this.nextIndexToAdd] = up;
+                        this.nextIndexToAdd++;
                         continueLoop = false;
                     }
                 }
@@ -600,16 +618,16 @@ public class ChessPiece {
                 ChessPiece pieceInLocation = board.getPiece(up);
                 if (pieceInLocation == null) {
                     // nothing's there, keep going this direction further
-                    possibleMoves[index] = up;
-                    index++;
+                    possibleMoves[this.nextIndexToAdd] = up;
+                    this.nextIndexToAdd++;
                 } else {
                     if (pieceInLocation.getTeamColor() == pieceColor) {
                         // the piece there is ours; we shouldn't add this location, and we should stop looping
                         continueLoop = false;
                     } else {
                         // the piece there is theirs; we should add this location, but we should stop looping
-                        possibleMoves[index] = up;
-                        index++;
+                        possibleMoves[this.nextIndexToAdd] = up;
+                        this.nextIndexToAdd++;
                         continueLoop = false;
                     }
                 }
