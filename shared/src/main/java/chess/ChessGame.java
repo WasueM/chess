@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -78,7 +79,14 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingLocation = chessBoard.getKingPosition(teamColor);
+        // loop through every piece on the enemy team, and see if they include this position
+        Set<ChessPosition> placesTeamCouldGo = chessBoard.getPlacesTeamCouldGo(teamColor);
+        if (placesTeamCouldGo.contains(kingLocation)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

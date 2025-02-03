@@ -1,6 +1,5 @@
 package chess;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -14,7 +13,7 @@ public class ChessBoard {
     int numPieces = 0;
 
     public ChessBoard() {
-        
+
     }
 
     /**
@@ -37,6 +36,41 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return pieces.get(position);
+    }
+
+    // a function to get a team's king's location
+    public ChessPosition getKingPosition(ChessGame.TeamColor team) {
+        for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
+            ChessPiece piece = entry.getValue(); // get a piece out of the entry if its possible
+            if (piece.getTeamColor() == team) {
+                if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    return entry.getKey();
+                }
+            }
+        }
+        return null;
+    }
+
+    // a function that loops through all of the pieces from a team, and gets a set of all the places they could move
+    public Set<ChessPosition> getPlacesTeamCouldGo(ChessGame.TeamColor team) {
+        Set<ChessPosition> placesTheTeamCouldGo = new HashSet<ChessPosition>();
+        for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
+            ChessPiece piece = entry.getValue();
+            ChessPosition position = entry.getKey();
+
+            // is it from the right team?
+            if (piece.getTeamColor() == team) {
+                // where can this piece move?
+                Collection<ChessMove> possibleMoves = piece.pieceMoves(this, position);
+
+                // just get the positions out of the move
+                for (ChessMove possibleMove : possibleMoves) {
+                    ChessPosition positionToGoTo = possibleMove.getEndPosition();
+                    placesTheTeamCouldGo.add(positionToGoTo);
+                }
+            }
+        }
+        return placesTheTeamCouldGo;
     }
 
     /**
