@@ -80,8 +80,15 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingLocation = chessBoard.getKingPosition(teamColor);
+
+        // get other team color
+        TeamColor enemyTeamColor = TeamColor.WHITE;
+        if (teamColor == TeamColor.WHITE) {
+            enemyTeamColor = TeamColor.BLACK;
+        }
+
         // loop through every piece on the enemy team, and see if they include this position
-        Set<ChessPosition> placesTeamCouldGo = chessBoard.getPlacesTeamCouldGo(teamColor);
+        Set<ChessPosition> placesTeamCouldGo = chessBoard.getPlacesTeamCouldGo(enemyTeamColor);
         if (placesTeamCouldGo.contains(kingLocation)) {
             return true;
         } else {
@@ -96,7 +103,12 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // first, are we in check at all?
+        if (this.isInCheck(teamColor)) {
+            Collection<ChessPosition> placesTheKingCouldGo = chessBoard.getPlacesKingCouldGo(teamColor);
+
+
+        }
     }
 
     /**

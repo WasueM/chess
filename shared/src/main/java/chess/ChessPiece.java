@@ -176,6 +176,44 @@ public class ChessPiece {
         return possibleMoves;
     }
 
+    // the same thing as pieceMoves but it returns just the positions instead of the moves
+    public Collection<ChessPosition> piecePositions(ChessBoard board, ChessPosition myPosition) {
+        // we will store possible moves here
+        ChessPosition[] possiblePositions = new ChessPosition[64]; // not sure if 32 is the right size but it'll be big enough for sure
+
+        // so I guess we'll do a switch statement for each possible piece that this could be to organize it?
+        switch (this.pieceType) {
+            case KING:
+                addKingMoves(possiblePositions, myPosition, board);
+                break;
+            case QUEEN:
+                addDiagonalMoves(possiblePositions, myPosition, board);
+                addStraightMoves(possiblePositions, myPosition, board);
+                break;
+            case BISHOP:
+                addDiagonalMoves(possiblePositions, myPosition, board);
+                break;
+            case KNIGHT:
+                addKnightMoves(possiblePositions, myPosition, board);
+                break;
+            case ROOK:
+                addStraightMoves(possiblePositions, myPosition, board);
+                break;
+            case PAWN:
+                addPawnMoves(possiblePositions, myPosition, board);
+                break;
+        }
+
+        Collection<ChessPosition> positions = new ArrayList<>();
+        for (int i = 0; i < possiblePositions.length; i++) {
+            if (possiblePositions[i] != null) {
+                positions.add(possiblePositions[i]);
+            }
+        }
+
+        return positions;
+    }
+
     public void addSinglePositionIfPossible(ChessPosition[] possibleMoves, ChessBoard board, ChessPosition myPosition, int upDown, int leftRight) {
         ChessPosition newPosition = makeNewPositionIfPossible(myPosition, upDown, leftRight, board);
         if (newPosition != null) { // so this location is on the board

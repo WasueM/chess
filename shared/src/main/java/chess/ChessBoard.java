@@ -38,6 +38,18 @@ public class ChessBoard {
         return pieces.get(position);
     }
 
+    public ChessPiece getKing(ChessGame.TeamColor team) {
+        for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
+            ChessPiece piece = entry.getValue(); // get a piece out of the entry if its possible
+            if (piece.getTeamColor() == team) {
+                if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    return piece;
+                }
+            }
+        }
+        return null;
+    }
+
     // a function to get a team's king's location
     public ChessPosition getKingPosition(ChessGame.TeamColor team) {
         for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
@@ -49,6 +61,16 @@ public class ChessBoard {
             }
         }
         return null;
+    }
+
+    // a function that finds out where the king can move for a specific color
+    public Collection<ChessPosition> getPlacesKingCouldGo(ChessGame.TeamColor team) {
+        // use the pieceMoves on the king, once we get its position and object
+        ChessPosition kingPosition = getKingPosition(team);
+        ChessPiece king = getKing(team);
+        Collection<ChessPosition> placesKingCouldGo = king.piecePositions(this, kingPosition);
+
+        return placesKingCouldGo;
     }
 
     // a function that loops through all of the pieces from a team, and gets a set of all the places they could move
