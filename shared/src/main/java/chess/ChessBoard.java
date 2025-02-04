@@ -16,6 +16,15 @@ public class ChessBoard {
 
     }
 
+    public ChessBoard(ChessBoard otherBoard) {
+        this.pieces = otherBoard.pieces;
+        this.numPieces = otherBoard.numPieces;
+    }
+
+    public ChessBoard copy() {
+        return new ChessBoard(this);
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *

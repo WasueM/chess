@@ -60,6 +60,11 @@ public class ChessGame {
         return null;
     }
 
+    public boolean isMoveValid(ChessMove move) {
+        // make a copy of the chessboard, do the move, then see if that would've put us in check
+        ChessBoard boardCopy = chessBoard.copy();
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -70,6 +75,10 @@ public class ChessGame {
         ChessPiece pieceToMove = chessBoard.getPiece(move.getStartPosition());
         chessBoard.addPiece(move.getStartPosition(), null); // remove piece from the old location
         chessBoard.addPiece(move.getEndPosition(), pieceToMove); // add the piece to the new location
+
+        if (invalidMove) {
+            throw InvalidMoveException("INVALID MOVE");
+        }
     }
 
     /**
@@ -123,7 +132,11 @@ public class ChessGame {
 
             if (foundAnEscape == false) {
                 return true;
+            } else {
+                return false;
             }
+        } else {
+            return false;
         }
     }
 
@@ -135,7 +148,32 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // the same as checking if we're in checkmate, except isInCheck should be false
+        if (this.isInCheck(teamColor) == false) {
+            // get other team color
+            TeamColor enemyTeamColor = TeamColor.WHITE;
+            if (teamColor == TeamColor.WHITE) {
+                enemyTeamColor = TeamColor.BLACK;
+            }
+
+            Collection<ChessPosition> placesTheKingCouldGo = chessBoard.getPlacesKingCouldGo(teamColor);
+            Set<ChessPosition> placesTeamCouldGo = chessBoard.getPlacesTeamCouldGo(enemyTeamColor);
+
+            boolean foundAnEscape = false;
+            for (ChessPosition place : placesTheKingCouldGo) {
+                if (placesTeamCouldGo.contains(place) == false) {
+                    foundAnEscape = true;
+                }
+            }
+
+            if (foundAnEscape == false) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -144,7 +182,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.chessBoard = board;
     }
 
     /**
@@ -153,6 +191,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.chessBoard;
     }
 }
