@@ -67,6 +67,13 @@ public class ChessGame {
     }
 
     public boolean isMoveValid(ChessMove move, ChessGame.TeamColor color) {
+        // first, make sure there's a piece there
+        ChessPosition movingFrom = move.getStartPosition();
+        ChessPiece piece = chessBoard.getPiece(movingFrom);
+        if (piece == null) {
+            return false;
+        }
+
         // make a copy of the chessboard, do the move, then see if that would've put us in check
         ChessBoard boardCopy = chessBoard.copy();
         makeMoveWithNoChecks(move, boardCopy);
