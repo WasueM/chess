@@ -50,9 +50,11 @@ public class ChessBoard {
     public ChessPiece getKing(ChessGame.TeamColor team) {
         for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
             ChessPiece piece = entry.getValue(); // get a piece out of the entry if its possible
-            if (piece.getTeamColor() == team) {
-                if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                    return piece;
+            if (piece != null) {
+                if (piece.getTeamColor() == team) {
+                    if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                        return piece;
+                    }
                 }
             }
         }
@@ -63,9 +65,11 @@ public class ChessBoard {
     public ChessPosition getKingPosition(ChessGame.TeamColor team) {
         for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
             ChessPiece piece = entry.getValue(); // get a piece out of the entry if its possible
-            if (piece.getTeamColor() == team) {
-                if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                    return entry.getKey();
+            if (piece != null) {
+                if (piece.getTeamColor() == team) {
+                    if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                        return entry.getKey();
+                    }
                 }
             }
         }
