@@ -105,9 +105,25 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         // first, are we in check at all?
         if (this.isInCheck(teamColor)) {
+            // get other team color
+            TeamColor enemyTeamColor = TeamColor.WHITE;
+            if (teamColor == TeamColor.WHITE) {
+                enemyTeamColor = TeamColor.BLACK;
+            }
+
             Collection<ChessPosition> placesTheKingCouldGo = chessBoard.getPlacesKingCouldGo(teamColor);
+            Set<ChessPosition> placesTeamCouldGo = chessBoard.getPlacesTeamCouldGo(enemyTeamColor);
 
+            boolean foundAnEscape = false;
+            for (ChessPosition place : placesTheKingCouldGo) {
+                if (placesTeamCouldGo.contains(place) == false) {
+                    foundAnEscape = true;
+                }
+            }
 
+            if (foundAnEscape == false) {
+                return true;
+            }
         }
     }
 
