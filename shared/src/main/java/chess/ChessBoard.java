@@ -93,15 +93,17 @@ public class ChessBoard {
             ChessPiece piece = entry.getValue();
             ChessPosition position = entry.getKey();
 
-            // is it from the right team?
-            if (piece.getTeamColor() == team) {
-                // where can this piece move?
-                Collection<ChessMove> possibleMoves = piece.pieceMoves(this, position);
+            if (piece != null) {
+                // is it from the right team?
+                if (piece.getTeamColor() == team) {
+                    // where can this piece move?
+                    Collection<ChessMove> possibleMoves = piece.pieceMoves(this, position);
 
-                // just get the positions out of the move
-                for (ChessMove possibleMove : possibleMoves) {
-                    ChessPosition positionToGoTo = possibleMove.getEndPosition();
-                    placesTheTeamCouldGo.add(positionToGoTo);
+                    // just get the positions out of the move
+                    for (ChessMove possibleMove : possibleMoves) {
+                        ChessPosition positionToGoTo = possibleMove.getEndPosition();
+                        placesTheTeamCouldGo.add(positionToGoTo);
+                    }
                 }
             }
         }
