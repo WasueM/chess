@@ -53,16 +53,31 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece pieceInLocation = chessBoard.getPiece(startPosition);
+        ChessGame.TeamColor pieceColor = pieceInLocation.getTeamColor();
         if (pieceInLocation != null) { // there's a piece here
-            Collection<ChessMove> validMoves = pieceInLocation.pieceMoves(chessBoard, startPosition);
-            return validMoves;
+            Collection<ChessMove> moves = pieceInLocation.pieceMoves(chessBoard, startPosition);
+            for (ChessMove move : moves) {
+                if (isMoveValid(move, pieceColor) == false) {
+                    moves.remove(move);
+                }
+            }
+            return moves;
         }
         return null;
     }
 
-    public boolean isMoveValid(ChessMove move) {
+    public boolean isMoveValid(ChessMove move, ChessGame.TeamColor color) {
         // make a copy of the chessboard, do the move, then see if that would've put us in check
         ChessBoard boardCopy = chessBoard.copy();
+        makeMoveWithNoChecks(move, boardCopy);
+
+        // now that we've made the move, are we in check or not?
+        boolean wouldThisPutThemInCheck = isInCheck(color, boardCopy);
+        if (wouldThisPutThemInCheck == true) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -72,13 +87,19 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessPiece pieceToMove = chessBoard.getPiece(move.getStartPosition());
-        chessBoard.addPiece(move.getStartPosition(), null); // remove piece from the old location
-        chessBoard.addPiece(move.getEndPosition(), pieceToMove); // add the piece to the new location
-
-        if (invalidMove) {
-            throw InvalidMoveException("INVALID MOVE");
+        if (isMoveValid(move, this.getTeamTurn())) {
+            ChessPiece pieceToMove = chessBoard.getPiece(move.getStartPosition());
+            chessBoard.addPiece(move.getStartPosition(), null); // remove piece from the old location
+            chessBoard.addPiece(move.getEndPosition(), pieceToMove); // add the piece to the new location
+        } else {
+            throw new InvalidMoveException("INVALID MOVE");
         }
+    }
+
+    public void makeMoveWithNoChecks(ChessMove move, ChessBoard board) {
+        ChessPiece pieceToMove = board.getPiece(move.getStartPosition());
+        board.addPiece(move.getStartPosition(), null); // remove piece from the old location
+        board.addPiece(move.getEndPosition(), pieceToMove); // add the piece to the new location
     }
 
     /**
@@ -98,6 +119,24 @@ public class ChessGame {
 
         // loop through every piece on the enemy team, and see if they include this position
         Set<ChessPosition> placesTeamCouldGo = chessBoard.getPlacesTeamCouldGo(enemyTeamColor);
+        if (placesTeamCouldGo.contains(kingLocation)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
+        ChessPosition kingLocation = chessBoard.getKingPosition(teamColor);
+
+        // get other team color
+        TeamColor enemyTeamColor = TeamColor.WHITE;
+        if (teamColor == TeamColor.WHITE) {
+            enemyTeamColor = TeamColor.BLACK;
+        }
+
+        // loop through every piece on the enemy team, and see if they include this position
+        Set<ChessPosition> placesTeamCouldGo = board.getPlacesTeamCouldGo(enemyTeamColor);
         if (placesTeamCouldGo.contains(kingLocation)) {
             return true;
         } else {
