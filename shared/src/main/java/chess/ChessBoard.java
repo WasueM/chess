@@ -17,10 +17,12 @@ public class ChessBoard {
     }
 
     public ChessBoard(ChessBoard otherBoard) {
-       // this.pieces = otherBoard.pieces;  makes a shallow copy only
+       // this.pieces = otherBoard.pieces;  would make a shallow copy only, so commented out
+
+        // deep copy
         HashMap<ChessPosition, ChessPiece> piecesCopy = new HashMap<>();
         for (Map.Entry<ChessPosition, ChessPiece> entry : otherBoard.pieces.entrySet()) {
-            piecesCopy.put(entry.getKey(), entry.getValue());
+            piecesCopy.put(entry.getKey().copy(), entry.getValue().copy());
         }
         this.pieces = piecesCopy;
         this.numPieces = otherBoard.numPieces;

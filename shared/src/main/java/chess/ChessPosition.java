@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -16,6 +18,16 @@ public class ChessPosition {
     public ChessPosition(int row, int col) {
         this.rowNumber = row;
         this.columnNumber = col;
+    }
+
+    public ChessPosition(ChessPosition otherPosition) {
+        // copies the row and column
+        this.rowNumber = otherPosition.getRow();
+        this.columnNumber = otherPosition.getColumn();
+    }
+
+    public ChessPosition copy() {
+        return new ChessPosition(this);
     }
 
     /**

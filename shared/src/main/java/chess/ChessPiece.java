@@ -22,6 +22,18 @@ public class ChessPiece {
         this.nextIndexToAdd = 0;
     }
 
+    // copy constructor
+    public ChessPiece(ChessPiece otherPiece) {
+        // copies the row and column
+        this.pieceColor = otherPiece.getTeamColor();
+        this.pieceType = otherPiece.getPieceType();
+        this.nextIndexToAdd = otherPiece.nextIndexToAdd;
+    }
+
+    public ChessPiece copy() {
+        return new ChessPiece(this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
