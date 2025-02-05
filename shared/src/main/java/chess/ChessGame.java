@@ -53,8 +53,11 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece pieceInLocation = chessBoard.getPiece(startPosition);
-        ChessGame.TeamColor pieceColor = pieceInLocation.getTeamColor();
         if (pieceInLocation != null) { // there's a piece here
+            ChessGame.TeamColor pieceColor = pieceInLocation.getTeamColor();
+            if (pieceColor != this.getTeamTurn()) {
+                return null;
+            }
             Collection<ChessMove> moves = pieceInLocation.pieceMoves(chessBoard, startPosition);
             Collection<ChessMove> validMoves = new ArrayList<>();
             System.out.println("NOW LETS CHECK THESE MOVES");
@@ -111,7 +114,11 @@ public class ChessGame {
 
         ChessPosition startPosition = move.getStartPosition();
         Collection<ChessMove> validMovesForPosition = validMoves(startPosition);
-        boolean thisMoveIsValid = validMovesForPosition.contains(move);
+
+        boolean thisMoveIsValid = false;
+        if (validMovesForPosition != null) {
+            thisMoveIsValid = validMovesForPosition.contains(move);
+        }
 
         if (thisMoveIsValid) {
             System.out.println("MAKING MOVE");
