@@ -94,6 +94,8 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        System.out.println("TO BEGIN, THE BOARD IS:");
+        System.out.println(chessBoard);
         if (isMoveValid(move, this.getTeamTurn())) {
             System.out.println("MAKING MOVE");
             System.out.println("FROM: ");
@@ -101,9 +103,16 @@ public class ChessGame {
             System.out.println("TO: ");
             System.out.println(move.getEndPosition());
 
-            ChessPiece pieceToMove = chessBoard.getPiece(move.getStartPosition());
+            ChessPiece pieceToMove = chessBoard.getPiece(move.getStartPosition(), true);
+            System.out.println("THE PIECE WE GOT IS: ");
+            System.out.println(pieceToMove);
             chessBoard.addPiece(move.getStartPosition(), null); // remove piece from the old location
-            chessBoard.addPiece(move.getEndPosition(), pieceToMove); // add the piece to the new location
+            chessBoard.addPiece(move.getEndPosition(), pieceToMove, true); // add the piece to the new location
+
+            // make sure it worked
+            ChessPiece pieceInEndSpot = chessBoard.getPiece(move.getEndPosition());
+            System.out.println("NOW THAT ITS MOVED, THIS IS WHATS THERE: ");
+            System.out.println(pieceInEndSpot);
         } else {
             throw new InvalidMoveException("INVALID MOVE");
         }

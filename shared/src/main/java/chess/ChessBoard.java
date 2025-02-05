@@ -17,7 +17,12 @@ public class ChessBoard {
     }
 
     public ChessBoard(ChessBoard otherBoard) {
-        this.pieces = otherBoard.pieces;
+       // this.pieces = otherBoard.pieces;  makes a shallow copy only
+        HashMap<ChessPosition, ChessPiece> piecesCopy = new HashMap<>();
+        for (Map.Entry<ChessPosition, ChessPiece> entry : otherBoard.pieces.entrySet()) {
+            piecesCopy.put(entry.getKey(), entry.getValue());
+        }
+        this.pieces = piecesCopy;
         this.numPieces = otherBoard.numPieces;
     }
 
@@ -38,6 +43,26 @@ public class ChessBoard {
         }
     }
 
+    public void addPiece(ChessPosition position, ChessPiece piece, boolean shouldPrint) {
+        System.out.println(this);
+
+        System.out.println("IT WAS:");
+        System.out.println(pieces.get(position));
+
+        System.out.println("PUTTING IN:");
+        System.out.println(pieces.get(piece));
+
+        pieces.put(position, piece);
+        System.out.println("NOW ITS:");
+        System.out.println(pieces.get(position));
+
+        System.out.println(this);
+
+        if (piece != null) {
+            numPieces++;
+        }
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *
@@ -47,6 +72,13 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return pieces.get(position);
+    }
+
+    public ChessPiece getPiece(ChessPosition position, boolean shouldPrint) {
+        ChessPiece piece = pieces.get(position);
+        System.out.println("THE PIECE WE FOUND WAS:");
+        System.out.println(piece);
+        return piece;
     }
 
     public ChessPiece getKing(ChessGame.TeamColor team) {
