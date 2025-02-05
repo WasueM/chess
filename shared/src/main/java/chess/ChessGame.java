@@ -56,12 +56,15 @@ public class ChessGame {
         ChessGame.TeamColor pieceColor = pieceInLocation.getTeamColor();
         if (pieceInLocation != null) { // there's a piece here
             Collection<ChessMove> moves = pieceInLocation.pieceMoves(chessBoard, startPosition);
+            Collection<ChessMove> validMoves = new ArrayList<>();
+            System.out.println("NOW LETS CHECK THESE MOVES");
             for (ChessMove move : moves) {
-                if (isMoveValid(move, pieceColor) == false) {
-                    moves.remove(move);
+                if (isMoveValid(move, pieceColor) == true) {
+                    System.out.println("INVALID MOVE DETECTED");
+                    validMoves.add(move);
                 }
             }
-            return moves;
+            return validMoves;
         }
         return null;
     }
@@ -78,8 +81,17 @@ public class ChessGame {
         ChessBoard boardCopy = chessBoard.copy();
         makeMoveWithNoChecks(move, boardCopy);
 
+        System.out.println("HYPOTHETICAL BOARD:");
+        System.out.println(boardCopy);
+
         // now that we've made the move, are we in check or not?
         boolean wouldThisPutThemInCheck = isInCheck(color, boardCopy);
+        System.out.print("COLOR ");
+        System.out.print(color);
+        System.out.print(" WOULD BE IN CHECK? ");
+        System.out.println(wouldThisPutThemInCheck);
+        System.out.println(" ");
+
         if (wouldThisPutThemInCheck == true) {
             return false;
         } else {
@@ -149,7 +161,7 @@ public class ChessGame {
     }
 
     public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
-        ChessPosition kingLocation = chessBoard.getKingPosition(teamColor);
+        ChessPosition kingLocation = board.getKingPosition(teamColor);
 
         // get other team color
         TeamColor enemyTeamColor = TeamColor.WHITE;
@@ -157,8 +169,13 @@ public class ChessGame {
             enemyTeamColor = TeamColor.BLACK;
         }
 
+        System.out.println("FRIENDLY KING LOCATION");
+        System.out.println(kingLocation);
+
         // loop through every piece on the enemy team, and see if they include this position
         Set<ChessPosition> placesTeamCouldGo = board.getPlacesTeamCouldGo(enemyTeamColor);
+        System.out.println("PLACES ENEMY TEAM COULD GO:");
+        System.out.println(placesTeamCouldGo);
         if (placesTeamCouldGo.contains(kingLocation)) {
             return true;
         } else {
