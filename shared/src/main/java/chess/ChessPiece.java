@@ -50,21 +50,40 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        switch (this.pieceType) {
+        String returnValue = "?";
+        switch (pieceType) {
             case KING:
-                return "K";
+                returnValue = "K";
+                break;
             case QUEEN:
-                return "Q";
+                returnValue = "Q";
+                break;
             case BISHOP:
-                return "B";
+                returnValue = "B";
+                break;
             case KNIGHT:
-                return "K";
+                returnValue = "N";
+                break;
             case ROOK:
-                return "R";
+                returnValue = "R";
+                break;
             case PAWN:
-                return "P";
+                returnValue = "P";
+                break;
+            default:
+                returnValue = "?";
+                break;
         }
-        return "FAILED";
+
+        //add color information
+        if (pieceColor == ChessGame.TeamColor.BLACK) {
+            returnValue += " ";
+        } else if (pieceColor == ChessGame.TeamColor.WHITE) {
+            returnValue += "*";
+        } else {
+            returnValue += "?";
+        }
+        return returnValue;
     }
 
     /**

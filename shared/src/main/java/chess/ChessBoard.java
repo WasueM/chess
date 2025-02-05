@@ -184,13 +184,53 @@ public class ChessBoard {
         this.numPieces = 32;
     }
 
+//    @Override
+//    public boolean equals(Object o) {
+//        if (o == null || getClass() != o.getClass()) {
+//            return false;
+//        }
+//        ChessBoard that = (ChessBoard) o;
+//        return numPieces == that.numPieces && Objects.equals(pieces, that.pieces);
+//    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
         ChessBoard that = (ChessBoard) o;
-        return numPieces == that.numPieces && Objects.equals(pieces, that.pieces);
+        // return Objects.equals(pieces, that.pieces);
+
+        // if you want to see the board side-by-side, uncomment this
+        //System.out.println(this.toString());
+        //System.out.println("-***********-");
+        //System.out.println(that.toString());
+
+        // okay, I have an idea. It says the strings are identical, but "sameBoard" comes out to false. That means something in the toString isnt idential. I'll find it
+        String thisString = this.toString();
+        String thatString = that.toString();
+
+        char[] thisCharacterArray = thisString.toCharArray();
+        char[] thatCharacterArray = thatString.toCharArray();
+
+        // compare each char one by one
+        boolean difference = false;
+        for (int i = 0; i < thisCharacterArray.length; i++) {
+            // uncomment the below line to see each char compared, one by one
+            // System.out.println(thisCharacterArray[i] + " " + thatCharacterArray[i]);
+            if (thisCharacterArray[i] != thatCharacterArray[i]) {
+                // there's a difference in the chars
+                difference = true;
+            }
+        }
+
+        if (difference) {
+            // different boards
+            return false;
+        } else {
+            // same board!
+            return true;
+        }
     }
 
     @Override
@@ -200,19 +240,24 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        // Go through each location on the board, and add then in the string builder prettily
-        StringBuilder sb = new StringBuilder();
-        for (int i = 8; i > 0; i--) { // row, go from 8 at the top to 1 at the bottom
-            for (int j = 1; j <= 8; j++) { // column, go from 1 at the left to 8 at the right
-                ChessPiece piece = getPiece(new ChessPosition(i, j));
-                if (piece == null) {
-                    sb.append("0");
+        String finalString = "";
+
+        // go through each row and column and add them
+        for (int i = 8; i > 0; i--) { // row, from 8 to 1
+            for (int j = 1; j < 9; j++) { // column, from 1 to 8
+                ChessPosition positionIWantToRetrieve = new ChessPosition(i, j);
+                ChessPiece pieceAtPosition = this.getPiece(positionIWantToRetrieve);
+                if (pieceAtPosition != null) {
+                    finalString = finalString + pieceAtPosition.toString();
                 } else {
-                    sb.append(piece);
+                    finalString = finalString + "--";
                 }
+
             }
-            sb.append("\n"); // this row is done, go to the next one
+            // new line after each row
+            finalString = finalString + "\n";
         }
-        return sb.toString();
+
+        return finalString;
     }
 }
