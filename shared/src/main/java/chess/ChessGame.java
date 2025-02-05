@@ -131,7 +131,18 @@ public class ChessGame {
             System.out.println("THE PIECE WE GOT IS: ");
             System.out.println(pieceToMove);
             chessBoard.addPiece(move.getStartPosition(), null); // remove piece from the old location
-            chessBoard.addPiece(move.getEndPosition(), pieceToMove, true); // add the piece to the new location
+
+            if (pieceToMove.getPieceType() != ChessPiece.PieceType.PAWN) {
+                chessBoard.addPiece(move.getEndPosition(), pieceToMove, true); // add the piece to the new location
+            } else {
+                // for pawns, check if we should promote or not. If so, promote
+                if (move.getPromotionPiece() != null) {
+                    ChessPiece newPiece = new ChessPiece(pieceToMove.getTeamColor(), move.getPromotionPiece());
+                    chessBoard.addPiece(move.getEndPosition(), newPiece, true);
+                } else {
+                    chessBoard.addPiece(move.getEndPosition(), pieceToMove, true); // just add a pawn
+                }
+            }
 
             // make sure it worked
             ChessPiece pieceInEndSpot = chessBoard.getPiece(move.getEndPosition());
