@@ -22,7 +22,9 @@ public class ChessBoard {
         // deep copy
         HashMap<ChessPosition, ChessPiece> piecesCopy = new HashMap<>();
         for (Map.Entry<ChessPosition, ChessPiece> entry : otherBoard.pieces.entrySet()) {
-            piecesCopy.put(entry.getKey().copy(), entry.getValue().copy());
+            if ((entry.getKey() != null) && (entry.getValue() != null)) {
+                piecesCopy.put(entry.getKey().copy(), entry.getValue().copy());
+            }
         }
         this.pieces = piecesCopy;
         this.numPieces = otherBoard.numPieces;
