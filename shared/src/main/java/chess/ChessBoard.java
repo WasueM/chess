@@ -33,7 +33,9 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         pieces.put(position, piece);
-        numPieces++;
+        if (piece != null) {
+            numPieces++;
+        }
     }
 
     /**

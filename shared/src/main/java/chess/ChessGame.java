@@ -95,6 +95,12 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if (isMoveValid(move, this.getTeamTurn())) {
+            System.out.println("MAKING MOVE");
+            System.out.println("FROM: ");
+            System.out.println(move.getStartPosition());
+            System.out.println("TO: ");
+            System.out.println(move.getEndPosition());
+
             ChessPiece pieceToMove = chessBoard.getPiece(move.getStartPosition());
             chessBoard.addPiece(move.getStartPosition(), null); // remove piece from the old location
             chessBoard.addPiece(move.getEndPosition(), pieceToMove); // add the piece to the new location
