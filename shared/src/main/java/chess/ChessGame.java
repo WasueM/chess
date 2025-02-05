@@ -1,5 +1,6 @@
 package chess;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -55,9 +56,6 @@ public class ChessGame {
         ChessPiece pieceInLocation = chessBoard.getPiece(startPosition);
         if (pieceInLocation != null) { // there's a piece here
             ChessGame.TeamColor pieceColor = pieceInLocation.getTeamColor();
-            if (pieceColor != this.getTeamTurn()) {
-                return null;
-            }
             Collection<ChessMove> moves = pieceInLocation.pieceMoves(chessBoard, startPosition);
             Collection<ChessMove> validMoves = new ArrayList<>();
             System.out.println("NOW LETS CHECK THESE MOVES");
@@ -120,6 +118,16 @@ public class ChessGame {
             thisMoveIsValid = validMovesForPosition.contains(move);
         }
 
+        ChessPiece pieceToMove = chessBoard.getPiece(move.getStartPosition(), true);
+        if (pieceToMove == null) {
+            thisMoveIsValid = false;
+        } else {
+            TeamColor pieceColor = pieceToMove.getTeamColor();
+            if (pieceColor != this.getTeamTurn()) {
+                thisMoveIsValid = false;
+            }
+        }
+
         if (thisMoveIsValid) {
             System.out.println("MAKING MOVE");
             System.out.println("FROM: ");
@@ -127,7 +135,6 @@ public class ChessGame {
             System.out.println("TO: ");
             System.out.println(move.getEndPosition());
 
-            ChessPiece pieceToMove = chessBoard.getPiece(move.getStartPosition(), true);
             System.out.println("THE PIECE WE GOT IS: ");
             System.out.println(pieceToMove);
             chessBoard.addPiece(move.getStartPosition(), null); // remove piece from the old location
