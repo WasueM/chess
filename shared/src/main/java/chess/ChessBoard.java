@@ -159,10 +159,12 @@ public class ChessBoard {
                 // is it from the right team?
                 if (piece.getTeamColor() == team) {
                     // where can this piece move?
-                    possibleMoves = piece.pieceMoves(this, position);
+                    System.out.println("FOUND A PIECE FROM THIS TEAM WHICH IS " + team.toString());
+                    possibleMoves.addAll(piece.pieceMoves(this, position));
                 }
             }
         }
+        System.out.println("VERIFY THAT OUR RETURN IS: " + possibleMoves.toString());
         return possibleMoves;
     }
 

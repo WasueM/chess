@@ -278,7 +278,7 @@ public class ChessGame {
             }
 
             Collection<ChessMove> allPossibleFriendlyTeamMoves = chessBoard.getMovesTeamCouldDo(teamColor);
-            System.out.println("PLACES FRIENDLY TEAM COULD GO");
+            System.out.println("PLACES FRIENDLY TEAM COULD GO (stalemate edition)");
             System.out.println(allPossibleFriendlyTeamMoves);
 
             // attempt to find a world in all the places the friendly team could go, that doesn't result in a king in check
