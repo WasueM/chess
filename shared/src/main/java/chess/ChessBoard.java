@@ -48,20 +48,7 @@ public class ChessBoard {
     }
 
     public void addPiece(ChessPosition position, ChessPiece piece, boolean shouldPrint) {
-        System.out.println(this);
-
-        System.out.println("IT WAS:");
-        System.out.println(pieces.get(position));
-
-        System.out.println("PUTTING IN:");
-        System.out.println(pieces.get(piece));
-
         pieces.put(position, piece);
-        System.out.println("NOW ITS:");
-        System.out.println(pieces.get(position));
-
-        System.out.println(this);
-
         if (piece != null) {
             numPieces++;
         }
@@ -80,8 +67,6 @@ public class ChessBoard {
 
     public ChessPiece getPiece(ChessPosition position, boolean shouldPrint) {
         ChessPiece piece = pieces.get(position);
-        System.out.println("THE PIECE WE FOUND WAS:");
-        System.out.println(piece);
         return piece;
     }
 
@@ -159,12 +144,12 @@ public class ChessBoard {
                 // is it from the right team?
                 if (piece.getTeamColor() == team) {
                     // where can this piece move?
-                    System.out.println("FOUND A PIECE FROM THIS TEAM WHICH IS " + team.toString());
+//                    System.out.println("FOUND A PIECE FROM THIS TEAM WHICH IS " + team.toString());
                     possibleMoves.addAll(piece.pieceMoves(this, position));
                 }
             }
         }
-        System.out.println("VERIFY THAT OUR RETURN IS: " + possibleMoves.toString());
+//        System.out.println("VERIFY THAT OUR RETURN IS: " + possibleMoves.toString());
         return possibleMoves;
     }
 
