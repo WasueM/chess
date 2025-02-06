@@ -19,6 +19,7 @@ public class ChessGame {
     public ChessGame() {
         this.whoseTurnItIs = TeamColor.WHITE;
         this.chessBoard = new ChessBoard();
+        this.chessBoard.resetBoard();
     }
 
     /**
@@ -235,32 +236,17 @@ public class ChessGame {
                 enemyTeamColor = TeamColor.BLACK;
             }
 
-            Collection<ChessPosition> placesTheKingCouldGo = chessBoard.getPlacesKingCouldGo(teamColor);
-            System.out.println("PLACES KING COULD GO:");
-            System.out.println(placesTheKingCouldGo);
+            Collection<ChessMove> allPossibleFriendlyTeamMoves = chessBoard.getMovesTeamCouldDo(teamColor);
+            System.out.println("PLACES FRIENDLY TEAM COULD GO");
+            System.out.println(allPossibleFriendlyTeamMoves);
 
-            Set<ChessPosition> placesTeamCouldGo = chessBoard.getPlacesTeamCouldGo(enemyTeamColor);
-            System.out.println("PLACES ENEMY TEAM COULD GO:");
-            System.out.println(placesTeamCouldGo);
-
+            // attempt to find a world in all the places the friendly team could go, that doesn't result in a king in check
             boolean foundAnEscape = false;
-            for (ChessPosition place : placesTheKingCouldGo) {
-                if (placesTeamCouldGo.contains(place) == false) {
-                    // but hold up. Let's make a hypothetical board in which this position is moved to, and see if its in check or not then
-                    ChessBoard boardCopy = chessBoard.copy();
-                    ChessMove move = new ChessMove(chessBoard.getKingPosition(teamColor), place, null);
-                    makeMoveWithNoChecks(move, boardCopy);
-
-                    System.out.println("HYPOTHETICAL BOARD:");
-                    System.out.println(boardCopy);
-
-                    // now that we've made the move, are we in check or not?
-                    boolean wouldThisPutThemInCheck = isInCheck(teamColor, boardCopy);
-                    if (!wouldThisPutThemInCheck) {
-                        System.out.println("FOUND AN ESCAPE:");
-                        System.out.println(place);
-                        foundAnEscape = true;
-                    }
+            for (ChessMove move : allPossibleFriendlyTeamMoves) {
+                if (isMoveValid(move, teamColor) == true) {
+                    System.out.println("FOUND AN ESCAPE:");
+                    System.out.println(move);
+                    foundAnEscape = true;
                 }
             }
 
@@ -291,12 +277,16 @@ public class ChessGame {
                 enemyTeamColor = TeamColor.BLACK;
             }
 
-            Collection<ChessPosition> placesTheKingCouldGo = chessBoard.getPlacesKingCouldGo(teamColor);
-            Set<ChessPosition> placesTeamCouldGo = chessBoard.getPlacesTeamCouldGo(enemyTeamColor);
+            Collection<ChessMove> allPossibleFriendlyTeamMoves = chessBoard.getMovesTeamCouldDo(teamColor);
+            System.out.println("PLACES FRIENDLY TEAM COULD GO");
+            System.out.println(allPossibleFriendlyTeamMoves);
 
+            // attempt to find a world in all the places the friendly team could go, that doesn't result in a king in check
             boolean foundAnEscape = false;
-            for (ChessPosition place : placesTheKingCouldGo) {
-                if (placesTeamCouldGo.contains(place) == false) {
+            for (ChessMove move : allPossibleFriendlyTeamMoves) {
+                if (isMoveValid(move, teamColor) == true) {
+                    System.out.println("FOUND AN ESCAPE:");
+                    System.out.println(move);
                     foundAnEscape = true;
                 }
             }

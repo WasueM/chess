@@ -13,7 +13,7 @@ public class ChessBoard {
     int numPieces = 0;
 
     public ChessBoard() {
-        this.resetBoard();
+
     }
 
     public ChessBoard(ChessBoard otherBoard) {
@@ -146,6 +146,24 @@ public class ChessBoard {
             }
         }
         return placesTheTeamCouldGo;
+    }
+
+    // Get every move possible for a team
+    public Collection<ChessMove> getMovesTeamCouldDo(ChessGame.TeamColor team) {
+        Collection<ChessMove> possibleMoves = new ArrayList<>();
+        for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
+            ChessPiece piece = entry.getValue();
+            ChessPosition position = entry.getKey();
+
+            if (piece != null) {
+                // is it from the right team?
+                if (piece.getTeamColor() == team) {
+                    // where can this piece move?
+                    possibleMoves = piece.pieceMoves(this, position);
+                }
+            }
+        }
+        return possibleMoves;
     }
 
     /**
