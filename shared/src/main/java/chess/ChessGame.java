@@ -236,16 +236,36 @@ public class ChessGame {
             }
 
             Collection<ChessPosition> placesTheKingCouldGo = chessBoard.getPlacesKingCouldGo(teamColor);
+            System.out.println("PLACES KING COULD GO:");
+            System.out.println(placesTheKingCouldGo);
+
             Set<ChessPosition> placesTeamCouldGo = chessBoard.getPlacesTeamCouldGo(enemyTeamColor);
+            System.out.println("PLACES ENEMY TEAM COULD GO:");
+            System.out.println(placesTeamCouldGo);
 
             boolean foundAnEscape = false;
             for (ChessPosition place : placesTheKingCouldGo) {
                 if (placesTeamCouldGo.contains(place) == false) {
-                    foundAnEscape = true;
+                    // but hold up. Let's make a hypothetical board in which this position is moved to, and see if its in check or not then
+                    ChessBoard boardCopy = chessBoard.copy();
+                    ChessMove move = new ChessMove(chessBoard.getKingPosition(teamColor), place, null);
+                    makeMoveWithNoChecks(move, boardCopy);
+
+                    System.out.println("HYPOTHETICAL BOARD:");
+                    System.out.println(boardCopy);
+
+                    // now that we've made the move, are we in check or not?
+                    boolean wouldThisPutThemInCheck = isInCheck(teamColor, boardCopy);
+                    if (!wouldThisPutThemInCheck) {
+                        System.out.println("FOUND AN ESCAPE:");
+                        System.out.println(place);
+                        foundAnEscape = true;
+                    }
                 }
             }
 
             if (foundAnEscape == false) {
+                System.out.println("NO ESCAPE: CHECKMATE");
                 return true;
             } else {
                 return false;

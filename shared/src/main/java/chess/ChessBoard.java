@@ -13,7 +13,7 @@ public class ChessBoard {
     int numPieces = 0;
 
     public ChessBoard() {
-
+        this.resetBoard();
     }
 
     public ChessBoard(ChessBoard otherBoard) {
