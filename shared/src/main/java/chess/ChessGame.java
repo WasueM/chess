@@ -59,10 +59,8 @@ public class ChessGame {
             ChessGame.TeamColor pieceColor = pieceInLocation.getTeamColor();
             Collection<ChessMove> moves = pieceInLocation.pieceMoves(chessBoard, startPosition);
             Collection<ChessMove> validMoves = new ArrayList<>();
-//            System.out.println("NOW LETS CHECK THESE MOVES");
             for (ChessMove move : moves) {
                 if (isMoveValid(move, pieceColor) == true) {
-//                    System.out.println("INVALID MOVE DETECTED");
                     validMoves.add(move);
                 }
             }
@@ -83,16 +81,8 @@ public class ChessGame {
         ChessBoard boardCopy = chessBoard.copy();
         makeMoveWithNoChecks(move, boardCopy);
 
-//        System.out.println("HYPOTHETICAL BOARD:");
-//        System.out.println(boardCopy);
-
         // now that we've made the move, are we in check or not?
         boolean wouldThisPutThemInCheck = isInCheck(color, boardCopy);
-//        System.out.print("COLOR ");
-//        System.out.print(color);
-//        System.out.print(" WOULD BE IN CHECK? ");
-//        System.out.println(wouldThisPutThemInCheck);
-//        System.out.println(" ");
 
         if (wouldThisPutThemInCheck == true) {
             return false;
@@ -108,8 +98,6 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-//        System.out.println("TO BEGIN, THE BOARD IS:");
-//        System.out.println(chessBoard);
 
         ChessPosition startPosition = move.getStartPosition();
         Collection<ChessMove> validMovesForPosition = validMoves(startPosition);
@@ -130,14 +118,7 @@ public class ChessGame {
         }
 
         if (thisMoveIsValid) {
-//            System.out.println("MAKING MOVE");
-//            System.out.println("FROM: ");
-//            System.out.println(move.getStartPosition());
-//            System.out.println("TO: ");
-//            System.out.println(move.getEndPosition());
 
-//            System.out.println("THE PIECE WE GOT IS: ");
-//            System.out.println(pieceToMove);
             chessBoard.addPiece(move.getStartPosition(), null); // remove piece from the old location
 
             if (pieceToMove.getPieceType() != ChessPiece.PieceType.PAWN) {
@@ -154,8 +135,6 @@ public class ChessGame {
 
             // make sure it worked
             ChessPiece pieceInEndSpot = chessBoard.getPiece(move.getEndPosition());
-//            System.out.println("NOW THAT ITS MOVED, THIS IS WHATS THERE: ");
-//            System.out.println(pieceInEndSpot);
         } else {
             throw new InvalidMoveException("INVALID MOVE");
         }
@@ -207,13 +186,8 @@ public class ChessGame {
             enemyTeamColor = TeamColor.BLACK;
         }
 
-//        System.out.println("FRIENDLY KING LOCATION");
-//        System.out.println(kingLocation);
-
         // loop through every piece on the enemy team, and see if they include this position
         Set<ChessPosition> placesTeamCouldGo = board.getPlacesTeamCouldGo(enemyTeamColor);
-//        System.out.println("PLACES ENEMY TEAM COULD GO:");
-//        System.out.println(placesTeamCouldGo);
         if (placesTeamCouldGo.contains(kingLocation)) {
             return true;
         } else {
@@ -237,21 +211,16 @@ public class ChessGame {
             }
 
             Collection<ChessMove> allPossibleFriendlyTeamMoves = chessBoard.getMovesTeamCouldDo(teamColor);
-//            System.out.println("PLACES FRIENDLY TEAM COULD GO");
-//            System.out.println(allPossibleFriendlyTeamMoves);
 
             // attempt to find a world in all the places the friendly team could go, that doesn't result in a king in check
             boolean foundAnEscape = false;
             for (ChessMove move : allPossibleFriendlyTeamMoves) {
                 if (isMoveValid(move, teamColor) == true) {
-//                    System.out.println("FOUND AN ESCAPE:");
-//                    System.out.println(move);
                     foundAnEscape = true;
                 }
             }
 
             if (foundAnEscape == false) {
-//                System.out.println("NO ESCAPE: CHECKMATE");
                 return true;
             } else {
                 return false;
@@ -278,15 +247,11 @@ public class ChessGame {
             }
 
             Collection<ChessMove> allPossibleFriendlyTeamMoves = chessBoard.getMovesTeamCouldDo(teamColor);
-//            System.out.println("PLACES FRIENDLY TEAM COULD GO (stalemate edition)");
-//            System.out.println(allPossibleFriendlyTeamMoves);
 
             // attempt to find a world in all the places the friendly team could go, that doesn't result in a king in check
             boolean foundAnEscape = false;
             for (ChessMove move : allPossibleFriendlyTeamMoves) {
                 if (isMoveValid(move, teamColor) == true) {
-//                    System.out.println("FOUND AN ESCAPE:");
-//                    System.out.println(move);
                     foundAnEscape = true;
                 }
             }

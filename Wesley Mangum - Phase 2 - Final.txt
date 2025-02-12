@@ -1,0 +1,128 @@
+actor Client
+participant Server
+participant Handler
+participant Service
+participant DataAccess
+database db
+
+entryspacing 0.2
+group #navy Registration #white
+Client -> Server: [POST] /user\n{"username":" ", "password":" ", "email":" "}
+Server -> Handler: {"username":" ", "password":" ", "email":" "}
+Handler -> Service: register(RegisterRequest)
+Service -> DataAccess: getUser(username)
+DataAccess -> db:Find UserData by username
+DataAccess --> Service: null
+Service -> DataAccess:createUser(userData)
+DataAccess -> db:Add UserData
+Service -> DataAccess:createAuth(authData)
+DataAccess -> db:Add AuthData
+Service --> Handler: RegisterResult
+Handler --> Server: {"username" : " ", "authToken" : " "}
+Server --> Client: 200\n{"username" : " ", "authToken" : " "}
+end
+
+group #orange Login #white
+Client -> Server: [POST] /session\n{"username":" ","password":" "}
+Server -> Handler: {"username":" ","password":" "}
+Handler -> Service: startSession(StartSessionRequest)
+Service -> DataAccess:areUsernameAndPasswordValid(userData)
+DataAccess -> db:Find UserData by Username
+DataAccess<--db:{"username": " ", "password":" "}
+DataAccess --> Service: areValid ("True" or "False")
+Service -> DataAccess:createAuthToken(generatedAuthToken)
+DataAccess -> db:Add Generated Token
+Service<--DataAccess:null
+Service --> Handler: LoginResult
+Handler --> Server: {"authToken":" "}
+Server --> Client: 200\n{"authToken" : " "}
+end
+
+group #green Logout #white
+Client -> Server: [DELETE] /session\n(HEADER) authToken: " "
+Server -> Handler: {"authToken":" "}
+Handler -> Service: endSession(EndSessionRequest)
+Service->DataAccess:deleteAuthToken(authToken)
+DataAccess->db:deleteAuthToken(authToken)
+Service<--DataAccess:null
+Service --> Handler: null
+Handler --> Server: {}
+Server --> Client: 200\n{}
+end
+
+group #red List Games #white
+Client -> Server: [GET] /game\n(HEADER) authToken: " "
+Server -> Handler: {"authToken":" "}
+Handler -> Service: getGamesList(GamesListRequest)
+Service->DataAccess:isAuthTokenValid(authToken)
+DataAccess -> db:Get Valid AuthTokens
+DataAccess<--db:{"authtokens": []}
+DataAccess --> Service: isValid ("True" or "False")
+Service->DataAccess:getGames()
+DataAccess -> db:Get All (Active) Games
+DataAccess<--db:{ "games": [{"gameID": 1234, "whiteUsername":"", "blackUsername":"", "gameName:" "}]}
+DataAccess --> Service: { "games": [{"gameID": 1234, "whiteUsername":"", "blackUsername":"", "gameName:" "}]}
+Handler<-Service:GamesListResult
+Handler --> Server: { "games": [{"gameID": 1234, "whiteUsername":"", "blackUsername":"", "gameName:" "}]} ]}
+Server --> Client: 200\n{ "games": [{"gameID": 1234, "whiteUsername":"", "blackUsername":"", "gameName:" "}]} ]}
+end
+
+group #purple Create Game #white
+Client -> Server: [POST] /game\n(HEADER) authToken: " "\n{"gameName", " "}
+Server -> Handler: {"authToken":" ", "gameName":" "}
+Handler -> Service: createGame(CreateGameRequest)
+Service->DataAccess:isAuthTokenValid(authToken)
+DataAccess -> db:Get Valid AuthTokens
+DataAccess<--db:{"authtokens": []}
+DataAccess --> Service: isValid ("True" or "False")
+Service->DataAccess:getUserDataFromToken(authToken)
+DataAccess -> db:Get User Data associated with Auth Token
+DataAccess<--db:{"username":" "}
+DataAccess --> Service: {"username":" "}
+Service->DataAccess:makeGame(Username, GameName)
+DataAccess -> db:Make a new game
+Service<--DataAccess:{ "gameID": 1234 }
+Service --> Handler: CreateGameResult
+Handler --> Server: { "gameID": 1234 }
+Server --> Client: 200\n{ "gameID": 1234 }
+end
+
+group #yellow Join Game #black
+Client -> Server: [PUT] /game\n(HEADER) authToken: " "\n{"playerColor":" ", "gameID":" "}
+Server -> Handler: {"playerColor":" ", "gameID":" ", "authToken":" "}
+Handler -> Service: joinGame(JoinGameRequest)
+Service->DataAccess:isAuthTokenValid(authToken)
+DataAccess -> db:Get Valid AuthTokens
+DataAccess<--db:{"authtokens": []}
+DataAccess --> Service: isValid ("True" or "False")
+Service->DataAccess:isGameIDValid(gameID)
+DataAccess -> db:Get Valid Game IDs
+DataAccess<--db:{"gameIDs": [1234, 2345]}
+DataAccess --> Service: isValid ("True" or "False")
+Service->DataAccess:getGameFromID(gameID)
+DataAccess -> db:Get Game associated with the ID
+DataAccess<--db:{ "game": {"gameID": 1234, "whiteUsername":"(defaults to the creators username)", "blackUsername":"(defaults to blank)", "gameName:" "}}
+DataAccess --> Service: { "game": {"gameID": 1234, "whiteUsername":"(defaults to the creators username)", "blackUsername":"(defaults to blank)", "gameName:" "}}
+Service->DataAccess:getUserDataFromToken(authToken)
+DataAccess -> db:Get User Data associated with Auth Token
+DataAccess<--db:{"username":" "}
+DataAccess --> Service: {"username":" "}
+Service->DataAccess:updateGameWithBothUsernamesAtCorrectColors(whiteUsername, blackUserName, gameID)
+DataAccess -> db:Update the game with the right ID to have the usernames in the desired color slots
+DataAccess --> Service: null
+Service --> Handler: null
+Handler --> Server: {}
+Server --> Client: 200\n{}
+end
+
+group #gray Clear application #white
+Client -> Server: [DELETE] /db
+Server -> Handler:
+Handler -> Service: deleteDatabase()
+Service -> DataAccess: deleteDatabase()
+DataAccess -> db:Delete the entire database\nand reset to default state
+DataAccess --> Service: null
+Service --> Handler: null
+Handler --> Server: {}
+Server --> Client: 200\n{}
+end

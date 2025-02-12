@@ -144,12 +144,10 @@ public class ChessBoard {
                 // is it from the right team?
                 if (piece.getTeamColor() == team) {
                     // where can this piece move?
-//                    System.out.println("FOUND A PIECE FROM THIS TEAM WHICH IS " + team.toString());
                     possibleMoves.addAll(piece.pieceMoves(this, position));
                 }
             }
         }
-//        System.out.println("VERIFY THAT OUR RETURN IS: " + possibleMoves.toString());
         return possibleMoves;
     }
 
@@ -206,12 +204,6 @@ public class ChessBoard {
             return false;
         }
         ChessBoard that = (ChessBoard) o;
-        // return Objects.equals(pieces, that.pieces);
-
-        // if you want to see the board side-by-side, uncomment this
-        //System.out.println(this.toString());
-        //System.out.println("-***********-");
-        //System.out.println(that.toString());
 
         // okay, I have an idea. It says the strings are identical, but "sameBoard" comes out to false. That means something in the toString isnt idential. I'll find it
         String thisString = this.toString();
@@ -224,7 +216,6 @@ public class ChessBoard {
         boolean difference = false;
         for (int i = 0; i < thisCharacterArray.length; i++) {
             // uncomment the below line to see each char compared, one by one
-            // System.out.println(thisCharacterArray[i] + " " + thatCharacterArray[i]);
             if (thisCharacterArray[i] != thatCharacterArray[i]) {
                 // there's a difference in the chars
                 difference = true;
