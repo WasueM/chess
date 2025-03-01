@@ -16,7 +16,7 @@ public class AuthDataAccessMemory implements AuthDataAccessObject {
 
     @Override
     public AuthData deleteAuthToken(AuthData authData) throws DataAccessException {
-        authTokens.remove(authData)
+        authTokens.remove(authData);
         return null;
     }
 
