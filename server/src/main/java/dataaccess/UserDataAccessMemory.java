@@ -23,9 +23,9 @@ public final class UserDataAccessMemory implements UserDataAccessObject {
     }
 
     @Override
-    public static UserData addUser(AuthData auth, UserData user) throws DataAccessException {
+    public static UserData addUser(UserData user) throws DataAccessException {
         allUsers.add(user); // Store user separately
-        userAuthMapping.put(user, auth); // Associate with auth data
+        userAuthMapping.put(user, null); // Associate with auth data
         return user;
     }
 
@@ -45,5 +45,10 @@ public final class UserDataAccessMemory implements UserDataAccessObject {
             }
         }
         return null;
+    }
+
+    public static AuthData getAuthTokenByUser(UserData user) throws DataAccessException {
+        // get the access token for the user
+        return userAuthMapping.get(user);
     }
 }

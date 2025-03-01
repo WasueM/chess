@@ -1,0 +1,16 @@
+package services;
+
+record LoginRequest(
+        String username,
+        String password){
+}
+
+record RegisterRequest(
+        String username,
+        String password,
+        String email) {
+}
+
+record LogoutRequest(
+        String username
+) {}
