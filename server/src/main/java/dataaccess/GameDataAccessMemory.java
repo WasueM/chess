@@ -2,10 +2,11 @@ package dataaccess;
 
 import model.GameData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameDataAccessMemory implements GameDataAccessObject {
-    final private List<GameData> games = new List<>();
+    final private List<GameData> games = new ArrayList<GameData>();
 
     @Override
     public GameData makeGame(GameData gameData) throws DataAccessException {
