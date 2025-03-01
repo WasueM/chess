@@ -3,15 +3,18 @@ package dataaccess;
 import model.AuthData;
 import model.UserData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
-public class UserDataAccessMemory implements UserDataAccessObject {
-    final private HashMap<AuthData, UserData> allUsers = new HashMap<>();
+public final class UserDataAccessMemory implements UserDataAccessObject {
+    final static private List<UserData> allUsers = new ArrayList<>();
+    final static private HashMap<UserData, AuthData> userAuthMapping = new HashMap<>();
 
     @Override
-    public UserData getUserByUsername(String username) throws DataAccessException {
-        for (UserData user : allUsers.values()) {
+    public static UserData getUserByUsername(String username) throws DataAccessException {
+        for (UserData user : allUsers) {
             if (Objects.equals(user.username(), username)) {
                 return user;
             }
@@ -20,13 +23,27 @@ public class UserDataAccessMemory implements UserDataAccessObject {
     }
 
     @Override
-    public UserData addUser(AuthData auth, UserData user) throws DataAccessException {
-        allUsers.put(auth, user);
+    public static UserData addUser(AuthData auth, UserData user) throws DataAccessException {
+        allUsers.add(user); // Store user separately
+        userAuthMapping.put(user, auth); // Associate with auth data
         return user;
     }
 
+    public static UserData addTokenToUser(AuthData auth, String username) {
+        for (UserData user : allUsers) {
+            if (Objects.equals(user.username(), username)) {
+                userAuthMapping.put(user, auth);
+            }
+        }
+    }
+
     @Override
-    public UserData getUserByAuthToken(AuthData authData) throws DataAccessException {
-        return allUsers.get(authData);
+    public static UserData getUserByAuthToken(AuthData authData) throws DataAccessException {
+        for (UserData user : userAuthMapping.keySet()) {
+            if (Objects.equals(userAuthMapping.get(user), authData)) {
+                return user;
+            }
+        }
+        return null;
     }
 }

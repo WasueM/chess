@@ -5,7 +5,7 @@ import model.GameData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameDataAccessMemory implements GameDataAccessObject {
+public final class GameDataAccessMemory implements GameDataAccessObject {
     final private List<GameData> games = new ArrayList<GameData>();
 
     @Override

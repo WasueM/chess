@@ -5,23 +5,23 @@ import model.AuthData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthDataAccessMemory implements AuthDataAccessObject {
-    final private List<AuthData> authTokens = new ArrayList<>();
+public final class AuthDataAccessMemory implements AuthDataAccessObject {
+    final static private List<AuthData> authTokens = new ArrayList<>();
 
     @Override
-    public AuthData addAuthToken(AuthData authData) throws DataAccessException {
+    public static AuthData addAuthToken(AuthData authData) throws DataAccessException {
         authTokens.add(authData);
         return null;
     }
 
     @Override
-    public AuthData deleteAuthToken(AuthData authData) throws DataAccessException {
+    public static AuthData deleteAuthToken(AuthData authData) throws DataAccessException {
         authTokens.remove(authData);
         return null;
     }
 
     @Override
-    public AuthData[] getValidTokens(AuthData authData) throws DataAccessException {
+    public static AuthData[] getValidTokens() throws DataAccessException {
         return authTokens.toArray(new AuthData[0]);
     }
 }
