@@ -44,6 +44,8 @@ public class GameService {
 
             GameData newGame = new GameData(randomGameID, username, "", createGameRequest.gameName(), new ChessGame());
             GameDataAccessMemory.makeGame(newGame);
+
+            return new CreateGameResult(randomGameID);
         }
         else {
             return null;

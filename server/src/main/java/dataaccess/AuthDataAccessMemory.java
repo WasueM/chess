@@ -8,16 +8,16 @@ import java.util.List;
 import java.util.Objects;
 
 public final class AuthDataAccessMemory implements AuthDataAccessObject {
-    final static private List<AuthData> authTokens = new ArrayList<>();
+    final private List<AuthData> authTokens = new ArrayList<>();
 
     @Override
-    public static AuthData addAuthToken(AuthData authData) throws DataAccessException {
+    public AuthData addAuthToken(AuthData authData) throws DataAccessException {
         authTokens.add(authData);
         return null;
     }
 
     @Override
-    public static AuthData deleteAuthToken(String authToken) throws DataAccessException {
+    public AuthData deleteAuthToken(String authToken) throws DataAccessException {
         for (AuthData authData : authTokens) {
             if (authData.authToken() == authToken) {
                 authTokens.remove(authData);
@@ -27,12 +27,12 @@ public final class AuthDataAccessMemory implements AuthDataAccessObject {
     }
 
     @Override
-    public static AuthData[] getValidTokens() throws DataAccessException {
+    public AuthData[] getValidTokens() throws DataAccessException {
         return authTokens.toArray(new AuthData[0]);
     }
 
     @Override
-    public static String getUserByAuthToken(String authToken) throws DataAccessException {
+    public String getUserByAuthToken(String authToken) throws DataAccessException {
         for (AuthData authData : authTokens) {
             if (authData.authToken() == authToken) {
                 return authData.username();
@@ -41,7 +41,7 @@ public final class AuthDataAccessMemory implements AuthDataAccessObject {
         return null;
     }
 
-    public static String getAuthTokenByUser(String username) throws DataAccessException {
+    public String getAuthTokenByUser(String username) throws DataAccessException {
         // get the access token for the user
         for (AuthData authData : authTokens) {
             if (authData.username() == username) {
