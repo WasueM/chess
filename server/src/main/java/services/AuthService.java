@@ -31,13 +31,14 @@ public class AuthService {
         return authToken;
     }
 
-    public boolean verifyAuthToken(AuthData authToken) throws DataAccessException {
+    public static boolean verifyAuthToken(String authToken) throws DataAccessException {
         AuthData[] validCredentials = AuthDataAccessMemory.getValidTokens();
-        if (Arrays.asList(validCredentials).contains(authToken)) {
-            return true;
-        } else {
-            return false;
+        for (AuthData authData : validCredentials) {
+            if (authData.authToken() == authToken) {
+                return true;
+            }
         }
+        return false;
     }
 
     public static String generateToken() {

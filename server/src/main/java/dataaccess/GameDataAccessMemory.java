@@ -54,7 +54,7 @@ public final class GameDataAccessMemory implements GameDataAccessObject {
     }
 
     @Override
-    public GameData[] getActiveGames() throws DataAccessException {
+    public static GameData[] getActiveGames() throws DataAccessException {
         return games.toArray(new GameData[0]);
     }
 
