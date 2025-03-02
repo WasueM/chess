@@ -17,8 +17,12 @@ public final class AuthDataAccessMemory implements AuthDataAccessObject {
     }
 
     @Override
-    public static AuthData deleteAuthToken(AuthData authData) throws DataAccessException {
-        authTokens.remove(authData);
+    public static AuthData deleteAuthToken(String authToken) throws DataAccessException {
+        for (AuthData authData : authTokens) {
+            if (authData.authToken() == authToken) {
+                authTokens.remove(authData);
+            }
+        }
         return null;
     }
 

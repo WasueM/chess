@@ -1,10 +1,7 @@
 package services;
 
 import chess.ChessGame;
-import dataaccess.AuthDataAccessMemory;
-import dataaccess.DataAccessException;
-import dataaccess.GameDataAccessMemory;
-import dataaccess.UserDataAccessMemory;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -12,6 +9,13 @@ import model.UserData;
 import java.util.Random;
 
 public class GameService {
+
+    private final GameDataAccessObject gameDataAccess;
+
+    public GameService(GameDataAccessObject gameDataAccess) {
+        this.gameDataAccess = gameDataAccess;
+    }
+
     public GamesListResult getGamesList(GamesListRequest gamesListRequest) throws DataAccessException {
         // authenticate
         boolean validAuth = AuthService.verifyAuthToken(gamesListRequest.authToken());

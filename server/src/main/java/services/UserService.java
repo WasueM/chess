@@ -2,10 +2,18 @@ package services;
 import dataaccess.AuthDataAccessMemory;
 import dataaccess.DataAccessException;
 import dataaccess.UserDataAccessMemory;
+import dataaccess.UserDataAccessObject;
 import model.AuthData;
 import model.UserData;
 
 public class UserService {
+
+    private final UserDataAccessObject userDataAccess;
+
+    public UserService(UserDataAccessObject userDataAccess) {
+        this.userDataAccess = userDataAccess;
+    }
+
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         // find out if the username has been taken
         UserData user = UserDataAccessMemory.getUserByUsername(registerRequest.username());
@@ -33,13 +41,11 @@ public class UserService {
     }
 
     public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
-        // get the user and its auth data
-        UserData user = UserDataAccessMemory.getUserByUsername(logoutRequest.username());
-        AuthData authData = UserDataAccessMemory.getAuthTokenByUser(user);
+        // get the auth token to delete
+        String authToken = AuthDataAccessMemory.getAuthTokenByUser(logoutRequest.username());
 
-        // set the authData to null in the user object and in the auth object
-        AuthDataAccessMemory.deleteAuthToken(authData);
-        UserDataAccessMemory.addTokenToUser(null, user.username());
+        // delete the auth token
+        AuthDataAccessMemory.deleteAuthToken(authToken);
 
         return new LogoutResult(logoutRequest.username());
     }

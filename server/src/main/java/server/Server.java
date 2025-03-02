@@ -1,8 +1,21 @@
 package server;
 
+import services.AuthService;
+import services.GameService;
+import services.UserService;
 import spark.*;
 
 public class Server {
+
+    private final AuthService authService;
+    private final UserService userService;
+    private final GameService gameService;
+
+    public Server(AuthService authService, UserService userService, GameService gameService) {
+        this.authService = authService;
+        this.userService = userService;
+        this.gameService = gameService;
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);

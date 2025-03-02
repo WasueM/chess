@@ -10,7 +10,6 @@ import java.util.Objects;
 
 public final class UserDataAccessMemory implements UserDataAccessObject {
     final static private List<UserData> allUsers = new ArrayList<>();
-  //  final static private HashMap<UserData, AuthData> userAuthMapping = new HashMap<>();
 
     @Override
     public static UserData getUserByUsername(String username) throws DataAccessException {
@@ -25,15 +24,6 @@ public final class UserDataAccessMemory implements UserDataAccessObject {
     @Override
     public static UserData addUser(UserData user) throws DataAccessException {
         allUsers.add(user); // Store user separately
-     //   userAuthMapping.put(user, null); // Associate with auth data
         return user;
     }
-
-//    public static UserData addTokenToUser(AuthData auth, String username) {
-//        for (UserData user : allUsers) {
-//            if (Objects.equals(user.username(), username)) {
-//                userAuthMapping.put(user, auth);
-//            }
-//        }
-//    }
 }

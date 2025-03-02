@@ -1,6 +1,7 @@
 package services;
 
 import dataaccess.AuthDataAccessMemory;
+import dataaccess.AuthDataAccessObject;
 import dataaccess.DataAccessException;
 import dataaccess.UserDataAccessMemory;
 import model.AuthData;
@@ -10,6 +11,13 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class AuthService {
+
+    private final AuthDataAccessObject authDataAccess;
+
+    public AuthService(AuthDataAccessObject authDataAccess) {
+        this.authDataAccess = authDataAccess;
+    }
+
     public static boolean verifyCredentials(String username, String password) throws DataAccessException {
         UserData user = UserDataAccessMemory.getUserByUsername(username);
         if (user != null) {
@@ -27,7 +35,6 @@ public class AuthService {
         String authToken = generateToken();
         AuthData newAuthData = new AuthData(authToken, username);
         AuthDataAccessMemory.addAuthToken(newAuthData);
-        UserDataAccessMemory.addTokenToUser(newAuthData, username);
         return authToken;
     }
 
