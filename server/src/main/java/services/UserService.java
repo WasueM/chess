@@ -1,9 +1,6 @@
 package services;
-import dataaccess.AuthDataAccessMemory;
 import dataaccess.DataAccessException;
-import dataaccess.UserDataAccessMemory;
 import dataaccess.UserDataAccessObject;
-import model.AuthData;
 import model.UserData;
 
 public class UserService {
@@ -16,10 +13,10 @@ public class UserService {
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         // find out if the username has been taken
-        UserData user = UserDataAccessMemory.getUserByUsername(registerRequest.username());
+        UserData user = userDataAccess.getUserByUsername(registerRequest.username());
         if (user == null) {
             // we can make a new user with this name
-            UserDataAccessMemory.addUser(new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email()));
+            userDataAccess.addUser(new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email()));
 
             // make the authToken and add to authenticatedUsers
             String authToken = AuthService.authenticateUser(registerRequest.username());
@@ -31,7 +28,7 @@ public class UserService {
     }
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
-        boolean isValidUser = AuthService.verifyCredentials(loginRequest.username(), loginRequest.password());
+        boolean isValidUser = verifyCredentials(loginRequest.username(), loginRequest.password());
         if (isValidUser) {
             String authToken = AuthService.authenticateUser(loginRequest.username());
             return new LoginResult(loginRequest.username(), authToken);
@@ -40,13 +37,16 @@ public class UserService {
         }
     }
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
-        // get the auth token to delete
-        String authToken = AuthDataAccessMemory.getAuthTokenByUser(logoutRequest.username());
-
-        // delete the auth token
-        AuthDataAccessMemory.deleteAuthToken(authToken);
-
-        return new LogoutResult(logoutRequest.username());
+    public boolean verifyCredentials(String username, String password) throws DataAccessException {
+        UserData user = userDataAccess.getUserByUsername(username);
+        if (user != null) {
+            if (user.password() == password) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

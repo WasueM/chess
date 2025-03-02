@@ -1,13 +1,9 @@
 package services;
 
-import dataaccess.AuthDataAccessMemory;
 import dataaccess.AuthDataAccessObject;
 import dataaccess.DataAccessException;
-import dataaccess.UserDataAccessMemory;
 import model.AuthData;
-import model.UserData;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 public class AuthService {
@@ -18,34 +14,31 @@ public class AuthService {
         this.authDataAccess = authDataAccess;
     }
 
-    public static boolean verifyCredentials(String username, String password) throws DataAccessException {
-        UserData user = UserDataAccessMemory.getUserByUsername(username);
-        if (user != null) {
-            if (user.password() == password) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    public static String authenticateUser(String username) throws DataAccessException {
+    public String authenticateUser(String username) throws DataAccessException {
         String authToken = generateToken();
         AuthData newAuthData = new AuthData(authToken, username);
-        AuthDataAccessMemory.addAuthToken(newAuthData);
+        authDataAccess.addAuthToken(newAuthData);
         return authToken;
     }
 
-    public static boolean verifyAuthToken(String authToken) throws DataAccessException {
-        AuthData[] validCredentials = AuthDataAccessMemory.getValidTokens();
+    public boolean verifyAuthToken(String authToken) throws DataAccessException {
+        AuthData[] validCredentials = authDataAccess.getValidTokens();
         for (AuthData authData : validCredentials) {
             if (authData.authToken() == authToken) {
                 return true;
             }
         }
         return false;
+    }
+
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
+        // get the auth token to delete
+        String authToken = authDataAccess.getAuthTokenByUser(logoutRequest.username());
+
+        // delete the auth token
+        authDataAccess.deleteAuthToken(authToken);
+
+        return new LogoutResult(logoutRequest.username());
     }
 
     public static String generateToken() {

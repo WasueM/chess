@@ -2,9 +2,7 @@ package services;
 
 import chess.ChessGame;
 import dataaccess.*;
-import model.AuthData;
 import model.GameData;
-import model.UserData;
 
 import java.util.Random;
 
@@ -22,7 +20,7 @@ public class GameService {
 
         if (validAuth) {
             // get the games list
-            GameData[] gamesList = GameDataAccessMemory.getActiveGames();
+            GameData[] gamesList = gameDataAccess.getActiveGames();
 
             return new GamesListResult(gamesList);
         } else {
@@ -43,7 +41,7 @@ public class GameService {
             String username = AuthDataAccessMemory.getUserByAuthToken(createGameRequest.authToken());
 
             GameData newGame = new GameData(randomGameID, username, "", createGameRequest.gameName(), new ChessGame());
-            GameDataAccessMemory.makeGame(newGame);
+            gameDataAccess.makeGame(newGame);
 
             return new CreateGameResult(randomGameID);
         }
@@ -58,7 +56,7 @@ public class GameService {
 
             if (validAuth) {
                 // get the game from the id
-                GameData[] allGames = GameDataAccessMemory.getActiveGames();
+                GameData[] allGames = gameDataAccess.getActiveGames();
 
                 // see if the game ID exists
                 GameData gameToJoin = null;
@@ -92,7 +90,7 @@ public class GameService {
                     throw new DataAccessException("Failed to join the game");
                 }
 
-                GameDataAccessMemory.updateGameWithNewData(modifiedGame);
+                gameDataAccess.updateGameWithNewData(modifiedGame);
 
                 return new JoinGameResult(gameToJoin.gameID());
             }
