@@ -9,7 +9,7 @@ public final class GameDataAccessMemory implements GameDataAccessObject {
     final private List<GameData> games = new ArrayList<GameData>();
 
     @Override
-    public void makeGame(GameData gameData) throws DataAccessException {
+    public GameData makeGame(GameData gameData) throws DataAccessException {
         try {
             games.add(gameData);
             return gameData;
