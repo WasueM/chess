@@ -2,6 +2,7 @@ package services;
 
 import chess.ChessGame;
 import dataaccess.*;
+
 import model.GameData;
 
 import java.util.Random;
@@ -9,14 +10,16 @@ import java.util.Random;
 public class GameService {
 
     private final GameDataAccessObject gameDataAccess;
+    private final AuthService authService;
 
-    public GameService(GameDataAccessObject gameDataAccess) {
+    public GameService(GameDataAccessObject gameDataAccess, AuthService authService) {
         this.gameDataAccess = gameDataAccess;
+        this.authService = authService;
     }
 
     public GamesListResult getGamesList(GamesListRequest gamesListRequest) throws DataAccessException {
         // authenticate
-        boolean validAuth = AuthService.verifyAuthToken(gamesListRequest.authToken());
+        boolean validAuth = authService.verifyAuthToken(gamesListRequest.authToken());
 
         if (validAuth) {
             // get the games list
@@ -30,7 +33,7 @@ public class GameService {
 
     public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException {
         // authenticate
-        boolean validAuth = AuthService.verifyAuthToken(createGameRequest.authToken());
+        boolean validAuth = authService.verifyAuthToken(createGameRequest.authToken());
 
         if (validAuth) {
             // random id
@@ -38,7 +41,7 @@ public class GameService {
             int randomGameID = random.nextInt(99999);
 
             // get player data for name
-            String username = AuthDataAccessMemory.getUserByAuthToken(createGameRequest.authToken());
+            String username = authService.getUserByAuthToken(createGameRequest.authToken());
 
             GameData newGame = new GameData(randomGameID, username, "", createGameRequest.gameName(), new ChessGame());
             gameDataAccess.makeGame(newGame);
@@ -52,7 +55,7 @@ public class GameService {
 
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
             // authenticate
-            boolean validAuth = AuthService.verifyAuthToken(joinGameRequest.authToken());
+            boolean validAuth = authService.verifyAuthToken(joinGameRequest.authToken());
 
             if (validAuth) {
                 // get the game from the id
@@ -76,7 +79,7 @@ public class GameService {
                 ChessGame chessGame = gameToJoin.game();
 
                 // get the username of the person whose joining
-                String joinerName = AuthDataAccessMemory.getUserByAuthToken(joinGameRequest.authToken());
+                String joinerName = authService.getUserByAuthToken(joinGameRequest.authToken());
 
                 // if the joining player wants to be black, make the game that way
                 GameData modifiedGame = null;

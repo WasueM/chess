@@ -4,6 +4,7 @@ import dataaccess.AuthDataAccessObject;
 import dataaccess.DataAccessException;
 import model.AuthData;
 
+import javax.xml.crypto.Data;
 import java.util.UUID;
 
 public class AuthService {
@@ -43,5 +44,9 @@ public class AuthService {
 
     public static String generateToken() {
         return UUID.randomUUID().toString();
+    }
+
+    public String getUserByAuthToken(String authToken) throws DataAccessException {
+        return authDataAccess.getUserByAuthToken(authToken);
     }
 }

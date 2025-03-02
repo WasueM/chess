@@ -19,7 +19,7 @@ public class Main {
 
         // create the services based on the version of the database we want
         AuthService authService = new AuthService(authDataAccessMemory);
-        GameService gameService = new GameService(gameDataAccessMemory);
+        GameService gameService = new GameService(gameDataAccessMemory, authDataAccessMemory);
         UserService userService = new UserService(userDataAccessMemory);
 
         Server server = new Server(authService, userService, gameService);
