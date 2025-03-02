@@ -6,9 +6,11 @@ import model.UserData;
 public class UserService {
 
     private final UserDataAccessObject userDataAccess;
+    private final AuthService authService;
 
-    public UserService(UserDataAccessObject userDataAccess) {
+    public UserService(UserDataAccessObject userDataAccess, AuthService authService) {
         this.userDataAccess = userDataAccess;
+        this.authService = authService;
     }
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
@@ -19,7 +21,7 @@ public class UserService {
             userDataAccess.addUser(new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email()));
 
             // make the authToken and add to authenticatedUsers
-            String authToken = AuthService.authenticateUser(registerRequest.username());
+            String authToken = authService.authenticateUser(registerRequest.username());
 
             return new RegisterResult(registerRequest.username(), authToken);
         } else {
@@ -30,7 +32,7 @@ public class UserService {
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
         boolean isValidUser = verifyCredentials(loginRequest.username(), loginRequest.password());
         if (isValidUser) {
-            String authToken = AuthService.authenticateUser(loginRequest.username());
+            String authToken = authService.authenticateUser(loginRequest.username());
             return new LoginResult(loginRequest.username(), authToken);
         } else {
             return null;
