@@ -17,6 +17,5 @@ record CreateGameResult(
 ) {}
 
 record JoinGameResult(
-        String authToken,
         int gameID
 ) {}

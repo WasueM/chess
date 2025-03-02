@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class GameDataAccessMemory implements GameDataAccessObject {
-    final private List<GameData> games = new ArrayList<GameData>();
+    static final private List<GameData> games = new ArrayList<GameData>();
 
     @Override
-    public GameData makeGame(GameData gameData) throws DataAccessException {
+    public static void makeGame(GameData gameData) throws DataAccessException {
         try {
             games.add(gameData);
             return gameData;
@@ -43,7 +43,7 @@ public final class GameDataAccessMemory implements GameDataAccessObject {
     }
 
     @Override
-    public GameData updateGameWithNewData(GameData gameData) {
+    public static GameData updateGameWithNewData(GameData gameData) {
         for (GameData game : games) {
             if (game.gameID() == gameData.gameID()) {
                 games.remove(game);

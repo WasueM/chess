@@ -20,10 +20,12 @@ record GamesListRequest(
 ) {}
 
 record CreateGameRequest(
-        String authToken
+        String authToken,
+        String gameName
 ) {}
 
 record JoinGameRequest(
         String authToken,
-        int gameID
+        int gameID,
+        String playerColor
 ) {}
