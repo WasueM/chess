@@ -1,20 +1,38 @@
 package server;
 
+import dataaccess.AuthDataAccessMemory;
+import dataaccess.GameDataAccessMemory;
+import dataaccess.UserDataAccessMemory;
 import services.AuthService;
 import services.GameService;
+import services.Handlers;
 import services.UserService;
 import spark.*;
 
 public class Server {
 
-    private final AuthService authService;
-    private final UserService userService;
-    private final GameService gameService;
+    private AuthService authService;
+    private UserService userService;
+    private GameService gameService;
 
-    public Server(AuthService authService, UserService userService, GameService gameService) {
-        this.authService = authService;
-        this.userService = userService;
-        this.gameService = gameService;
+    private Handlers handlers;
+
+    public Server() {
+        this.resetDatabase();
+
+        this.handlers = new Handlers(userService, gameService, authService);
+    }
+
+    public void resetDatabase() {
+        // create the memory version of the database
+        AuthDataAccessMemory authDataAccessMemory = new AuthDataAccessMemory();
+        GameDataAccessMemory gameDataAccessMemory = new GameDataAccessMemory();
+        UserDataAccessMemory userDataAccessMemory = new UserDataAccessMemory();
+
+        // create the services based on the version of the database we want
+        this.authService = new AuthService(authDataAccessMemory);
+        this.gameService = new GameService(gameDataAccessMemory, authService);
+        this.userService = new UserService(userDataAccessMemory, authService);
     }
 
     public int run(int desiredPort) {
@@ -22,13 +40,11 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        //Spark.staticFiles.externalLocation("src/main/resources/web");
-
         // Register your endpoints and handle exceptions here.
         createEndpoints();
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
-        //Spark.init();
+        Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -40,10 +56,15 @@ public class Server {
     }
 
     private void createEndpoints() {
+        System.out.println("HELLO I'M HERE");
         Spark.delete("/db", (request, response) -> {
-            return "HOWDY DAWGS";
+            this.resetDatabase();
+            return "Database reset!";
         });
         Spark.post("/user", (request, response) -> {
+            System.out.println(request.toString());
+            System.out.println(response.toString());
+            //this.handlers.handleRegister(request, response);
             return "HOWDY DAWGS";
         });
         Spark.post("/session", (request, response) -> {
@@ -63,19 +84,3 @@ public class Server {
         });
     }
 }
-
-//public class MyServer {
-//    public static void main(String[] args) {
-//        try {
-//            createRoutes();
-//        } catch(ArrayIndexOutOfBoundsException | NumberFormatException ex) {
-//            System.err.println("Specify the port number as a command line paramter");
-//        }
-//    }
-//    private void createRoutes() {
-//        Spark.get("/hi", (request, response) -> {
-//            return "HOWDY DAWGS";
-//            // request.params(":name");
-//        });
-//    }
-//}
