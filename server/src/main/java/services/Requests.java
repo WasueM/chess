@@ -14,3 +14,16 @@ record RegisterRequest(
 record LogoutRequest(
         String username
 ) {}
+
+record GamesListRequest(
+        String authToken
+) {}
+
+record CreateGameRequest(
+        String authToken
+) {}
+
+record JoinGameRequest(
+        String authToken,
+        int gameID
+) {}
