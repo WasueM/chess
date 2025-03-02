@@ -5,9 +5,6 @@ import dataaccess.UserDataAccessMemory;
 import model.AuthData;
 import model.UserData;
 
-import java.util.Arrays;
-import java.util.UUID;
-
 public class UserService {
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         // find out if the username has been taken
@@ -17,7 +14,7 @@ public class UserService {
             UserDataAccessMemory.addUser(new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email()));
 
             // make the authToken and add to authenticatedUsers
-            String authToken = authenticateUser(registerRequest.username());
+            String authToken = AuthService.authenticateUser(registerRequest.username());
 
             return new RegisterResult(registerRequest.username(), authToken);
         } else {
@@ -26,9 +23,9 @@ public class UserService {
     }
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
-        boolean isValidUser = verifyCredentials(loginRequest.username(), loginRequest.password());
+        boolean isValidUser = AuthService.verifyCredentials(loginRequest.username(), loginRequest.password());
         if (isValidUser) {
-            String authToken = authenticateUser(loginRequest.username());
+            String authToken = AuthService.authenticateUser(loginRequest.username());
             return new LoginResult(loginRequest.username(), authToken);
         } else {
             return null;
@@ -45,39 +42,5 @@ public class UserService {
         UserDataAccessMemory.addTokenToUser(null, user.username());
 
         return new LogoutResult(logoutRequest.username());
-    }
-
-    public boolean verifyCredentials(String username, String password) throws DataAccessException {
-        UserData user = UserDataAccessMemory.getUserByUsername(username);
-        if (user != null) {
-            if (user.password() == password) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    public String authenticateUser(String username) throws DataAccessException {
-        String authToken = generateToken();
-        AuthData newAuthData = new AuthData(authToken, username);
-        AuthDataAccessMemory.addAuthToken(newAuthData);
-        UserDataAccessMemory.addTokenToUser(newAuthData, username);
-        return authToken;
-    }
-
-    public boolean verifyAuthToken(AuthData authToken) throws DataAccessException {
-        AuthData[] validCredentials = AuthDataAccessMemory.getValidTokens();
-        if (Arrays.asList(validCredentials).contains(authToken)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static String generateToken() {
-        return UUID.randomUUID().toString();
     }
 }
