@@ -188,7 +188,10 @@ public class ChessPiece {
         for (int i = 0; i < possiblePositions.length; i++) {
             if (possiblePositions[i] != null) {
                 // if its a pawn moving ot the end, it will have a promotion, otherwise no
-                if (pieceType == PieceType.PAWN && ((possiblePositions[i].getRow() == 1) && (pieceColor == ChessGame.TeamColor.BLACK) || (possiblePositions[i].getRow() == 8) && (pieceColor == ChessGame.TeamColor.WHITE))) {
+                if (pieceType == PieceType.PAWN && ((possiblePositions[i].getRow() == 1)
+                        && (pieceColor == ChessGame.TeamColor.BLACK)
+                        || (possiblePositions[i].getRow() == 8)
+                        && (pieceColor == ChessGame.TeamColor.WHITE))) {
                     ChessMove promoteBishopMove = new ChessMove(myPosition, possiblePositions[i], PieceType.BISHOP);
                     possibleMoves.add(promoteBishopMove);
                     ChessMove promoteQueenMove = new ChessMove(myPosition, possiblePositions[i], PieceType.QUEEN);
@@ -245,7 +248,8 @@ public class ChessPiece {
         return positions;
     }
 
-    public void addSinglePositionIfPossible(ChessPosition[] possibleMoves, ChessBoard board, ChessPosition myPosition, int upDown, int leftRight) {
+    public void addSinglePositionIfPossible(ChessPosition[] possibleMoves, ChessBoard board,
+                                            ChessPosition myPosition, int upDown, int leftRight) {
         ChessPosition newPosition = makeNewPositionIfPossible(myPosition, upDown, leftRight, board);
         if (newPosition != null) { // so this location is on the board
             ChessPiece pieceInLocation = board.getPiece(newPosition);
@@ -261,7 +265,8 @@ public class ChessPiece {
         }
     }
 
-    public void addPositionsInDirectionIfPossible(ChessPosition[] possibleMoves, ChessBoard board, ChessPosition myPosition, int upDown, int leftRight) {
+    public void addPositionsInDirectionIfPossible(ChessPosition[] possibleMoves,
+                 ChessBoard board, ChessPosition myPosition, int upDown, int leftRight) {
         boolean continueLoop = true;
         int i = 0;
         while (continueLoop) {
@@ -345,8 +350,10 @@ public class ChessPiece {
                 possibleMoves[this.nextIndexToAdd] = straightForward;
                 this.nextIndexToAdd++;
 
-                // if its on the second row (in the case of WHITE) or the seventh row (in the case of BLACK), it check about moving two in front as well
-                if ((pieceColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) || (pieceColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7)) {
+                // if its on the second row (in the case of WHITE) or the
+                // seventh row (in the case of BLACK), it check about moving two in front as well
+                if ((pieceColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2)
+                        || (pieceColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7)) {
                     ChessPosition twoForward = makeNewPositionIfPossible(myPosition, 2 * colorMultiplier, 0, board);
                     ChessPiece pieceInTwoForward = board.getPiece(twoForward);
                     if (pieceInTwoForward == null) {

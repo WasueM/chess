@@ -92,7 +92,8 @@ public class GameService {
 
                 // if the joining player wants to be black, make the game that way
                 GameData modifiedGame = null;
-                if ((joinGameRequest.playerColor().equals("BLACK") && currentBlackUser != null) || (joinGameRequest.playerColor().equals("WHITE") && currentWhiteUser != null)) {
+                if ((joinGameRequest.playerColor().equals("BLACK") && currentBlackUser != null) ||
+                        (joinGameRequest.playerColor().equals("WHITE") && currentWhiteUser != null)) {
                     throw new DataAccessException("Failed to join the game because that color is already taken");
                 } else if (joinGameRequest.playerColor().equals("WHITE")) {
                     modifiedGame = new GameData(joinGameRequest.gameID(), joinerName, currentBlackUser, gameName, chessGame);

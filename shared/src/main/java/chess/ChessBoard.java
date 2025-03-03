@@ -205,7 +205,8 @@ public class ChessBoard {
         }
         ChessBoard that = (ChessBoard) o;
 
-        // okay, I have an idea. It says the strings are identical, but "sameBoard" comes out to false. That means something in the toString isnt idential. I'll find it
+        // okay, I have an idea. It says the strings are identical, but "sameBoard" comes
+        // out to false. That means something in the toString isnt idential. I'll find it
         String thisString = this.toString();
         String thatString = that.toString();
 
