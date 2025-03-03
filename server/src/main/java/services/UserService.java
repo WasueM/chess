@@ -2,6 +2,10 @@ package services;
 import dataaccess.DataAccessException;
 import dataaccess.UserDataAccessObject;
 import model.UserData;
+import services.RequestsRecords.LoginRequest;
+import services.RequestsRecords.RegisterRequest;
+import services.ResultsRecords.LoginResult;
+import services.ResultsRecords.RegisterResult;
 
 public class UserService {
 

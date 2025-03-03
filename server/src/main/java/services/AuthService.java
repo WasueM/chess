@@ -3,6 +3,8 @@ package services;
 import dataaccess.AuthDataAccessObject;
 import dataaccess.DataAccessException;
 import model.AuthData;
+import services.RequestsRecords.LogoutRequest;
+import services.ResultsRecords.LogoutResult;
 
 import javax.xml.crypto.Data;
 import java.util.UUID;
@@ -16,6 +18,10 @@ public class AuthService {
     }
 
     public String authenticateUser(String username) throws DataAccessException {
+        if (username == "") {
+            throw new DataAccessException("Username can't be an empty string");
+        }
+
         String authToken = generateToken();
         AuthData newAuthData = new AuthData(authToken, username);
         authDataAccess.addAuthToken(newAuthData);
@@ -43,11 +49,11 @@ public class AuthService {
         }
     }
 
-    public static String generateToken() {
-        return UUID.randomUUID().toString();
-    }
-
     public String getUserByAuthToken(String authToken) throws DataAccessException {
         return authDataAccess.getUserByAuthToken(authToken);
+    }
+
+    public static String generateToken() {
+        return UUID.randomUUID().toString();
     }
 }

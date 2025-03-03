@@ -4,7 +4,12 @@ import chess.ChessGame;
 import dataaccess.*;
 
 import model.GameData;
-import passoff.model.TestListEntry;
+import services.RequestsRecords.CreateGameRequest;
+import services.RequestsRecords.GamesListRequest;
+import services.RequestsRecords.JoinGameRequest;
+import services.ResultsRecords.CreateGameResult;
+import services.ResultsRecords.GamesListResult;
+import services.ResultsRecords.JoinGameResult;
 
 import java.util.Random;
 
