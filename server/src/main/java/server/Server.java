@@ -62,10 +62,8 @@ public class Server {
             return "Database reset!";
         });
         Spark.post("/user", (request, response) -> {
-            System.out.println(request.toString());
-            System.out.println(response.toString());
-            //this.handlers.handleRegister(request, response);
-            return "HOWDY DAWGS";
+            this.handlers.handleRegister(request, response);
+            return "HOWDY DAWGS WEE";
         });
         Spark.post("/session", (request, response) -> {
             return "HOWDY DAWGS";

@@ -1,8 +1,7 @@
 package services;
 
 import com.google.gson.Gson;
-
-//record ServerResponse(int statusCode, String message) {}
+import spark.*;
 
 public class Handlers {
 
@@ -18,16 +17,39 @@ public class Handlers {
         this.authService = authService;
     }
 
-    public String handleRegister(String request, String response) {
-        RegisterRequest registerRequest = gson.fromJson(request, RegisterRequest.class);
+    public Response handleRegister(Request request, Response response) {
+        response.type("application/json");
+
+        RegisterRequest registerRequest = gson.fromJson(request.body(), RegisterRequest.class);
+
+        // debug helps
+//        System.out.println(request.body().toString());
+
+//        System.out.println("Username: " + registerRequest.username());
+//        System.out.println("Password: " + registerRequest.password());
+//        System.out.println("Email: " + registerRequest.email());
+
         try {
             RegisterResult result = userService.register(registerRequest);
-            if (result == null) {
-                return gson.toJson("Username already in use");
-            }
-            return gson.toJson(result);
+
+            response.status(201);
+            response.body(gson.toJson(result));
         } catch (Exception error) {
-            return gson.toJson(error.getMessage());
+            response.body("Problem registering you");
+            response.status(500);
         }
+
+        return response;
     }
+
+    //        RegisterRequest registerRequest = gson.fromJson(request, RegisterRequest.class);
+//        try {
+//            RegisterResult result = userService.register(registerRequest);
+//            if (result == null) {
+//                return gson.toJson("Username already in use");
+//            }
+//            return gson.toJson(result);
+//        } catch (Exception error) {
+//            return gson.toJson(error.getMessage());
+//        }
 }
