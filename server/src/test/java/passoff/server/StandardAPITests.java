@@ -306,25 +306,11 @@ public class StandardAPITests {
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.BLACK, game1.getGameID()), authA.getAuthToken());
         expectedList[0] = new TestListEntry(game1.getGameID(), game1Name, null, authA.getUsername());
 
-        TestListResult listResult = serverFacade.listGames(existingAuth);
-        System.out.println("RETURNED FROM TESTLISTRESULT:------");
-        for (TestListEntry item : listResult.getGames()) {
-            System.out.println(item);
-        }
-
-
         //1 as white from B
         String game2Name = "Lonely";
         TestCreateResult game2 = serverFacade.createGame(new TestCreateRequest(game2Name), authB.getAuthToken());
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.WHITE, game2.getGameID()), authB.getAuthToken());
         expectedList[1] = new TestListEntry(game2.getGameID(), game2Name, authB.getUsername(), null);
-
-        listResult = serverFacade.listGames(existingAuth);
-        System.out.println("RETURNED FROM TESTLISTRESULT:------");
-        for (TestListEntry item : listResult.getGames()) {
-            System.out.println(item);
-        }
-
 
         //1 of each from C
         String game3Name = "GG";
@@ -333,13 +319,6 @@ public class StandardAPITests {
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.BLACK, game3.getGameID()), authA.getAuthToken());
         expectedList[2] = new TestListEntry(game3.getGameID(), game3Name, authC.getUsername(), authA.getUsername());
 
-        listResult = serverFacade.listGames(existingAuth);
-        System.out.println("RETURNED FROM TESTLISTRESULT:------");
-        for (TestListEntry item : listResult.getGames()) {
-            System.out.println(item);
-        }
-
-
         //C play self
         String game4Name = "All by myself";
         TestCreateResult game4 = serverFacade.createGame(new TestCreateRequest(game4Name), authC.getAuthToken());
@@ -347,13 +326,8 @@ public class StandardAPITests {
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.BLACK, game4.getGameID()), authC.getAuthToken());
         expectedList[3] = new TestListEntry(game4.getGameID(), game4Name, authC.getUsername(), authC.getUsername());
 
-
         //list games
-        listResult = serverFacade.listGames(existingAuth);
-        System.out.println("RETURNED FROM TESTLISTRESULT:------");
-        for (TestListEntry item : listResult.getGames()) {
-            System.out.println(item);
-        }
+        TestListResult listResult = serverFacade.listGames(existingAuth);
         assertHttpOk(listResult);
         TestListEntry[] returnedList = listResult.getGames();
         Assertions.assertNotNull(returnedList, "List result did not contain a list of games");
@@ -361,15 +335,6 @@ public class StandardAPITests {
 
         Arrays.sort(expectedList, gameIdComparator);
         Arrays.sort(returnedList, gameIdComparator);
-
-        System.out.println("EXPECTED:------");
-        for (TestListEntry item : expectedList) {
-            System.out.println(item);
-        }
-        System.out.println("YOU MADE:------");
-        for (TestListEntry item : returnedList) {
-            System.out.println(item);
-        }
 
         //check
         Assertions.assertArrayEquals(expectedList, returnedList, "Returned Games list was incorrect");
