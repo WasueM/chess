@@ -99,16 +99,6 @@ public class ChessBoard {
         return null;
     }
 
-    // a function that finds out where the king can move for a specific color
-    public Collection<ChessPosition> getPlacesKingCouldGo(ChessGame.TeamColor team) {
-        // use the pieceMoves on the king, once we get its position and object
-        ChessPosition kingPosition = getKingPosition(team);
-        ChessPiece king = getKing(team);
-        Collection<ChessPosition> placesKingCouldGo = king.piecePositions(this, kingPosition);
-
-        return placesKingCouldGo;
-    }
-
     // a function that loops through all of the pieces from a team, and gets a set of all the places they could move
     public Set<ChessPosition> getPlacesTeamCouldGo(ChessGame.TeamColor team) {
         Set<ChessPosition> placesTheTeamCouldGo = new HashSet<ChessPosition>();
@@ -188,15 +178,6 @@ public class ChessBoard {
         // set the right number of pieces
         this.numPieces = 32;
     }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (o == null || getClass() != o.getClass()) {
-//            return false;
-//        }
-//        ChessBoard that = (ChessBoard) o;
-//        return numPieces == that.numPieces && Objects.equals(pieces, that.pieces);
-//    }
 
     @Override
     public boolean equals(Object o) {

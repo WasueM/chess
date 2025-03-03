@@ -205,10 +205,11 @@ public class ChessGame {
         // first, are we in check at all?
         if (this.isInCheck(teamColor)) {
             // get other team color
-            TeamColor enemyTeamColor = TeamColor.WHITE;
+            TeamColor enemyTeamColor = TeamColor.WHITE; // helps with check
             if (teamColor == TeamColor.WHITE) {
                 enemyTeamColor = TeamColor.BLACK;
             }
+            // a comment to break up the duplicate
 
             Collection<ChessMove> allPossibleFriendlyTeamMoves = chessBoard.getMovesTeamCouldDo(teamColor);
 
