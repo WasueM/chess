@@ -23,7 +23,7 @@ public class Handlers {
         RegisterRequest registerRequest = gson.fromJson(request.body(), RegisterRequest.class);
 
         // debug helps
-//        System.out.println(request.body().toString());
+        System.out.println(request.body().toString());
 
 //        System.out.println("Username: " + registerRequest.username());
 //        System.out.println("Password: " + registerRequest.password());
@@ -32,11 +32,11 @@ public class Handlers {
         try {
             RegisterResult result = userService.register(registerRequest);
 
-            response.status(201);
+            response.status(200);
             response.body(gson.toJson(result));
         } catch (Exception error) {
-            response.body("Problem registering you");
-            response.status(500);
+            response.body("{\"message\":\"Error: Problem registering you\"}");
+            response.status(401);
         }
 
         return response;
@@ -47,14 +47,25 @@ public class Handlers {
 
         LoginRequest loginRequest = gson.fromJson(request.body(), LoginRequest.class);
 
+        System.out.println(request.body().toString());
+
         try {
+            System.out.println("I GOT HERE");
+
             LoginResult result = userService.login(loginRequest);
 
-            response.status(201);
-            response.body(gson.toJson(result));
+            if (result != null) {
+                System.out.println("RESULT: " + result.toString());
+
+                response.status(200);
+                response.body(gson.toJson(result));
+            } else {
+                response.status(401);
+                response.body("{\"message\":\"Error: Invalid username or password\"}");
+            }
         } catch (Exception error) {
-            response.body("Problem logging you in");
-            response.status(500);
+            response.body("{\"message\":\"Error: Problem logging you in\"}");
+            response.status(401);
         }
 
         return response;
@@ -68,7 +79,7 @@ public class Handlers {
         try {
             LogoutResult result = authService.logout(logoutRequest);
 
-            response.status(201);
+            response.status(200);
             response.body(gson.toJson(result));
         } catch (Exception error) {
             response.body("Problem logging you out");
@@ -86,7 +97,7 @@ public class Handlers {
         try {
             GamesListResult result = gameService.getGamesList(gamesListRequest);
 
-            response.status(201);
+            response.status(200);
             response.body(gson.toJson(result));
         } catch (Exception error) {
             response.body("Problem getting active games");
@@ -104,7 +115,7 @@ public class Handlers {
         try {
             CreateGameResult result = gameService.createGame(createGameRequest);
 
-            response.status(201);
+            response.status(200);
             response.body(gson.toJson(result));
         } catch (Exception error) {
             response.body("Problem creating the game");
@@ -122,7 +133,7 @@ public class Handlers {
         try {
             JoinGameResult result = gameService.joinGame(joinGameRequest);
 
-            response.status(201);
+            response.status(200);
             response.body(gson.toJson(result));
         } catch (Exception error) {
             response.body("Problem joining the game");

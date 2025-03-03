@@ -56,10 +56,11 @@ public class Server {
     }
 
     private void createEndpoints() {
-        System.out.println("HELLO I'M HERE");
         Spark.delete("/db", (request, response) -> {
             this.resetDatabase();
-            return "Database reset!";
+            response.type("application/json");
+            response.status(200);
+            return "{\"message\":\"Database reset!\"}";
         });
         Spark.post("/user", (request, response) -> {
             this.handlers.handleRegister(request, response);
@@ -70,15 +71,19 @@ public class Server {
             return response.body();
         });
         Spark.delete("/session", (request, response) -> {
+            this.handlers.handleLogout(request, response);
             return response.body();
         });
         Spark.get("/game", (request, response) -> {
+            this.handlers.handleGetGamesList(request, response);
             return response.body();
         });
         Spark.post("/game", (request, response) -> {
+            this.handlers.handleCreateGame(request, response);
             return response.body();
         });
         Spark.put("/game", (request, response) -> {
+            this.handlers.handleJoinGame(request, response);
             return response.body();
         });
     }

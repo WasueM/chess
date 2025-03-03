@@ -30,21 +30,30 @@ public class UserService {
     }
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        System.out.println("ALIVE");
         boolean isValidUser = verifyCredentials(loginRequest.username(), loginRequest.password());
+        System.out.println("STILL ALIVE");
         if (isValidUser) {
+            System.out.println("STILL ALIVE SOMEHOW");
             String authToken = authService.authenticateUser(loginRequest.username());
+            System.out.println("BWAHAHAHA");
             return new LoginResult(loginRequest.username(), authToken);
         } else {
+            System.out.println("Not valid user");
             return null;
         }
     }
 
     public boolean verifyCredentials(String username, String password) throws DataAccessException {
         UserData user = userDataAccess.getUserByUsername(username);
+        System.out.println("USERS: " + user.toString());
+        System.out.println("PASSWORD TO LOG IN WITH: " + password);
         if (user != null) {
-            if (user.password() == password) {
+            if (user.password().equals(password)) {
+                System.out.println("HOWDY");
                 return true;
             } else {
+                System.out.println("WOOO");
                 return false;
             }
         } else {
