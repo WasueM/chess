@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class AuthService {
 
-    private final AuthDataAccessObject authDataAccess;
+    private AuthDataAccessObject authDataAccess;
 
     public AuthService(AuthDataAccessObject authDataAccess) {
         this.authDataAccess = authDataAccess;

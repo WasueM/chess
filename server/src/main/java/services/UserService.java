@@ -5,8 +5,8 @@ import model.UserData;
 
 public class UserService {
 
-    private final UserDataAccessObject userDataAccess;
-    private final AuthService authService;
+    private UserDataAccessObject userDataAccess;
+    private AuthService authService;
 
     public UserService(UserDataAccessObject userDataAccess, AuthService authService) {
         this.userDataAccess = userDataAccess;
@@ -25,7 +25,11 @@ public class UserService {
 
             return new RegisterResult(registerRequest.username(), authToken);
         } else {
+            // make the authToken and add to authenticatedUsers
+            //String authToken = authService.authenticateUser(registerRequest.username());
+
             return null;
+          //  return new RegisterResult(null, null, "ERROR: Already registered this username. Use this authToken to get in for it");
         }
     }
 

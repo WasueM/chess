@@ -18,9 +18,8 @@ public class Server {
     private Handlers handlers;
 
     public Server() {
-        this.resetDatabase();
-
         this.handlers = new Handlers(userService, gameService, authService);
+        this.resetDatabase();
     }
 
     public void resetDatabase() {
@@ -33,6 +32,8 @@ public class Server {
         this.authService = new AuthService(authDataAccessMemory);
         this.gameService = new GameService(gameDataAccessMemory, authService);
         this.userService = new UserService(userDataAccessMemory, authService);
+
+        this.handlers.reset(userService, gameService, authService);
     }
 
     public int run(int desiredPort) {

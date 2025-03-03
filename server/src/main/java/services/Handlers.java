@@ -5,13 +5,19 @@ import spark.*;
 
 public class Handlers {
 
-    private final UserService userService;
-    private final GameService gameService;
-    private final AuthService authService;
+    private UserService userService;
+    private GameService gameService;
+    private AuthService authService;
 
     private static final Gson gson = new Gson();
 
     public Handlers(UserService userService, GameService gameService, AuthService authService) {
+        this.userService = userService;
+        this.gameService = gameService;
+        this.authService = authService;
+    }
+
+    public void reset(UserService userService, GameService gameService, AuthService authService) {
         this.userService = userService;
         this.gameService = gameService;
         this.authService = authService;
@@ -28,13 +34,6 @@ public class Handlers {
             return response;
         }
 
-        // debug helps
-//        System.out.println(request.body().toString());
-
-//        System.out.println("Username: " + registerRequest.username());
-//        System.out.println("Password: " + registerRequest.password());
-//        System.out.println("Email: " + registerRequest.email());
-
         try {
             RegisterResult result = userService.register(registerRequest);
 
@@ -43,7 +42,7 @@ public class Handlers {
                 response.body(gson.toJson(result));
             } else {
                 response.status(403);
-                response.body("{\"message\":\"Error: Can't register you\"}");
+                response.body("{\"message\":\"Error: Problem registering you, perhaps a duplicate username\"}");
             }
         } catch (Exception error) {
             response.body("{\"message\":\"Error: Problem registering you\"}");
