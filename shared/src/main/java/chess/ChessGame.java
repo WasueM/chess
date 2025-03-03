@@ -215,14 +215,6 @@ public class ChessGame {
         return true;
     }
 
-    public boolean isItInCheckmate(TeamColor teamColor) {
-        return isInCheck(teamColor) && noPossibleMoves(teamColor);
-    }
-
-    public boolean isItInStalemate(TeamColor teamColor) {
-        return !isInCheck(teamColor) && noPossibleMoves(teamColor);
-    }
-
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
