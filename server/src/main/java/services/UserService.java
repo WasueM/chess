@@ -9,8 +9,8 @@ import services.results.RegisterResult;
 
 public class UserService {
 
-    private UserDataAccessObject userDataAccess;
-    private AuthService authService;
+    private final UserDataAccessObject userDataAccess;
+    private final AuthService authService;
 
     public UserService(UserDataAccessObject userDataAccess, AuthService authService) {
         this.userDataAccess = userDataAccess;

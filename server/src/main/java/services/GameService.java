@@ -15,8 +15,8 @@ import java.util.Random;
 
 public class GameService {
 
-    private GameDataAccessObject gameDataAccess;
-    private AuthService authService;
+    private final GameDataAccessObject gameDataAccess;
+    private final AuthService authService;
 
     public GameService(GameDataAccessObject gameDataAccess, AuthService authService) {
         this.gameDataAccess = gameDataAccess;
