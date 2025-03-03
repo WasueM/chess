@@ -18,15 +18,6 @@ public final class AuthDataAccessMemory implements AuthDataAccessObject {
 
     @Override
     public AuthData deleteAuthToken(String authToken) throws DataAccessException {
-        System.out.println("HEYO");
-        System.out.println("SIZE OF ARRAY: " + authTokens.size());
-
-        if (authTokens.size() == 1) {
-            AuthData data = authTokens.getFirst();
-            authTokens.remove(0);
-            return data;
-        }
-
         for (AuthData authData : authTokens) {
             if (authData.authToken().equals(authToken)) {
 

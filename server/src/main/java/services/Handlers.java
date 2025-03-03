@@ -116,7 +116,7 @@ public class Handlers {
             response.status(200);
             response.body(gson.toJson(result));
         } catch (Exception error) {
-            response.body("Problem getting active games");
+            response.body("{\"message\":\"Error: Problem getting active games\"}");
             response.status(500);
         }
 
@@ -127,12 +127,22 @@ public class Handlers {
         response.type("application/json");
 
         CreateGameRequest createGameRequest = gson.fromJson(request.body(), CreateGameRequest.class);
+        createGameRequest = new CreateGameRequest(request.headers("Authorization"), createGameRequest.gameName());
+
+        System.out.println(createGameRequest.toString());
 
         try {
             CreateGameResult result = gameService.createGame(createGameRequest);
+            System.out.println("HEY");
 
-            response.status(200);
-            response.body(gson.toJson(result));
+            if (result != null) {
+                response.status(200);
+                response.body(gson.toJson(result));
+            } else {
+                response.status(401);
+                response.body("{\"message\":\"Error: Your auth Token was likely invalid\"}");
+            }
+
         } catch (Exception error) {
             response.body("Problem creating the game");
             response.status(500);
@@ -152,7 +162,7 @@ public class Handlers {
             response.status(200);
             response.body(gson.toJson(result));
         } catch (Exception error) {
-            response.body("Problem joining the game");
+            response.body("{\"message\":\"Error: Problem joining the game\"}");
             response.status(500);
         }
 
