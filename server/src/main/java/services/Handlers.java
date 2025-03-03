@@ -113,8 +113,13 @@ public class Handlers {
         try {
             GamesListResult result = gameService.getGamesList(gamesListRequest);
 
-            response.status(200);
-            response.body(gson.toJson(result));
+            if (result != null) {
+                response.status(200);
+                response.body(gson.toJson(result));
+            } else {
+                response.status(500);
+                response.body("{\"message\":\"Error: Problem getting active games\"}");
+            }
         } catch (Exception error) {
             response.body("{\"message\":\"Error: Problem getting active games\"}");
             response.status(500);
