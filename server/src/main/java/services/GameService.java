@@ -81,10 +81,6 @@ public class GameService {
                 // get the username of the person whose joining
                 String joinerName = authService.getUserByAuthToken(joinGameRequest.authToken());
 
-                System.out.println("WOW");
-                System.out.println(joinGameRequest.playerColor());
-                System.out.println(gameToJoin.whiteUsername());
-
                 // if the joining player wants to be black, make the game that way
                 GameData modifiedGame = null;
                 if ((joinGameRequest.playerColor().equals("BLACK") && gameToJoin.blackUserName() != null) || (joinGameRequest.playerColor().equals("WHITE") && gameToJoin.whiteUsername() != null)) {

@@ -44,8 +44,6 @@ public final class AuthDataAccessMemory implements AuthDataAccessObject {
     }
 
     public String getAuthTokenByUser(String username) throws DataAccessException {
-        System.out.println("WE");
-
         // get the access token for the user
         for (AuthData authData : authTokens) {
             if (authData.username().equals(username)) {

@@ -37,10 +37,8 @@ public class AuthService {
         AuthData authData = authDataAccess.deleteAuthToken(logoutRequest.authToken());
 
         if (authData != null) {
-            System.out.println("WO");
             return new LogoutResult(logoutRequest.authToken());
         } else {
-            System.out.println("WI");
             return null;
         }
     }
