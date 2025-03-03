@@ -43,7 +43,7 @@ public class GameService {
             // get player data for name
             String username = authService.getUserByAuthToken(createGameRequest.authToken());
 
-            GameData newGame = new GameData(randomGameID, username, "", createGameRequest.gameName(), new ChessGame());
+            GameData newGame = new GameData(randomGameID, null, null, createGameRequest.gameName(), new ChessGame());
             gameDataAccess.makeGame(newGame);
 
             return new CreateGameResult(randomGameID);
@@ -81,12 +81,18 @@ public class GameService {
                 // get the username of the person whose joining
                 String joinerName = authService.getUserByAuthToken(joinGameRequest.authToken());
 
+                System.out.println("WOW");
+                System.out.println(joinGameRequest.playerColor());
+                System.out.println(gameToJoin.whiteUsername());
+
                 // if the joining player wants to be black, make the game that way
                 GameData modifiedGame = null;
-                if (joinGameRequest.playerColor() == "BLACK") {
-                    modifiedGame = new GameData(joinGameRequest.gameID(), hostName, joinerName, gameName, chessGame);
-                } else if (joinGameRequest.playerColor() == "WHITE") {
+                if ((joinGameRequest.playerColor().equals("BLACK") && gameToJoin.blackUserName() != null) || (joinGameRequest.playerColor().equals("WHITE") && gameToJoin.whiteUsername() != null)) {
+                    throw new DataAccessException("Failed to join the game because that color is already taken");
+                } else if (joinGameRequest.playerColor().equals("WHITE")) {
                     modifiedGame = new GameData(joinGameRequest.gameID(), joinerName, hostName, gameName, chessGame);
+                } else if (joinGameRequest.playerColor().equals("BLACK")) {
+                    modifiedGame = new GameData(joinGameRequest.gameID(), hostName, joinerName, gameName, chessGame);
                 }
 
                 if (modifiedGame == null) {

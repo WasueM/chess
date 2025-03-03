@@ -108,10 +108,14 @@ public class Handlers {
     public Response handleGetGamesList(Request request, Response response) {
         response.type("application/json");
 
-        GamesListRequest gamesListRequest = gson.fromJson(request.body(), GamesListRequest.class);
+        GamesListRequest gamesListRequest = new GamesListRequest(request.headers("Authorization"));
+
+        //System.out.println(gamesListRequest.toString());
 
         try {
             GamesListResult result = gameService.getGamesList(gamesListRequest);
+
+            System.out.println(result.toString());
 
             if (result != null) {
                 response.status(200);
@@ -159,16 +163,44 @@ public class Handlers {
     public Response handleJoinGame(Request request, Response response) {
         response.type("application/json");
 
+        System.out.println(request.body().toString());
+
         JoinGameRequest joinGameRequest = gson.fromJson(request.body(), JoinGameRequest.class);
+        joinGameRequest = new JoinGameRequest(request.headers("Authorization"), joinGameRequest.gameID(), joinGameRequest.playerColor());
+
+
+        System.out.println(joinGameRequest.toString());
+
+        if (joinGameRequest.playerColor() == null) {
+            response.body("{\"message\":\"Error: Please enter a valid team color, 'BLACK' or 'WHITE'\"}");
+            response.status(400);
+            return response;
+        }
+
+        if ((!joinGameRequest.playerColor().equals("BLACK")) && (!joinGameRequest.playerColor().equals("WHITE"))) {
+            response.body("{\"message\":\"Error: Please enter a valid team color, 'BLACK' or 'WHITE'\"}");
+            response.status(400);
+            return response;
+        }
 
         try {
             JoinGameResult result = gameService.joinGame(joinGameRequest);
 
-            response.status(200);
-            response.body(gson.toJson(result));
+            if (result != null) {
+                response.status(200);
+                response.body(gson.toJson(result));
+            } else {
+                response.status(401);
+                response.body("{\"message\":\"Error: Problem joining the game. Check your auth token\"}");
+            }
         } catch (Exception error) {
-            response.body("{\"message\":\"Error: Problem joining the game\"}");
-            response.status(500);
+            if (error.getMessage() == "Failed to join the game because that color is already taken") {
+                response.body("{\"message\":\"Error: Failed to join the game because that color is already taken\"}");
+                response.status(403);
+            } else {
+                response.body("{\"message\":\"Error: Problem joining the game, is your game id right?\"}");
+                response.status(400);
+            }
         }
 
         return response;
