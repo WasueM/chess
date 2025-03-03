@@ -306,12 +306,24 @@ public class StandardAPITests {
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.BLACK, game1.getGameID()), authA.getAuthToken());
         expectedList[0] = new TestListEntry(game1.getGameID(), game1Name, null, authA.getUsername());
 
+        TestListResult listResult = serverFacade.listGames(existingAuth);
+        System.out.println("RETURNED FROM TESTLISTRESULT:------");
+        for (TestListEntry item : listResult.getGames()) {
+            System.out.println(item);
+        }
+
 
         //1 as white from B
         String game2Name = "Lonely";
         TestCreateResult game2 = serverFacade.createGame(new TestCreateRequest(game2Name), authB.getAuthToken());
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.WHITE, game2.getGameID()), authB.getAuthToken());
         expectedList[1] = new TestListEntry(game2.getGameID(), game2Name, authB.getUsername(), null);
+
+        listResult = serverFacade.listGames(existingAuth);
+        System.out.println("RETURNED FROM TESTLISTRESULT:------");
+        for (TestListEntry item : listResult.getGames()) {
+            System.out.println(item);
+        }
 
 
         //1 of each from C
@@ -320,6 +332,12 @@ public class StandardAPITests {
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.WHITE, game3.getGameID()), authC.getAuthToken());
         serverFacade.joinPlayer(new TestJoinRequest(ChessGame.TeamColor.BLACK, game3.getGameID()), authA.getAuthToken());
         expectedList[2] = new TestListEntry(game3.getGameID(), game3Name, authC.getUsername(), authA.getUsername());
+
+        listResult = serverFacade.listGames(existingAuth);
+        System.out.println("RETURNED FROM TESTLISTRESULT:------");
+        for (TestListEntry item : listResult.getGames()) {
+            System.out.println(item);
+        }
 
 
         //C play self
@@ -331,7 +349,7 @@ public class StandardAPITests {
 
 
         //list games
-        TestListResult listResult = serverFacade.listGames(existingAuth);
+        listResult = serverFacade.listGames(existingAuth);
         System.out.println("RETURNED FROM TESTLISTRESULT:------");
         for (TestListEntry item : listResult.getGames()) {
             System.out.println(item);

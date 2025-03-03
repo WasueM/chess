@@ -83,7 +83,7 @@ public class GameService {
                 String gameName = gameToJoin.gameName();
                 ChessGame chessGame = gameToJoin.game();
                 String currentWhiteUser = gameToJoin.whiteUsername();
-                String currentBlackUser = gameToJoin.blackUserName();
+                String currentBlackUser = gameToJoin.blackUsername();
 
                 // get the username of the person whose joining
                 String joinerName = authService.getUserByAuthToken(joinGameRequest.authToken());
