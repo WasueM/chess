@@ -12,7 +12,7 @@ public class Handlers {
     private GameService gameService;
     private AuthService authService;
 
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
 
     public Handlers(UserService userService, GameService gameService, AuthService authService) {
         this.userService = userService;
@@ -29,7 +29,7 @@ public class Handlers {
     public Response handleRegister(Request request, Response response) {
         response.type("application/json");
 
-        RegisterRequest registerRequest = gson.fromJson(request.body(), RegisterRequest.class);
+        RegisterRequest registerRequest = GSON.fromJson(request.body(), RegisterRequest.class);
 
         if ((registerRequest.username() == null) || (registerRequest.password() == null) || (registerRequest.email() == null)) {
             response.status(400);
@@ -42,7 +42,7 @@ public class Handlers {
 
             if (result != null) {
                 response.status(200);
-                response.body(gson.toJson(result));
+                response.body(GSON.toJson(result));
             } else {
                 response.status(403);
                 response.body("{\"message\":\"Error: Problem registering you, perhaps a duplicate username\"}");
@@ -58,14 +58,14 @@ public class Handlers {
     public Response handleLogin(Request request, Response response) {
         response.type("application/json");
 
-        LoginRequest loginRequest = gson.fromJson(request.body(), LoginRequest.class);
+        LoginRequest loginRequest = GSON.fromJson(request.body(), LoginRequest.class);
 
         try {
             LoginResult result = userService.login(loginRequest);
 
             if (result != null) {
                 response.status(200);
-                response.body(gson.toJson(result));
+                response.body(GSON.toJson(result));
             } else {
                 response.status(401);
                 response.body("{\"message\":\"Error: Invalid username or password\"}");
@@ -88,7 +88,7 @@ public class Handlers {
 
             if (result != null) {
                 response.status(200);
-                response.body(gson.toJson(result));
+                response.body(GSON.toJson(result));
             } else {
                 response.status(401);
                 response.body("{\"message\":\"Error: Problem logging you out\"}");
@@ -114,7 +114,7 @@ public class Handlers {
                 for (GameData r : result.games()) {
                     System.out.println(r.toString());
                 }
-                response.body(gson.toJson(result));
+                response.body(GSON.toJson(result));
             } else {
                 response.status(401);
                 response.body("{\"message\":\"Error: Problem getting active games\"}");
@@ -130,7 +130,7 @@ public class Handlers {
     public Response handleCreateGame(Request request, Response response) {
         response.type("application/json");
 
-        CreateGameRequest createGameRequest = gson.fromJson(request.body(), CreateGameRequest.class);
+        CreateGameRequest createGameRequest = GSON.fromJson(request.body(), CreateGameRequest.class);
         createGameRequest = new CreateGameRequest(request.headers("Authorization"), createGameRequest.gameName());
 
         try {
@@ -138,7 +138,7 @@ public class Handlers {
 
             if (result != null) {
                 response.status(200);
-                response.body(gson.toJson(result));
+                response.body(GSON.toJson(result));
             } else {
                 response.status(401);
                 response.body("{\"message\":\"Error: Your auth Token was likely invalid\"}");
@@ -155,7 +155,7 @@ public class Handlers {
     public Response handleJoinGame(Request request, Response response) {
         response.type("application/json");
 
-        JoinGameRequest joinGameRequest = gson.fromJson(request.body(), JoinGameRequest.class);
+        JoinGameRequest joinGameRequest = GSON.fromJson(request.body(), JoinGameRequest.class);
         joinGameRequest = new JoinGameRequest(request.headers("Authorization"), joinGameRequest.gameID(), joinGameRequest.playerColor());
 
         if (joinGameRequest.playerColor() == null) {
@@ -175,7 +175,7 @@ public class Handlers {
 
             if (result != null) {
                 response.status(200);
-                response.body(gson.toJson(result));
+                response.body(GSON.toJson(result));
             } else {
                 response.status(401);
                 response.body("{\"message\":\"Error: Problem joining the game. Check your auth token\"}");

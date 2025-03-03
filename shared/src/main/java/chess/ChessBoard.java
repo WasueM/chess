@@ -70,20 +70,6 @@ public class ChessBoard {
         return piece;
     }
 
-    public ChessPiece getKing(ChessGame.TeamColor team) {
-        for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {
-            ChessPiece piece = entry.getValue(); // get a piece out of the entry if its possible
-            if (piece != null) {
-                if (piece.getTeamColor() == team) {
-                    if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                        return piece;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     // a function to get a team's king's location
     public ChessPosition getKingPosition(ChessGame.TeamColor team) {
         for (Map.Entry<ChessPosition, ChessPiece> entry : pieces.entrySet()) {

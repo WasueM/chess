@@ -202,33 +202,25 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        // first, are we in check at all?
-        if (this.isInCheck(teamColor)) {
-            // get other team color
-            TeamColor enemyTeamColor = TeamColor.WHITE; // helps with check
-            if (teamColor == TeamColor.WHITE) {
-                enemyTeamColor = TeamColor.BLACK;
-            }
-            // a comment to break up the duplicate
+        return isInCheck(teamColor) && noPossibleMoves(teamColor);
+    }
 
-            Collection<ChessMove> allPossibleFriendlyTeamMoves = chessBoard.getMovesTeamCouldDo(teamColor);
-
-            // attempt to find a world in all the places the friendly team could go, that doesn't result in a king in check
-            boolean foundAnEscape = false;
-            for (ChessMove move : allPossibleFriendlyTeamMoves) {
-                if (isMoveValid(move, teamColor) == true) {
-                    foundAnEscape = true;
-                }
-            }
-
-            if (foundAnEscape == false) {
-                return true;
-            } else {
+    private boolean noPossibleMoves(TeamColor teamColor) {
+        Collection<ChessMove> allPossibleMoves = chessBoard.getMovesTeamCouldDo(teamColor);
+        for (ChessMove move : allPossibleMoves) {
+            if (isMoveValid(move, teamColor)) {
                 return false;
             }
-        } else {
-            return false;
         }
+        return true;
+    }
+
+    public boolean isItInCheckmate(TeamColor teamColor) {
+        return isInCheck(teamColor) && noPossibleMoves(teamColor);
+    }
+
+    public boolean isItInStalemate(TeamColor teamColor) {
+        return !isInCheck(teamColor) && noPossibleMoves(teamColor);
     }
 
     /**
@@ -239,32 +231,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        // the same as checking if we're in checkmate, except isInCheck should be false
-        if (this.isInCheck(teamColor) == false) {
-            // get other team color
-            TeamColor enemyTeamColor = TeamColor.WHITE;
-            if (teamColor == TeamColor.WHITE) {
-                enemyTeamColor = TeamColor.BLACK;
-            }
-
-            Collection<ChessMove> allPossibleFriendlyTeamMoves = chessBoard.getMovesTeamCouldDo(teamColor);
-
-            // attempt to find a world in all the places the friendly team could go, that doesn't result in a king in check
-            boolean foundAnEscape = false;
-            for (ChessMove move : allPossibleFriendlyTeamMoves) {
-                if (isMoveValid(move, teamColor) == true) {
-                    foundAnEscape = true;
-                }
-            }
-
-            if (foundAnEscape == false) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        return !isInCheck(teamColor) && noPossibleMoves(teamColor);
     }
 
     /**
