@@ -4,8 +4,8 @@ import dataaccess.AuthDataAccessMemory;
 import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import services.AuthService;
-import services.RequestsRecords.LogoutRequest;
-import services.ResultsRecords.LogoutResult;
+import services.requests.LogoutRequest;
+import services.results.LogoutResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

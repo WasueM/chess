@@ -4,12 +4,12 @@ import chess.ChessGame;
 import dataaccess.*;
 
 import model.GameData;
-import services.RequestsRecords.CreateGameRequest;
-import services.RequestsRecords.GamesListRequest;
-import services.RequestsRecords.JoinGameRequest;
-import services.ResultsRecords.CreateGameResult;
-import services.ResultsRecords.GamesListResult;
-import services.ResultsRecords.JoinGameResult;
+import services.requests.CreateGameRequest;
+import services.requests.GamesListRequest;
+import services.requests.JoinGameRequest;
+import services.results.CreateGameResult;
+import services.results.GamesListResult;
+import services.results.JoinGameResult;
 
 import java.util.Random;
 

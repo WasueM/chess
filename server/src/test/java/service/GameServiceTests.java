@@ -3,16 +3,15 @@ package service;
 import dataaccess.DataAccessException;
 import dataaccess.AuthDataAccessMemory;
 import dataaccess.GameDataAccessMemory;
-import model.GameData;
 import org.junit.jupiter.api.*;
 import services.AuthService;
 import services.GameService;
-import services.RequestsRecords.CreateGameRequest;
-import services.RequestsRecords.GamesListRequest;
-import services.RequestsRecords.JoinGameRequest;
-import services.ResultsRecords.CreateGameResult;
-import services.ResultsRecords.GamesListResult;
-import services.ResultsRecords.JoinGameResult;
+import services.requests.CreateGameRequest;
+import services.requests.GamesListRequest;
+import services.requests.JoinGameRequest;
+import services.results.CreateGameResult;
+import services.results.GamesListResult;
+import services.results.JoinGameResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,3 +1,3 @@
-package services.ResultsRecords;
+package services.results;
 
 public record LogoutResult(String username) {}

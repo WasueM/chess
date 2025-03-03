@@ -1,4 +1,4 @@
-package services.RequestsRecords;
+package services.requests;
 
 public record JoinGameRequest(
         String authToken,

@@ -6,10 +6,10 @@ import dataaccess.UserDataAccessMemory;
 import org.junit.jupiter.api.*;
 import services.AuthService;
 import services.UserService;
-import services.RequestsRecords.LoginRequest;
-import services.RequestsRecords.RegisterRequest;
-import services.ResultsRecords.LoginResult;
-import services.ResultsRecords.RegisterResult;
+import services.requests.LoginRequest;
+import services.requests.RegisterRequest;
+import services.results.LoginResult;
+import services.results.RegisterResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -19,20 +19,6 @@ public final class GameDataAccessMemory implements GameDataAccessObject {
     }
 
     @Override
-    public GameData deleteGame(int gameID) throws DataAccessException {
-        try {
-            for (GameData game : games) {
-                if (game.gameID() == gameID) {
-                    games.remove(game);
-                }
-            }
-        } catch (Exception e) {
-            throw new DataAccessException("Error deleting game");
-        }
-        return null;
-    }
-
-    @Override
     public GameData getGame(int gameID) throws DataAccessException {
         for (GameData game : games) {
             if (game.gameID() == gameID) {

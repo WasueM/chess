@@ -3,10 +3,9 @@ package services;
 import dataaccess.AuthDataAccessObject;
 import dataaccess.DataAccessException;
 import model.AuthData;
-import services.RequestsRecords.LogoutRequest;
-import services.ResultsRecords.LogoutResult;
+import services.requests.LogoutRequest;
+import services.results.LogoutResult;
 
-import javax.xml.crypto.Data;
 import java.util.UUID;
 
 public class AuthService {
