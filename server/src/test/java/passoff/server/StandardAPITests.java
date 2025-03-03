@@ -331,26 +331,27 @@ public class StandardAPITests {
 
 
         //list games
-        System.out.println("HOWDY");
         TestListResult listResult = serverFacade.listGames(existingAuth);
-        System.out.println("HELLO");
+        System.out.println("RETURNED FROM TESTLISTRESULT:------");
         for (TestListEntry item : listResult.getGames()) {
             System.out.println(item);
         }
-        System.out.println("WOW");
         assertHttpOk(listResult);
         TestListEntry[] returnedList = listResult.getGames();
         Assertions.assertNotNull(returnedList, "List result did not contain a list of games");
         Comparator<TestListEntry> gameIdComparator = Comparator.comparingInt(TestListEntry::getGameID);
+
+        Arrays.sort(expectedList, gameIdComparator);
+        Arrays.sort(returnedList, gameIdComparator);
+
+        System.out.println("EXPECTED:------");
         for (TestListEntry item : expectedList) {
             System.out.println(item);
         }
-        System.out.println("------");
+        System.out.println("YOU MADE:------");
         for (TestListEntry item : returnedList) {
             System.out.println(item);
         }
-        Arrays.sort(expectedList, gameIdComparator);
-        Arrays.sort(returnedList, gameIdComparator);
 
         //check
         Assertions.assertArrayEquals(expectedList, returnedList, "Returned Games list was incorrect");
