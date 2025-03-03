@@ -63,22 +63,23 @@ public class Server {
         });
         Spark.post("/user", (request, response) -> {
             this.handlers.handleRegister(request, response);
-            return "HOWDY DAWGS WEE";
+            return response.body();
         });
         Spark.post("/session", (request, response) -> {
-            return "HOWDY DAWGS";
+            this.handlers.handleLogin(request, response);
+            return response.body();
         });
         Spark.delete("/session", (request, response) -> {
-            return "HOWDY DAWGS";
+            return response.body();
         });
         Spark.get("/game", (request, response) -> {
-            return "HOWDY DAWGS";
+            return response.body();
         });
         Spark.post("/game", (request, response) -> {
-            return "HOWDY DAWGS";
+            return response.body();
         });
         Spark.put("/game", (request, response) -> {
-            return "HOWDY DAWGS";
+            return response.body();
         });
     }
 }
