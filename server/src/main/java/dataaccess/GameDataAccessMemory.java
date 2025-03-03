@@ -44,13 +44,15 @@ public final class GameDataAccessMemory implements GameDataAccessObject {
 
     @Override
     public GameData updateGameWithNewData(GameData gameData) {
+        GameData gameToUpdate = null;
         for (GameData game : games) {
             if (game.gameID() == gameData.gameID()) {
-                games.remove(game);
-                games.add(gameData);
+                gameToUpdate = game;
             }
         }
-        return null;
+        games.remove(gameToUpdate);
+        games.add(gameData);
+        return gameData;
     }
 
     @Override

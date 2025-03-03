@@ -1,6 +1,7 @@
 package services;
 
 import com.google.gson.Gson;
+import model.GameData;
 import spark.*;
 
 public class Handlers {
@@ -108,6 +109,9 @@ public class Handlers {
 
             if (result != null) {
                 response.status(200);
+                for (GameData r : result.games()) {
+                    System.out.println(r.toString());
+                }
                 response.body(gson.toJson(result));
             } else {
                 response.status(401);

@@ -4,6 +4,7 @@ import chess.ChessGame;
 import dataaccess.*;
 
 import model.GameData;
+import passoff.model.TestListEntry;
 
 import java.util.Random;
 
@@ -75,27 +76,43 @@ public class GameService {
 
                 // get the needed data out of the game
                 String gameName = gameToJoin.gameName();
-                String hostName = gameToJoin.whiteUsername();
                 ChessGame chessGame = gameToJoin.game();
+                String currentWhiteUser = gameToJoin.whiteUsername();
+                String currentBlackUser = gameToJoin.blackUserName();
 
                 // get the username of the person whose joining
                 String joinerName = authService.getUserByAuthToken(joinGameRequest.authToken());
 
+                System.out.println(gameName + " " + joinerName + " " + joinGameRequest.playerColor());
+
                 // if the joining player wants to be black, make the game that way
                 GameData modifiedGame = null;
-                if ((joinGameRequest.playerColor().equals("BLACK") && gameToJoin.blackUserName() != null) || (joinGameRequest.playerColor().equals("WHITE") && gameToJoin.whiteUsername() != null)) {
+                if ((joinGameRequest.playerColor().equals("BLACK") && currentBlackUser != null) || (joinGameRequest.playerColor().equals("WHITE") && currentWhiteUser != null)) {
                     throw new DataAccessException("Failed to join the game because that color is already taken");
                 } else if (joinGameRequest.playerColor().equals("WHITE")) {
-                    modifiedGame = new GameData(joinGameRequest.gameID(), joinerName, hostName, gameName, chessGame);
+                    modifiedGame = new GameData(joinGameRequest.gameID(), joinerName, currentBlackUser, gameName, chessGame);
                 } else if (joinGameRequest.playerColor().equals("BLACK")) {
-                    modifiedGame = new GameData(joinGameRequest.gameID(), hostName, joinerName, gameName, chessGame);
+                    modifiedGame = new GameData(joinGameRequest.gameID(), currentWhiteUser, joinerName, gameName, chessGame);
                 }
+
+                System.out.println(modifiedGame.toString());
+                System.out.println("^^^^^^");
 
                 if (modifiedGame == null) {
                     throw new DataAccessException("Failed to join the game");
                 }
 
+                for (GameData item : gameDataAccess.getActiveGames()) {
+                    System.out.println(item);
+                }
+
                 gameDataAccess.updateGameWithNewData(modifiedGame);
+
+                System.out.println("------");
+                for (GameData item : gameDataAccess.getActiveGames()) {
+                    System.out.println(item);
+                }
+                System.out.println("000000");
 
                 return new JoinGameResult(gameToJoin.gameID());
             }
