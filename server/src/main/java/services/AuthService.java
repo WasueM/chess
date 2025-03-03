@@ -25,7 +25,7 @@ public class AuthService {
     public boolean verifyAuthToken(String authToken) throws DataAccessException {
         AuthData[] validCredentials = authDataAccess.getValidTokens();
         for (AuthData authData : validCredentials) {
-            if (authData.authToken() == authToken) {
+            if (authData.authToken().equals(authToken)) {
                 return true;
             }
         }
@@ -33,13 +33,16 @@ public class AuthService {
     }
 
     public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
-        // get the auth token to delete
-        String authToken = authDataAccess.getAuthTokenByUser(logoutRequest.username());
-
         // delete the auth token
-        authDataAccess.deleteAuthToken(authToken);
+        AuthData authData = authDataAccess.deleteAuthToken(logoutRequest.authToken());
 
-        return new LogoutResult(logoutRequest.username());
+        if (authData != null) {
+            System.out.println("WO");
+            return new LogoutResult(logoutRequest.authToken());
+        } else {
+            System.out.println("WI");
+            return null;
+        }
     }
 
     public static String generateToken() {

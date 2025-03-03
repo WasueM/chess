@@ -18,9 +18,20 @@ public final class AuthDataAccessMemory implements AuthDataAccessObject {
 
     @Override
     public AuthData deleteAuthToken(String authToken) throws DataAccessException {
+        System.out.println("HEYO");
+        System.out.println("SIZE OF ARRAY: " + authTokens.size());
+
+        if (authTokens.size() == 1) {
+            AuthData data = authTokens.getFirst();
+            authTokens.remove(0);
+            return data;
+        }
+
         for (AuthData authData : authTokens) {
-            if (authData.authToken() == authToken) {
+            if (authData.authToken().equals(authToken)) {
+
                 authTokens.remove(authData);
+                return authData;
             }
         }
         return null;
@@ -34,7 +45,7 @@ public final class AuthDataAccessMemory implements AuthDataAccessObject {
     @Override
     public String getUserByAuthToken(String authToken) throws DataAccessException {
         for (AuthData authData : authTokens) {
-            if (authData.authToken() == authToken) {
+            if (authData.authToken().equals(authToken)) {
                 return authData.username();
             }
         }
@@ -42,9 +53,11 @@ public final class AuthDataAccessMemory implements AuthDataAccessObject {
     }
 
     public String getAuthTokenByUser(String username) throws DataAccessException {
+        System.out.println("WE");
+
         // get the access token for the user
         for (AuthData authData : authTokens) {
-            if (authData.username() == username) {
+            if (authData.username().equals(username)) {
                 return authData.authToken();
             }
         }

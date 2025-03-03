@@ -12,7 +12,7 @@ record RegisterRequest(
 }
 
 record LogoutRequest(
-        String username
+        String authToken
 ) {}
 
 record GamesListRequest(

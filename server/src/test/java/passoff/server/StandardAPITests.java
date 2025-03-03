@@ -51,6 +51,8 @@ public class StandardAPITests {
         //one user already logged in
         TestAuthResult regResult = serverFacade.register(existingUser);
         existingAuth = regResult.getAuthToken();
+
+        System.out.println("MADE AN AUTH THAT IS:" + existingAuth);
     }
 
     @Test
@@ -142,6 +144,7 @@ public class StandardAPITests {
     public void successLogout() {
         //log out existing user
         TestResult result = serverFacade.logout(existingAuth);
+        System.out.println("Existing Auth:" + existingAuth);
 
         assertHttpOk(result);
     }

@@ -22,8 +22,14 @@ public class Handlers {
 
         RegisterRequest registerRequest = gson.fromJson(request.body(), RegisterRequest.class);
 
+        if ((registerRequest.username() == null) || (registerRequest.password() == null) || (registerRequest.email() == null)) {
+            response.status(400);
+            response.body("{\"message\":\"Error: Missing a parameter\"}");
+            return response;
+        }
+
         // debug helps
-        System.out.println(request.body().toString());
+//        System.out.println(request.body().toString());
 
 //        System.out.println("Username: " + registerRequest.username());
 //        System.out.println("Password: " + registerRequest.password());
@@ -32,11 +38,16 @@ public class Handlers {
         try {
             RegisterResult result = userService.register(registerRequest);
 
-            response.status(200);
-            response.body(gson.toJson(result));
+            if (result != null) {
+                response.status(200);
+                response.body(gson.toJson(result));
+            } else {
+                response.status(403);
+                response.body("{\"message\":\"Error: Can't register you\"}");
+            }
         } catch (Exception error) {
             response.body("{\"message\":\"Error: Problem registering you\"}");
-            response.status(401);
+            response.status(400);
         }
 
         return response;
@@ -50,13 +61,9 @@ public class Handlers {
         System.out.println(request.body().toString());
 
         try {
-            System.out.println("I GOT HERE");
-
             LoginResult result = userService.login(loginRequest);
 
             if (result != null) {
-                System.out.println("RESULT: " + result.toString());
-
                 response.status(200);
                 response.body(gson.toJson(result));
             } else {
@@ -74,16 +81,26 @@ public class Handlers {
     public Response handleLogout(Request request, Response response) {
         response.type("application/json");
 
-        LogoutRequest logoutRequest = gson.fromJson(request.body(), LogoutRequest.class);
+        LogoutRequest logoutRequest = new LogoutRequest(request.headers("Authorization"));
 
         try {
+            System.out.println(request.body());
+            System.out.println(logoutRequest.authToken());
+
             LogoutResult result = authService.logout(logoutRequest);
 
-            response.status(200);
-            response.body(gson.toJson(result));
+            System.out.println(result.toString());
+
+            if (result != null) {
+                response.status(200);
+                response.body(gson.toJson(result));
+            } else {
+                response.status(401);
+                response.body("{\"message\":\"Error: Problem logging you out\"}");
+            }
         } catch (Exception error) {
-            response.body("Problem logging you out");
-            response.status(500);
+            response.status(401);
+            response.body("{\"message\":\"Error: Problem logging you out\"}");
         }
 
         return response;
