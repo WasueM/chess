@@ -28,7 +28,7 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
             // turn the ChessGame into JSON so it can be uploaded
             String JSONchessGame = gson.toJson(gameData.game());
-            statement.setString(4, JSONchessGame);
+            statement.setString(5, JSONchessGame);
 
             // Run the command
             statement.executeUpdate();
