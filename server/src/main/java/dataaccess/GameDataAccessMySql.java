@@ -5,14 +5,17 @@ import model.GameData;
 import com.google.gson.Gson;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameDataAccessMySql implements GameDataAccessObject {
+
+    // set up a GSON to use for all the chessGame uploading/downloading
+    private final Gson gson = new Gson();
+
     @Override
     public GameData makeGame(GameData gameData) throws DataAccessException {
         String SQLcommand = "INSERT INTO GameData (game_id, white_username, black_username, game_name, game_json) VALUES (?, ?, ?, ?, ?)";
-
-        // get gson ready to go
-        Gson gson = new Gson();
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(SQLcommand, Statement.RETURN_GENERATED_KEYS)) {
@@ -28,7 +31,7 @@ public class GameDataAccessMySql implements GameDataAccessObject {
             statement.setString(4, JSONchessGame);
 
             // Run the command
-            statement.executeUpdate();
+            statement.execute();
 
             // If we got to this point, return the gameData because it's a success
             return gameData;
@@ -41,9 +44,6 @@ public class GameDataAccessMySql implements GameDataAccessObject {
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
         String SQLcommand = "SELECT * FROM GameData WHERE game_id = ?";
-
-        // get gson ready to go
-        Gson gson = new Gson();
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(SQLcommand)) {
@@ -74,9 +74,6 @@ public class GameDataAccessMySql implements GameDataAccessObject {
     public GameData updateGameWithNewData(GameData gameData) {
         String SQLcommand = "UPDATE GameData SET white_username = ?, black_username = ?, game_name = ?, game_json = ? WHERE game_id = ?";
 
-        // get gson ready to go
-        Gson gson = new Gson();
-
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(SQLcommand)) {
 
@@ -91,7 +88,7 @@ public class GameDataAccessMySql implements GameDataAccessObject {
             statement.setString(4, JSONchessGame);
 
             // full send
-            statement.executeUpdate();
+            statement.execute();
 
             // if we got this far, it worked, return the gamedata
             return gameData;
@@ -102,11 +99,51 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
     @Override
     public GameData[] getActiveGames() throws DataAccessException {
-        return new GameData[0];
+        String SQLcommand = "SELECT * FROM GameData";
+        List<GameData> games = new ArrayList<>();
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement(SQLcommand);
+             ResultSet results = statement.executeQuery()) {
+
+            while (results.next()) {
+                int gameID = results.getInt("game_id");
+                String whiteUsername = results.getString("white_username");
+                String blackUsername = results.getString("black_username");
+                String gameName = results.getString("game_name");
+
+                // use GSON to make the game json into a game object
+                ChessGame game = gson.fromJson(results.getString("game_json"), ChessGame.class);
+
+                // add it to our list of games that we've found
+                games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+            }
+
+            // return the games we found
+            return games.toArray(new GameData[0]);
+        } catch (SQLException e) {
+            throw new DataAccessException("Error getting the active games from the SQL server");
+        }
     }
 
     @Override
     public int[] getGameIDs() throws DataAccessException {
-        return new int[0];
+        String SQLcommand = "SELECT game_id FROM GameData";
+        List<Integer> idList = new ArrayList<>();
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement(SQLcommand);
+             ResultSet results = statement.executeQuery()) {
+
+            while (results.next()) {
+                // that means there's a result, so we grab it and add it
+                idList.add(results.getInt("game_id"));
+            }
+
+            // return all the ids we found
+            return idList.stream().mapToInt(i -> i).toArray();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error getting the active game ids");
+        }
     }
 }
