@@ -31,7 +31,7 @@ public class GameDataAccessMySql implements GameDataAccessObject {
             statement.setString(4, JSONchessGame);
 
             // Run the command
-            statement.execute();
+            statement.executeUpdate();
 
             // If we got to this point, return the gameData because it's a success
             return gameData;
@@ -88,7 +88,7 @@ public class GameDataAccessMySql implements GameDataAccessObject {
             statement.setString(4, JSONchessGame);
 
             // full send
-            statement.execute();
+            statement.executeUpdate();
 
             // if we got this far, it worked, return the gamedata
             return gameData;

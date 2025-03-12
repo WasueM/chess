@@ -18,7 +18,7 @@ public final class AuthDataAccessMySql implements AuthDataAccessObject {
             statement.setString(2, authData.username());
 
             // DO IT!
-            statement.execute();
+            statement.executeUpdate();
 
             return authData;
         } catch (SQLException error) {
@@ -46,7 +46,7 @@ public final class AuthDataAccessMySql implements AuthDataAccessObject {
                         results.getString("username"));
 
                 deleteStatement.setString(1, authToken);
-                deleteStatement.execute();
+                deleteStatement.executeUpdate();
 
                 return authData;
             }
