@@ -6,6 +6,7 @@ import services.requests.LoginRequest;
 import services.requests.RegisterRequest;
 import services.results.LoginResult;
 import services.results.RegisterResult;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService {
 
@@ -49,10 +50,16 @@ public class UserService {
 
     public boolean verifyCredentials(String username, String password) throws DataAccessException {
         UserData user = userDataAccess.getUserByUsername(username);
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         if (user != null) {
             if (user.password().equals(password)) {
+                // this is if they're the same, for the memory access
+                return true;
+            } else if (user.password().equals(hashedPassword)) {
+                // this is if they're the same, for the sql version
                 return true;
             } else {
+                // if both the above don't work, then its the wrong password
                 return false;
             }
         } else {
