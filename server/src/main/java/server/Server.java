@@ -21,16 +21,35 @@ public class Server {
 
     public Server() {
         this.handlers = new Handlers(userService, gameService, authService);
-        this.resetDatabase();
+        this.wakeupDatabase();
     }
 
-    public void resetDatabase() {
-        // create the memory version of the database
+    public void wakeupDatabase() {
+        // umcomment to create the memory version of the database
 //        AuthDataAccessMemory authDataAccessMemory = new AuthDataAccessMemory();
 //        GameDataAccessMemory gameDataAccessMemory = new GameDataAccessMemory();
 //        UserDataAccessMemory userDataAccessMemory = new UserDataAccessMemory();
 
-        // create the SQL version of the database
+        // uncomment to create the SQL version of the database
+        AuthDataAccessMySql authDataAccessMemory = new AuthDataAccessMySql();
+        GameDataAccessMySql gameDataAccessMemory = new GameDataAccessMySql();
+        UserDataAccessMySql userDataAccessMemory = new UserDataAccessMySql();
+
+        // create the services based on the version of the database we want
+        this.authService = new AuthService(authDataAccessMemory);
+        this.gameService = new GameService(gameDataAccessMemory, authService);
+        this.userService = new UserService(userDataAccessMemory, authService);
+
+        this.handlers.reset(userService, gameService, authService);
+    }
+
+    public void resetDatabase() {
+        // umcomment to create the memory version of the database
+//        AuthDataAccessMemory authDataAccessMemory = new AuthDataAccessMemory();
+//        GameDataAccessMemory gameDataAccessMemory = new GameDataAccessMemory();
+//        UserDataAccessMemory userDataAccessMemory = new UserDataAccessMemory();
+
+        // uncomment to create the SQL version of the database
         AuthDataAccessMySql authDataAccessMemory = new AuthDataAccessMySql();
         GameDataAccessMySql gameDataAccessMemory = new GameDataAccessMySql();
         UserDataAccessMySql userDataAccessMemory = new UserDataAccessMySql();
@@ -38,6 +57,8 @@ public class Server {
         // delete everything from the SQL tables to get them ready to go
         try (Connection conn = DatabaseManager.getConnection();
              Statement statement = conn.createStatement()) {
+
+            System.out.println("RESET EVERYTHING");
 
             statement.executeUpdate("DELETE FROM AuthData");
             statement.executeUpdate("DELETE FROM GameData");
