@@ -7,6 +7,10 @@ import services.Handlers;
 import services.UserService;
 import spark.*;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 public class Server {
 
     private AuthService authService;
@@ -30,6 +34,20 @@ public class Server {
         AuthDataAccessMySql authDataAccessMemory = new AuthDataAccessMySql();
         GameDataAccessMySql gameDataAccessMemory = new GameDataAccessMySql();
         UserDataAccessMySql userDataAccessMemory = new UserDataAccessMySql();
+
+        // delete everything from the SQL tables to get them ready to go
+        try (Connection conn = DatabaseManager.getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            stmt.executeUpdate("DELETE FROM AuthData");
+            stmt.executeUpdate("DELETE FROM GameData");
+            stmt.executeUpdate("DELETE FROM UserData");
+
+            System.out.println("Database successfully cleared!");
+
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException("Error resetting my sql database");
+        }
 
         // create the services based on the version of the database we want
         this.authService = new AuthService(authDataAccessMemory);

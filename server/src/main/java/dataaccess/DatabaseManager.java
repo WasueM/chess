@@ -70,7 +70,7 @@ public class DatabaseManager {
 //        }
 //    }
 
-    static Connection getConnection() throws DataAccessException {
+    public static Connection getConnection() throws DataAccessException {
         try {
             System.out.println("Connecting to: " + CONNECTION_URL + "/" + DATABASE_NAME);
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
