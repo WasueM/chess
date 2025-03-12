@@ -37,13 +37,11 @@ public class Server {
 
         // delete everything from the SQL tables to get them ready to go
         try (Connection conn = DatabaseManager.getConnection();
-             Statement stmt = conn.createStatement()) {
+             Statement statement = conn.createStatement()) {
 
-            stmt.executeUpdate("DELETE FROM AuthData");
-            stmt.executeUpdate("DELETE FROM GameData");
-            stmt.executeUpdate("DELETE FROM UserData");
-
-            System.out.println("Database successfully cleared!");
+            statement.executeUpdate("DELETE FROM AuthData");
+            statement.executeUpdate("DELETE FROM GameData");
+            statement.executeUpdate("DELETE FROM UserData");
 
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException("Error resetting my sql database");
