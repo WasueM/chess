@@ -49,7 +49,10 @@ public class UserDataAccessMySql implements UserDataAccessObject {
             statement.setString(3, user.email());
 
             // make them!
-            statement.executeUpdate();
+            int rows = statement.executeUpdate();
+
+            // debug
+            System.out.println("Inserted user rows: " + rows);
 
             // return the user, because we're done
             return user;

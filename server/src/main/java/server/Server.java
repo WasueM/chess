@@ -1,8 +1,6 @@
 package server;
 
-import dataaccess.AuthDataAccessMemory;
-import dataaccess.GameDataAccessMemory;
-import dataaccess.UserDataAccessMemory;
+import dataaccess.*;
 import services.AuthService;
 import services.GameService;
 import services.Handlers;
@@ -24,9 +22,14 @@ public class Server {
 
     public void resetDatabase() {
         // create the memory version of the database
-        AuthDataAccessMemory authDataAccessMemory = new AuthDataAccessMemory();
-        GameDataAccessMemory gameDataAccessMemory = new GameDataAccessMemory();
-        UserDataAccessMemory userDataAccessMemory = new UserDataAccessMemory();
+//        AuthDataAccessMemory authDataAccessMemory = new AuthDataAccessMemory();
+//        GameDataAccessMemory gameDataAccessMemory = new GameDataAccessMemory();
+//        UserDataAccessMemory userDataAccessMemory = new UserDataAccessMemory();
+
+        // create the SQL version of the database
+        AuthDataAccessMySql authDataAccessMemory = new AuthDataAccessMySql();
+        GameDataAccessMySql gameDataAccessMemory = new GameDataAccessMySql();
+        UserDataAccessMySql userDataAccessMemory = new UserDataAccessMySql();
 
         // create the services based on the version of the database we want
         this.authService = new AuthService(authDataAccessMemory);
