@@ -9,9 +9,9 @@ public final class AuthDataAccessMySql implements AuthDataAccessObject {
 
     @Override
     public AuthData addAuthToken(AuthData authData) throws DataAccessException {
-        String SQLcommand = "INSERT INTO AuthData (token, username) VALUES (?, ?)";
+        String sqlCommand = "INSERT INTO AuthData (token, username) VALUES (?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement statement = conn.prepareStatement(SQLcommand)) {
+             PreparedStatement statement = conn.prepareStatement(sqlCommand)) {
 
             // add the auth token to the first column, the user name to the second
             statement.setString(1, authData.authToken());
@@ -60,11 +60,11 @@ public final class AuthDataAccessMySql implements AuthDataAccessObject {
 
     @Override
     public AuthData[] getValidTokens() throws DataAccessException {
-        String SQLcommand = "SELECT token, username FROM AuthData";
+        String sqlCommand = "SELECT token, username FROM AuthData";
         List<AuthData> tokens = new ArrayList<>();
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement statement = conn.prepareStatement(SQLcommand)) {
+             PreparedStatement statement = conn.prepareStatement(sqlCommand)) {
 
             // run the query statement to get all the auth data
             ResultSet results = statement.executeQuery();
@@ -88,10 +88,10 @@ public final class AuthDataAccessMySql implements AuthDataAccessObject {
 
     @Override
     public String getUserByAuthToken(String authToken) throws DataAccessException {
-        String SQLcomand = "SELECT username FROM AuthData WHERE token = ?";
+        String sqlCommand = "SELECT username FROM AuthData WHERE token = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement statement = conn.prepareStatement(SQLcomand)) {
+             PreparedStatement statement = conn.prepareStatement(sqlCommand)) {
 
             // Set the token parameter to search for
             statement.setString(1, authToken);
