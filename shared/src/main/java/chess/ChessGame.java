@@ -13,8 +13,8 @@ import java.util.Set;
  */
 public class ChessGame {
 
-    ChessGame.TeamColor whoseTurnItIs;
-    ChessBoard chessBoard;
+    public ChessGame.TeamColor whoseTurnItIs;
+    public ChessBoard chessBoard;
 
     public ChessGame() {
         this.whoseTurnItIs = TeamColor.WHITE;

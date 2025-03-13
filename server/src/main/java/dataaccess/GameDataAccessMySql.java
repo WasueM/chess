@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import com.google.gson.GsonBuilder;
 import model.GameData;
 import com.google.gson.Gson;
 
@@ -11,7 +12,8 @@ import java.util.List;
 public class GameDataAccessMySql implements GameDataAccessObject {
 
     // set up a GSON to use for all the chessGame uploading/downloading
-    private final Gson gson = new Gson();
+    //private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
     public GameData makeGame(GameData gameData) throws DataAccessException {
@@ -102,9 +104,13 @@ public class GameDataAccessMySql implements GameDataAccessObject {
         String SQLcommand = "SELECT * FROM GameData";
         List<GameData> games = new ArrayList<>();
 
+        System.out.println("HOWDY FROM GET GAMES LIST SQL");
+
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(SQLcommand);
              ResultSet results = statement.executeQuery()) {
+
+            System.out.println("HOWDY FROM GET GAMES LIST SQL INSIDE");
 
             while (results.next()) {
                 int gameID = results.getInt("game_id");
@@ -112,12 +118,21 @@ public class GameDataAccessMySql implements GameDataAccessObject {
                 String blackUsername = results.getString("black_username");
                 String gameName = results.getString("game_name");
 
+                System.out.println("HOWDY FROM GET GAMES LIST SQL MIDDLE OF RESULT");
+
+                String jsonString = results.getString("game_json");
+                System.out.println("JSON STRING FROM DB: " + jsonString);
+
                 // use GSON to make the game json into a game object
                 ChessGame game = gson.fromJson(results.getString("game_json"), ChessGame.class);
+
+                System.out.println("HOWDY FROM GET GAMES LIST SQL MIDDLE-END-ISH OF RESULT");
 
                 // add it to our list of games that we've found
                 games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
             }
+
+            System.out.println("HOWDY FROM GET GAMES LIST SQL END");
 
             // return the games we found
             return games.toArray(new GameData[0]);

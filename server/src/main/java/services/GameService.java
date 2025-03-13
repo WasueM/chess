@@ -26,10 +26,12 @@ public class GameService {
     public GamesListResult getGamesList(GamesListRequest gamesListRequest) throws DataAccessException {
         // authenticate
         boolean validAuth = authService.verifyAuthToken(gamesListRequest.authToken());
+        System.out.println("VALID AUTH??? " + validAuth);
 
         if (validAuth) {
             // get the games list
             GameData[] gamesList = gameDataAccess.getActiveGames();
+            System.out.println("GamesListLength: " + gamesList.length);
 
             return new GamesListResult(gamesList);
         } else {

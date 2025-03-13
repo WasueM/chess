@@ -9,8 +9,8 @@ import java.util.*;
  */
 public class ChessBoard {
 
-    HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
-    int numPieces = 0;
+    public HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
+    public int numPieces = 0;
 
     public ChessBoard() {
 
