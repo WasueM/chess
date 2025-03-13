@@ -133,33 +133,40 @@ public class Server {
         try (Connection conn = DatabaseManager.getConnection();
              Statement statement = conn.createStatement()) {
 
+            System.out.println("Ensuring tables exist...");
+
             // Ensure the database exists
             DatabaseManager.createDatabase();
 
-            // Create tables if they do not exist
-            String createAuthTable = "CREATE TABLE IF NOT EXISTS AuthData (" +
-                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                    "token VARCHAR(255) NOT NULL UNIQUE, " +
-                    "userId INT NOT NULL, " +
-                    "FOREIGN KEY (userId) REFERENCES UserData(id) ON DELETE CASCADE" +
-                    ");";
+            // Create AuthData table
+            statement.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS AuthData (
+                token VARCHAR(255) PRIMARY KEY,
+                username VARCHAR(255) NOT NULL
+            )
+        """);
 
-            String createUserTable = "CREATE TABLE IF NOT EXISTS UserData (" +
-                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                    "username VARCHAR(255) NOT NULL UNIQUE, " +
-                    "passwordHash VARCHAR(255) NOT NULL" +
-                    ");";
+            // Create UserData table
+            statement.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS UserData (
+                username VARCHAR(255) PRIMARY KEY,
+                password VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL
+            )
+        """);
 
-            String createGameTable = "CREATE TABLE IF NOT EXISTS GameData (" +
-                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                    "gameState TEXT NOT NULL, " +
-                    "createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                    ");";
+            // Create GameData table
+            statement.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS GameData (
+                game_id INT AUTO_INCREMENT PRIMARY KEY,
+                white_username VARCHAR(255),
+                black_username VARCHAR(255),
+                game_name VARCHAR(255) NOT NULL,
+                game_json TEXT NOT NULL
+            )
+        """);
 
-            // Execute table creation statements
-            statement.executeUpdate(createUserTable);
-            statement.executeUpdate(createAuthTable);
-            statement.executeUpdate(createGameTable);
+            System.out.println("Database tables ensured successfully.");
 
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException("Error configuring database: " + e.getMessage(), e);
