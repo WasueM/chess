@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.GsonBuilder;
 import model.GameData;
@@ -13,7 +14,11 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
     // set up a GSON to use for all the chessGame uploading/downloading
     //private final Gson gson = new Gson();
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Gson gson = new GsonBuilder()
+    .registerTypeAdapter(ChessBoard.class, new ChessBoardJSONAdapter())
+            .setPrettyPrinting()
+    .create();
+
 
     @Override
     public GameData makeGame(GameData gameData) throws DataAccessException {
