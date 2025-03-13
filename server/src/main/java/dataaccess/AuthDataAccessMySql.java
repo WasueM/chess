@@ -28,12 +28,12 @@ public final class AuthDataAccessMySql implements AuthDataAccessObject {
 
     @Override
     public AuthData deleteAuthToken(String authToken) throws DataAccessException {
-        String SQLselectCommand = "SELECT token, username FROM AuthData WHERE token = ?";
-        String SQLdeleteCommand = "DELETE FROM AuthData WHERE token = ?";
+        String sqlSelectCommand = "SELECT token, username FROM AuthData WHERE token = ?";
+        String sqlDeleteCommand = "DELETE FROM AuthData WHERE token = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement selectStatement = conn.prepareStatement(SQLselectCommand);
-             PreparedStatement deleteStatement = conn.prepareStatement(SQLdeleteCommand)) {
+             PreparedStatement selectStatement = conn.prepareStatement(sqlSelectCommand);
+             PreparedStatement deleteStatement = conn.prepareStatement(sqlDeleteCommand)) {
 
             // add the auth token to the select statement and see if it comes up in the results
             selectStatement.setString(1, authToken);

@@ -25,10 +25,6 @@ public class Server {
     }
 
     public void wakeupDatabase() {
-        // umcomment to create the memory version of the database
-//        AuthDataAccessMemory authDataAccessMemory = new AuthDataAccessMemory();
-//        GameDataAccessMemory gameDataAccessMemory = new GameDataAccessMemory();
-//        UserDataAccessMemory userDataAccessMemory = new UserDataAccessMemory();
 
         // uncomment to create the SQL version of the database
         AuthDataAccessMySql authDataAccessMemory = new AuthDataAccessMySql();
@@ -44,10 +40,6 @@ public class Server {
     }
 
     public void resetDatabase() {
-        // umcomment to create the memory version of the database
-//        AuthDataAccessMemory authDataAccessMemory = new AuthDataAccessMemory();
-//        GameDataAccessMemory gameDataAccessMemory = new GameDataAccessMemory();
-//        UserDataAccessMemory userDataAccessMemory = new UserDataAccessMemory();
 
         configureDatabase();
 

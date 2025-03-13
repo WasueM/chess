@@ -7,10 +7,10 @@ import org.mindrot.jbcrypt.BCrypt;
 public class UserDataAccessMySql implements UserDataAccessObject {
     @Override
     public UserData getUserByUsername(String username) throws DataAccessException {
-        String SQLcommand = "SELECT username, password, email FROM UserData WHERE username = ?";
+        String sqlCommand = "SELECT username, password, email FROM UserData WHERE username = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement statememnt = conn.prepareStatement(SQLcommand)) {
+             PreparedStatement statememnt = conn.prepareStatement(sqlCommand)) {
 
             // search the database for a user with that username
             statememnt.setString(1, username);
@@ -35,13 +35,13 @@ public class UserDataAccessMySql implements UserDataAccessObject {
 
     @Override
     public UserData addUser(UserData user) throws DataAccessException {
-        String SQLcommand = "INSERT INTO UserData (username, password, email) VALUES (?, ?, ?)";
+        String sqlCommand = "INSERT INTO UserData (username, password, email) VALUES (?, ?, ?)";
 
         // turn the password into something we can send over the air safely
         String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement statement = conn.prepareStatement(SQLcommand)) {
+             PreparedStatement statement = conn.prepareStatement(sqlCommand)) {
 
             // put in the parameters for the new user
             statement.setString(1, user.username());

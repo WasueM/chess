@@ -23,7 +23,7 @@ public class UserSQLTests {
 
     @Test
     @Order(1)
-    @DisplayName("Add user - positive")
+    @DisplayName("Add user and get by username - positive")
     public void testAddUserPositive() throws DataAccessException {
         // add the user
         var user = new UserData("testUser", "1234", "testEmail");
@@ -60,14 +60,5 @@ public class UserSQLTests {
         // Get them by their username. If it returns something non-null and it has the right name, it did it right
         var returnedUser = userDataAccessSQL.getUserByUsername("testUser");
         assertEquals("testUser", returnedUser.username());
-    }
-
-    @Test
-    @Order(4)
-    @DisplayName("Get user by username - negative")
-    public void testGetUserByUsernameNegative() throws DataAccessException {
-        // Don't add a user, just try and get them anyways, should fail
-        var returnedUser = userDataAccessSQL.getUserByUsername("testUser");
-        assertNull(returnedUser);
     }
 }

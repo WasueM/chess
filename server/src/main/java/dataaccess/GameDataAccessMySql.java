@@ -21,10 +21,10 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
     @Override
     public GameData makeGame(GameData gameData) throws DataAccessException {
-        String SQLcommand = "INSERT INTO GameData (game_id, white_username, black_username, game_name, game_json) VALUES (?, ?, ?, ?, ?)";
+        String sqlCommand = "INSERT INTO GameData (game_id, white_username, black_username, game_name, game_json) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement statement = conn.prepareStatement(SQLcommand, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement statement = conn.prepareStatement(sqlCommand, Statement.RETURN_GENERATED_KEYS)) {
 
             // set the basic parameters
             statement.setInt(1, gameData.gameID());
@@ -33,8 +33,8 @@ public class GameDataAccessMySql implements GameDataAccessObject {
             statement.setString(4, gameData.gameName());
 
             // turn the ChessGame into JSON so it can be uploaded
-            String JSONchessGame = gson.toJson(gameData.game());
-            statement.setString(5, JSONchessGame);
+            String jsonChessGame = gson.toJson(gameData.game());
+            statement.setString(5, jsonChessGame);
 
             // Run the command
             statement.executeUpdate();
@@ -49,10 +49,10 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        String SQLcommand = "SELECT * FROM GameData WHERE game_id = ?";
+        String sqlCommand = "SELECT * FROM GameData WHERE game_id = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement statement = conn.prepareStatement(SQLcommand)) {
+             PreparedStatement statement = conn.prepareStatement(sqlCommand)) {
 
             statement.setInt(1, gameID);
 
@@ -78,10 +78,10 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
     @Override
     public GameData updateGameWithNewData(GameData gameData) {
-        String SQLcommand = "UPDATE GameData SET game_id = ?, white_username = ?, black_username = ?, game_name = ?, game_json = ? WHERE game_id = ?";
+        String sqlCommand = "UPDATE GameData SET game_id = ?, white_username = ?, black_username = ?, game_name = ?, game_json = ? WHERE game_id = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement statement = conn.prepareStatement(SQLcommand)) {
+             PreparedStatement statement = conn.prepareStatement(sqlCommand)) {
 
             // set the basic parameters
             statement.setInt(1, gameData.gameID());
@@ -90,8 +90,8 @@ public class GameDataAccessMySql implements GameDataAccessObject {
             statement.setString(4, gameData.gameName());
 
             // turn the ChessGame into JSON so it can be uploaded
-            String JSONchessGame = gson.toJson(gameData.game());
-            statement.setString(5, JSONchessGame);
+            String jsonChessGame = gson.toJson(gameData.game());
+            statement.setString(5, jsonChessGame);
 
             // set the parameter so that it knows which row to update
             statement.setInt(6, gameData.gameID());
@@ -108,11 +108,11 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
     @Override
     public GameData[] getActiveGames() throws DataAccessException {
-        String SQLcommand = "SELECT * FROM GameData";
+        String sqlCommand = "SELECT * FROM GameData";
         List<GameData> games = new ArrayList<>();
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement statement = conn.prepareStatement(SQLcommand);
+             PreparedStatement statement = conn.prepareStatement(sqlCommand);
              ResultSet results = statement.executeQuery()) {
 
             while (results.next()) {
@@ -137,11 +137,11 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
     @Override
     public int[] getGameIDs() throws DataAccessException {
-        String SQLcommand = "SELECT game_id FROM GameData";
+        String sqlCommand = "SELECT game_id FROM GameData";
         List<Integer> idList = new ArrayList<>();
 
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement statement = conn.prepareStatement(SQLcommand);
+             PreparedStatement statement = conn.prepareStatement(sqlCommand);
              ResultSet results = statement.executeQuery()) {
 
             while (results.next()) {

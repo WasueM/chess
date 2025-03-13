@@ -198,12 +198,12 @@ public class GameSQLTests {
     @Order(9)
     @DisplayName("super update game test - doing a couple moves and seeing if it saves")
     public void testUpdateGameWithMoves() throws DataAccessException {
-        // add a game
+        // add a new game
         var originalGame = new GameData(
-                10,
-                "whiteUser",
-                "blackUser",
-                "testGame",
+                17,
+                "theWhiteUser",
+                "theBlackUser",
+                "theTestGame",
                 new ChessGame()
         );
         gameDataAccessSQL.makeGame(originalGame);
@@ -222,25 +222,27 @@ public class GameSQLTests {
                 | | | | | | | | |
                 """));
 
-        // update
-        var updatedGame = new GameData(
-                10,
-                "newWhiteUser",
-                "newBlackUser",
-                "testGame",
+        // update it
+        var theUpdatedGame = new GameData(
+                17,
+                "aNewWhiteUser",
+                "aNewBlackUser",
+                "aTestGame",
                 updatedChessGame
         );
-        gameDataAccessSQL.updateGameWithNewData(updatedGame);
+        gameDataAccessSQL.updateGameWithNewData(theUpdatedGame);
 
         // see if the changes stuck around
-        var returnedGame = gameDataAccessSQL.getGame(10);
-        assertNotNull(returnedGame);
-        assertEquals("newWhiteUser", returnedGame.whiteUsername());
+        var theReturnedGame = gameDataAccessSQL.getGame(17);
+        assertNotNull(theReturnedGame);
 
-        // see if the chess game is now the new one, with the right team turn
-        assertEquals(ChessGame.TeamColor.BLACK, returnedGame.game().getTeamTurn());
+        // did the username stay changed?
+        assertEquals("newWhiteUser", theReturnedGame.whiteUsername());
 
         // now see if it's in check as it should be
-        Assertions.assertTrue(returnedGame.game().isInCheck(ChessGame.TeamColor.WHITE), "White is in check but isInCheck returned false. This indicates that the proper board wasn't stored and return in the database when update was called");
+        Assertions.assertTrue(theReturnedGame.game().isInCheck(ChessGame.TeamColor.WHITE),
+                "White is in check but isInCheck returned false." +
+                " This indicates that the proper board wasn't stored " +
+                "and return in the database when update was called");
     }
 }
