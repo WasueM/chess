@@ -40,14 +40,9 @@ public class DatabaseManager {
         // Try and make the database if it doesn't exist
         try (Connection conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
              Statement statement = conn.createStatement()) {
-            System.out.println("MADE IT TO THE FRONT");
 
             String createDB = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
             statement.executeUpdate(createDB);
-
-            // Now that it's created, print confirmation
-            System.out.println("Database created: " + DATABASE_NAME);
-            System.out.println("MADE IT TO THE FRONT-MIDDLE");
 
         } catch (SQLException e) {
             throw new DataAccessException("Couldn't create the MySQL database");
@@ -57,15 +52,12 @@ public class DatabaseManager {
         try (Connection conn = DriverManager.getConnection(CONNECTION_URL + "/" + DATABASE_NAME, USER, PASSWORD);
              Statement statement = conn.createStatement()) {
 
-            System.out.println("MADE IT TO THE MIDDLE");
-
             // make auth data table
             String createAuthTable = "CREATE TABLE IF NOT EXISTS AuthData ("
                     + " token VARCHAR(255) PRIMARY KEY, "
                     + " username VARCHAR(255) NOT NULL "
                     + ")";
             statement.executeUpdate(createAuthTable);
-            System.out.println("AuthData Table Created");
 
             // make user data table
             String createUserTable = "CREATE TABLE IF NOT EXISTS UserData ("
@@ -85,10 +77,7 @@ public class DatabaseManager {
                     + ")";
             statement.executeUpdate(createGameTable);
 
-            System.out.println("MADE IT TO THE END");
-
         } catch (SQLException e) {
-            System.out.println("ERROR: " + e);
             throw new DataAccessException("Error adding new tables to new MySQL database");
         }
     }
@@ -111,9 +100,7 @@ public class DatabaseManager {
             var conn = DriverManager.getConnection(CONNECTION_URL + "/" + DATABASE_NAME, USER, PASSWORD);
 
             // always make sure the database and tables exist first
-            System.out.println("HEY");
             createDatabase();
-            System.out.println("HEY2");
 
             return conn;
         } catch (SQLException e) {
