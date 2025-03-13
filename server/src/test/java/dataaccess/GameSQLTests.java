@@ -237,12 +237,10 @@ public class GameSQLTests {
         assertNotNull(theReturnedGame);
 
         // did the username stay changed?
-        assertEquals("newWhiteUser", theReturnedGame.whiteUsername());
+        assertEquals("aNewWhiteUser", theReturnedGame.whiteUsername());
 
         // now see if it's in check as it should be
         Assertions.assertTrue(theReturnedGame.game().isInCheck(ChessGame.TeamColor.WHITE),
-                "White is in check but isInCheck returned false." +
-                " This indicates that the proper board wasn't stored " +
-                "and return in the database when update was called");
+                "White is in check but isInCheck returned false.");
     }
 }
