@@ -15,7 +15,7 @@ public class GameDataAccessMySql implements GameDataAccessObject {
     // set up a GSON to use for all the chessGame uploading/downloading
     //private final Gson gson = new Gson();
     private final Gson gson = new GsonBuilder()
-    .registerTypeAdapter(ChessBoard.class, new ChessBoardJSONAdapter())
+    //.registerTypeAdapter(ChessBoard.class, new ChessBoardJSONAdapter())
     .create();
 
 
