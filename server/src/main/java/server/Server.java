@@ -49,6 +49,8 @@ public class Server {
 //        GameDataAccessMemory gameDataAccessMemory = new GameDataAccessMemory();
 //        UserDataAccessMemory userDataAccessMemory = new UserDataAccessMemory();
 
+        configureDatabase();
+
         // uncomment to create the SQL version of the database
         AuthDataAccessMySql authDataAccessMemory = new AuthDataAccessMySql();
         GameDataAccessMySql gameDataAccessMemory = new GameDataAccessMySql();
@@ -125,5 +127,42 @@ public class Server {
             this.handlers.handleJoinGame(request, response);
             return response.body();
         });
+    }
+
+    private void configureDatabase() {
+        try (Connection conn = DatabaseManager.getConnection();
+             Statement statement = conn.createStatement()) {
+
+            // Ensure the database exists
+            DatabaseManager.createDatabase();
+
+            // Create tables if they do not exist
+            String createAuthTable = "CREATE TABLE IF NOT EXISTS AuthData (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "token VARCHAR(255) NOT NULL UNIQUE, " +
+                    "userId INT NOT NULL, " +
+                    "FOREIGN KEY (userId) REFERENCES UserData(id) ON DELETE CASCADE" +
+                    ");";
+
+            String createUserTable = "CREATE TABLE IF NOT EXISTS UserData (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "username VARCHAR(255) NOT NULL UNIQUE, " +
+                    "passwordHash VARCHAR(255) NOT NULL" +
+                    ");";
+
+            String createGameTable = "CREATE TABLE IF NOT EXISTS GameData (" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "gameState TEXT NOT NULL, " +
+                    "createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                    ");";
+
+            // Execute table creation statements
+            statement.executeUpdate(createUserTable);
+            statement.executeUpdate(createAuthTable);
+            statement.executeUpdate(createGameTable);
+
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException("Error configuring database: " + e.getMessage(), e);
+        }
     }
 }
