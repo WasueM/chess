@@ -62,6 +62,8 @@ public class DatabaseManager {
      */
     public static Connection getConnection() throws DataAccessException {
         try {
+            createDatabase();
+
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
             conn.setCatalog(DATABASE_NAME);
             return conn;
