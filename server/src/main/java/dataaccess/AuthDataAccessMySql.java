@@ -13,15 +13,12 @@ public final class AuthDataAccessMySql implements AuthDataAccessObject {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(SQLcommand)) {
 
-            System.out.println("AUTH TOKEN ADDED TO DATABSE: " + authData.authToken());
-
             // add the auth token to the first column, the user name to the second
             statement.setString(1, authData.authToken());
             statement.setString(2, authData.username());
 
             // DO IT!
             int rows = statement.executeUpdate();
-            System.out.println("Rows inserted by add auth: " + rows);
 
             return authData;
         } catch (SQLException error) {

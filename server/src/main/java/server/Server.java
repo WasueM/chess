@@ -58,8 +58,6 @@ public class Server {
         try (Connection conn = DatabaseManager.getConnection();
              Statement statement = conn.createStatement()) {
 
-            System.out.println("RESET EVERYTHING");
-
             statement.executeUpdate("DELETE FROM AuthData");
             statement.executeUpdate("DELETE FROM GameData");
             statement.executeUpdate("DELETE FROM UserData");

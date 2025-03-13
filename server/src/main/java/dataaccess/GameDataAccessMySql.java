@@ -124,8 +124,6 @@ public class GameDataAccessMySql implements GameDataAccessObject {
                 // use GSON to make the game json into a game object
                 ChessGame game = gson.fromJson(results.getString("game_json"), ChessGame.class);
 
-                System.out.println("White username on this game is: " + whiteUsername);
-
                 // add it to our list of games that we've found
                 games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
             }

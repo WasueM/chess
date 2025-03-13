@@ -49,7 +49,6 @@ public class UserService {
     }
 
     public boolean verifyCredentials(String username, String password) throws DataAccessException {
-        System.out.println("HEY");
         UserData user = userDataAccess.getUserByUsername(username);
         if (user != null) {
             if (user.password().equals(password)) {
@@ -57,7 +56,6 @@ public class UserService {
                 return true;
             } else if (BCrypt.checkpw(password, user.password())) {
                 // this is if they're the same, for the sql version
-                System.out.println("HEYOOOO");
                 return true;
             } else {
                 // if both the above don't work, then its the wrong password

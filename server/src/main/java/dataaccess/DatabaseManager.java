@@ -60,25 +60,12 @@ public class DatabaseManager {
      * }
      * </code>
      */
-//    static Connection getConnection() throws DataAccessException {
-//        try {
-//            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
-//            conn.setCatalog(DATABASE_NAME);
-//            return conn;
-//        } catch (SQLException e) {
-//            throw new DataAccessException(e.getMessage());
-//        }
-//    }
-
     public static Connection getConnection() throws DataAccessException {
         try {
-            System.out.println("Connecting to: " + CONNECTION_URL + "/" + DATABASE_NAME);
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
             conn.setCatalog(DATABASE_NAME);
-            System.out.println("Successfully connected to database: " + DATABASE_NAME);
             return conn;
         } catch (SQLException e) {
-            System.err.println("Database connection failed: " + e.getMessage());
             throw new DataAccessException(e.getMessage());
         }
     }

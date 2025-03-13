@@ -22,7 +22,6 @@ public class AuthService {
         }
 
         String authToken = generateToken();
-        System.out.println("GENERATED TOKEN IS: " + authToken);
         AuthData newAuthData = new AuthData(authToken, username);
         authDataAccess.addAuthToken(newAuthData);
         return authToken;

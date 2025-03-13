@@ -66,8 +66,6 @@ public class DatabaseTests {
         //list games using the auth
         TestListResult listResult = serverFacade.listGames(auth);
 
-        System.out.println("Auth after restart: " + auth);
-
         Assertions.assertEquals(200, serverFacade.getStatusCode(), "Server response code was not 200 OK");
         Assertions.assertEquals(1, listResult.getGames().length, "Missing game(s) in database after restart");
 
