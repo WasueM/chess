@@ -78,7 +78,7 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
     @Override
     public GameData updateGameWithNewData(GameData gameData) {
-        String SQLcommand = "UPDATE GameData SET white_username = ?, black_username = ?, game_name = ?, game_json = ? WHERE game_id = ?";
+        String SQLcommand = "UPDATE GameData SET game_id = ?, white_username = ?, black_username = ?, game_name = ?, game_json = ? WHERE game_id = ?";
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement statement = conn.prepareStatement(SQLcommand)) {
@@ -91,10 +91,13 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
             // turn the ChessGame into JSON so it can be uploaded
             String JSONchessGame = gson.toJson(gameData.game());
-            statement.setString(4, JSONchessGame);
+            statement.setString(5, JSONchessGame);
+
+            // set the parameter so that it knows which row to update
+            statement.setInt(6, gameData.gameID());
 
             // full send
-            statement.executeUpdate();
+            int rows = statement.executeUpdate();
 
             // if we got this far, it worked, return the gamedata
             return gameData;
@@ -120,6 +123,8 @@ public class GameDataAccessMySql implements GameDataAccessObject {
 
                 // use GSON to make the game json into a game object
                 ChessGame game = gson.fromJson(results.getString("game_json"), ChessGame.class);
+
+                System.out.println("White username on this game is: " + whiteUsername);
 
                 // add it to our list of games that we've found
                 games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
