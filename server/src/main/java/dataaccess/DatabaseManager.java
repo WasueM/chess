@@ -37,16 +37,62 @@ public class DatabaseManager {
      * Creates the database if it does not already exist.
      */
     static void createDatabase() throws DataAccessException {
-        try {
-            var statement = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
-            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.executeUpdate();
-            }
+        // Try and make the database if it doesn't exist
+        try (Connection conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+             Statement statement = conn.createStatement()) {
+            System.out.println("MADE IT TO THE FRONT");
+
+            String createDB = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
+            statement.executeUpdate(createDB);
+
+            // Now that it's created, print confirmation
+            System.out.println("Database created: " + DATABASE_NAME);
+            System.out.println("MADE IT TO THE FRONT-MIDDLE");
+
         } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataAccessException("Couldn't create the MySQL database");
+        }
+
+        // make the tables if they don't already exist
+        try (Connection conn = DriverManager.getConnection(CONNECTION_URL + "/" + DATABASE_NAME, USER, PASSWORD);
+             Statement statement = conn.createStatement()) {
+
+            System.out.println("MADE IT TO THE MIDDLE");
+
+            // make auth data table
+            String createAuthTable = "CREATE TABLE IF NOT EXISTS AuthData ("
+                    + " token VARCHAR(255) PRIMARY KEY, "
+                    + " username VARCHAR(255) NOT NULL "
+                    + ")";
+            statement.executeUpdate(createAuthTable);
+            System.out.println("AuthData Table Created");
+
+            // make user data table
+            String createUserTable = "CREATE TABLE IF NOT EXISTS UserData ("
+                    + " username VARCHAR(255) PRIMARY KEY, "
+                    + " password VARCHAR(255) NOT NULL, "
+                    + " email VARCHAR(255) NOT NULL "
+                    + ")";
+            statement.executeUpdate(createUserTable);
+
+            // make game data table
+            String createGameTable = "CREATE TABLE IF NOT EXISTS GameData ("
+                    + " game_id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + " white_username VARCHAR(255), "
+                    + " black_username VARCHAR(255), "
+                    + " game_name VARCHAR(255) NOT NULL, "
+                    + " game_json TEXT NOT NULL "
+                    + ")";
+            statement.executeUpdate(createGameTable);
+
+            System.out.println("MADE IT TO THE END");
+
+        } catch (SQLException e) {
+            System.out.println("ERROR: " + e);
+            throw new DataAccessException("Error adding new tables to new MySQL database");
         }
     }
+
 
     /**
      * Create a connection to the database and sets the catalog based upon the
@@ -62,8 +108,13 @@ public class DatabaseManager {
      */
     public static Connection getConnection() throws DataAccessException {
         try {
-            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
-            conn.setCatalog(DATABASE_NAME);
+            var conn = DriverManager.getConnection(CONNECTION_URL + "/" + DATABASE_NAME, USER, PASSWORD);
+
+            // always make sure the database and tables exist first
+            System.out.println("HEY");
+            createDatabase();
+            System.out.println("HEY2");
+
             return conn;
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
