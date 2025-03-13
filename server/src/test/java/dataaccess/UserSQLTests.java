@@ -15,7 +15,7 @@ public class UserSQLTests {
              var statement = conn.createStatement()) {
             statement.executeUpdate("DELETE FROM UserData");
         } catch (Exception e) {
-            throw new DataAccessException("Test failed because the table wouldn't be rest right");
+            throw new DataAccessException("Test failed because the table wouldn't be reset right");
         }
 
         userDataAccessSQL = new UserDataAccessMySql();
