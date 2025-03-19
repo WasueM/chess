@@ -79,8 +79,7 @@ public class Main {
                     listGames();
                     return true;
                 case "play game":
-                    playGame();
-                    return false;
+                    return playGame(); // will return true if it doesn't work (keep getting input) or false otherwise
                 case "observe game":
                     observeGame();
                     return false;
@@ -202,7 +201,7 @@ public class Main {
             System.out.println("Active Games: ");
 
             int counter = 0;
-            for (GameData game : games) {
+            for (GameData game : gameList) {
                 counter++;
                 System.out.println(counter + ". " + game.gameName());
             }
@@ -236,17 +235,35 @@ public class Main {
         }
     }
 
-    private static void playGame() {
+    private static boolean playGame() {
         System.out.println("Sounds good! Which game do you want to play? (Number)");
         System.out.print(">>> ");
 
         Scanner scanner = new Scanner(System.in);
-        String gameToJoinNumber = scanner.nextLine();
+        int gameToJoinNumber = Integer.parseInt(scanner.nextLine());
 
+        if (gameToJoinNumber > gameList.length) {
+            // this is an error, so just return and tell the user to input something better next time
+            System.out.println("That number is too high, there's no game for that. Please enter a smaller number next time.");
 
+            // return true that we should keep accepting input in the loop
+            return true;
+        }
+
+        GameData gameToJoin = gameList[gameToJoinNumber - 1];
+        int gameIDToJoin = gameToJoin.gameID();
+
+        System.out.println("Awesome! Type 'WHITE' to be white or 'BLACK' to be black!");
+        System.out.print(">>> ");
+
+        String color = scanner.nextLine();
+        if ((!Objects.equals(color, "WHITE")) && (!Objects.equals(color, "BLACK"))) {
+            // this is an error, tell the user to be better next time
+            System.out.println("You didn't type 'WHITE' or 'BLACK' so be better next time!");
+        }
 
         try {
-            GameData game = serverFacade.joinGame(playerColor, gameID);
+            GameData game = serverFacade.joinGame(color, gameIDToJoin);
 
             // if it didn't throw an error, it worked, so let them know
             System.out.println("Awesome! You've joined the game. Happy playing!");
@@ -256,8 +273,11 @@ public class Main {
             gameController = new GameController(game);
             gameController.show();
 
+            // no need to get more input right now, we're in-game
+            return false;
         } catch (Exception error) {
             System.out.println("Couldn't join that game. Was the game name correct?");
+            return true; // can keep getting input
         }
     }
 
