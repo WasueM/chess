@@ -146,8 +146,9 @@ public class ServerFacade {
 
         // Print why when it can't connect
         var status = http.getResponseCode();
-        if ( status <= 200 || status > 300) {
-            throw new Exception("Server didn't respond 200 OK, so there was a problem");
+        if ( status < 200 || status >= 300) {
+            String errorResponse = readResponseBody(http);
+            throw new Exception("Server didn't respond 200 OK, so there was a problem: " + errorResponse);
         }
 
         String responseBody = readResponseBody(http);
