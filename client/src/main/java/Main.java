@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Main {
 
     static ServerFacade serverFacade;
-    static int appState = 0; // 0 is not logged in, 1 in logged in, and I can add more later.
+    static int appState = 0; // 0 is not logged in, 1 in logged in, // 2 for in-game
 
     public static void main(String[] args) {
         // connect to the server
@@ -198,7 +198,7 @@ public class Main {
         String gameName = scanner.nextLine();
 
         try {
-            serverFacade.createGame(gameName);
+            GameData game = serverFacade.createGame(gameName);
 
             // if it didn't throw an error, it worked, so let them know
             System.out.println("Awesome! That game has been created.");
@@ -216,10 +216,29 @@ public class Main {
         String gameToJoinName = scanner.nextLine();
 
         try {
-            serverFacade.createGame(gameToJoinName);
+            GameData game = serverFacade.createGame(gameToJoinName);
 
             // if it didn't throw an error, it worked, so let them know
             System.out.println("Awesome! You've joined the game. Happy playing!");
+
+        } catch (Exception error) {
+            System.out.println("Couldn't join that game. Was the game name correct?");
+        }
+    }
+
+    private static void observeGame() {
+        System.out.println("Sounds good! Which game do you want to observe?");
+        System.out.print(">>> ");
+
+        Scanner scanner = new Scanner(System.in);
+        String gameToObserveName = scanner.nextLine();
+
+        try {
+            // won't do anything since it says to get this working only in phase 6
+            // GameData game = serverFacade.(gameToJoinName);
+
+            // if it didn't throw an error, it worked, so let them know
+            System.out.println("We'll get this up and running in phase 6 so nothing for now");
 
         } catch (Exception error) {
             System.out.println("Couldn't join that game. Was the game name correct?");
