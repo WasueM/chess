@@ -65,13 +65,13 @@ public class ServerFacade {
         this.authToken = authData.authToken();
     }
 
-    public void logout(String authToken) throws Exception {
-        sendRequest(serverURL + "session", "DELETE", authToken, null);
+    public void logout() throws Exception {
+        sendRequest(serverURL + "session", "DELETE", this.authToken, null);
         this.authToken = "loggedOutSoNoTokenHere";
     }
 
-    public GameData[] listGames(String authToken) throws Exception {
-        HttpURLConnection http = sendRequest(serverURL + "game", "GET", authToken, null);
+    public GameData[] listGames() throws Exception {
+        HttpURLConnection http = sendRequest(serverURL + "game", "GET", this.authToken, null);
         String response = receiveResponse(http);
 
         // turn the response into our game data models so we can use it
@@ -80,26 +80,23 @@ public class ServerFacade {
         return games;
     }
 
-    public void createGame(String authToken, String gameName) throws Exception {
-        JsonObject bodyJson = new JsonObject();
-        bodyJson.addProperty("gameName", gameName);
+    public void createGame(String gameName) throws Exception {
+        JsonObject body = new JsonObject();
+        body.addProperty("gameName", gameName);
 
-        HttpURLConnection http = sendRequest(serverURL + "game", "POST", authToken, bodyJson.toString());
-        receiveResponse(http);
+        sendRequest(serverURL + "game", "POST", this.authToken, body.toString());
     }
 
-    public void joinGame(String authToken, String playerColor, int gameID) throws Exception {
+    public void joinGame(String playerColor, int gameID) throws Exception {
         JsonObject body = new JsonObject();
         body.addProperty("playerColor", playerColor);
         body.addProperty("gameID", gameID);
 
-        HttpURLConnection http = sendRequest(serverURL + "game", "PUT", authToken, body.toString());
-        receiveResponse(http);
+        sendRequest(serverURL + "game", "PUT", this.authToken, body.toString());
     }
 
     public void clearDatabase() throws Exception {
         HttpURLConnection http = sendRequest(serverURL + "db", "DELETE", null, null);
-        receiveResponse(http);
     }
 
     private static HttpURLConnection sendRequest(String url, String method, String authToken, String body) throws URISyntaxException, IOException {
