@@ -211,7 +211,7 @@ public class Main {
             System.out.println();
 
         } catch (Exception error) {
-            System.out.println("Couldn't get a list of games. Sorry, that's our bad.");
+            System.out.println("Couldn't get a list of games. Sorry, that's our bad. \n" + error.getMessage());
         }
     }
 

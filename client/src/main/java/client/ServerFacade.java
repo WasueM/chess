@@ -5,6 +5,7 @@ import chess.ChessBoardJSONAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import model.AuthData;
 import model.GameData;
 
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.*;
+import java.util.Map;
 
 public class ServerFacade {
 
@@ -75,8 +77,12 @@ public class ServerFacade {
         HttpURLConnection http = sendRequest(serverURL + "game", "GET", this.authToken, null);
         String response = receiveResponse(http);
 
-        // turn the response into our game data models so we can use it
-        GameData[] games = new GameData[]{gson.fromJson(response, GameData.class)};
+        // since the games come wrapped in another level of json, we need this to help gson get the games out
+        var type = new TypeToken<Map<String, GameData[]>>(){}.getType();
+        Map<String, GameData[]> map = gson.fromJson(response, type);
+
+        // get the games from the wrapped data structure
+        GameData[] games = map.get("games");
 
         return games;
     }
