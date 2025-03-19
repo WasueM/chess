@@ -12,7 +12,7 @@ public class GameController {
         this.game = game;
     }
 
-    public setPlayer(ChessGame.TeamColor color) {
+    public void setPlayer(ChessGame.TeamColor color) {
         this.playerColor = color;
     }
 
