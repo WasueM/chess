@@ -96,7 +96,7 @@ public class ServerFacade {
     }
 
     public void clearDatabase() throws Exception {
-        HttpURLConnection http = sendRequest(serverURL + "db", "DELETE", null, null);
+        sendRequest(serverURL + "db", "DELETE", null, null);
     }
 
     private static HttpURLConnection sendRequest(String url, String method, String authToken, String body) throws URISyntaxException, IOException {
