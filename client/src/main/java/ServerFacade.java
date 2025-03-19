@@ -1,4 +1,5 @@
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,13 +7,41 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Map;
 
-public class SeverFacade {
-    public void connect() throws Exception {
-        URI uri = new URI("http://localhost:8080/error");
-        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-        http.setRequestMethod("GET");
+public class ServerFacade {
 
+    private String serverURL = "http://localhost:8080/";
+
+    public ServerFacade(String url) throws Exception {
+        serverURL = url;
+    }
+
+    public void connectToServer(String url) throws Exception {
+        serverURL = url;
+        HttpURLConnection http = sendRequest(url, "GET", null);
+        System.out.println("Connected to server!");
+        receiveResponse(http);
+    }
+
+    public void register(String username, String password, String email) {
+        JsonObject body = new JsonObject();
+        body.addProperty("username", username);
+        body.addProperty("password", password);
+        body.addProperty("email", email);
+
+        HttpURLConnection http = sendRequest(serverURL + "POST", null, body);
+    }
+
+    public void login(String username, String password) {
+
+    }
+
+    private static HttpURLConnection sendRequest(String url, String method, String authToken, String body) throws URISyntaxException, IOException {
+        URI uri = new URI(url);
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod(method);
+        writeRequestBody(body, http);
         http.connect();
+        System.out.printf("= Request =========\n[%s] %s\n\n%s\n\n", method, url, body);
 
         // Handle bad HTTP status
         var status = http.getResponseCode();
@@ -25,15 +54,7 @@ public class SeverFacade {
                 System.out.println(new Gson().fromJson(new InputStreamReader(in), Map.class));
             }
         }
-    }
 
-    private static HttpURLConnection sendRequest(String url, String method, String body) throws URISyntaxException, IOException {
-        URI uri = new URI(url);
-        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
-        http.setRequestMethod(method);
-        writeRequestBody(body, http);
-        http.connect();
-        System.out.printf("= Request =========\n[%s] %s\n\n%s\n\n", method, url, body);
         return http;
     }
 
