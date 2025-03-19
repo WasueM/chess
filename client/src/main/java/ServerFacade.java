@@ -96,7 +96,10 @@ public class ServerFacade {
         // debug
         System.out.printf("= Request =========\n[%s] %s\n\n%s\n\n", method, url, body != null ? body : "");
 
-        // Handle when it can't connect
+        // make the request
+        http.connect();
+
+        // Print why when it can't connect
         var status = http.getResponseCode();
         if ( status >= 200 && status < 300) {
             try (InputStream in = http.getInputStream()) {
@@ -111,11 +114,21 @@ public class ServerFacade {
         return http;
     }
 
+    // recieving response code from the github example
     private static void receiveResponse(HttpURLConnection http) throws IOException {
         var statusCode = http.getResponseCode();
         var statusMessage = http.getResponseMessage();
 
         Object responseBody = readResponseBody(http);
         System.out.printf("= Response =========\n[%d] %s\n\n%s\n\n", statusCode, statusMessage, responseBody);
+    }
+
+    private static Object readResponseBody(HttpURLConnection http) throws IOException {
+        Object responseBody = "";
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            responseBody = new Gson().fromJson(inputStreamReader, Map.class);
+        }
+        return responseBody;
     }
 }
