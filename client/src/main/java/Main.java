@@ -1,4 +1,5 @@
 import chess.*;
+import model.GameData;
 
 import java.util.Objects;
 import java.util.Scanner;
@@ -134,6 +135,15 @@ public class Main {
         }
     }
 
+    private static void logout() {
+        try {
+            serverFacade.logout();
+            appState = 0;
+        } catch (Exception error ){
+            System.out.println("Couldn't log you out. How odd. Just quit instead to restart.");
+        }
+    }
+
     private static void register() {
         System.out.println("Great, let's get you logged in! First, type your username:");
         System.out.print(">>> ");
@@ -159,6 +169,24 @@ public class Main {
             appState = 1;
         } catch (Exception error) {
             System.out.println("Couldn't register you. Is the username and email already in use?");
+        }
+    }
+
+    private static void listGames() {
+        try {
+            GameData[] games = serverFacade.listGames();
+
+            System.out.println("Active Games: ");
+
+            int counter = 0;
+            for (GameData game : games) {
+                counter++;
+                System.out.println(counter + ". " + game.gameName());
+            }
+            System.out.println();
+
+        } catch (Exception error) {
+            System.out.println("Couldn't get a list of games. Sorry, that's our bad.");
         }
     }
 }
