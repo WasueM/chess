@@ -136,26 +136,19 @@ public class ServerFacade {
         // make the request
         http.connect();
 
-        // Print why when it can't connect
-        var status = http.getResponseCode();
-        if ( status >= 200 && status < 300) {
-            try (InputStream in = http.getInputStream()) {
-                System.out.println(gson.fromJson(new InputStreamReader(in), Map.class));
-            }
-        } else {
-            try (InputStream in = http.getErrorStream()) {
-                System.out.println(gson.fromJson(new InputStreamReader(in), Map.class));
-            }
-            throw new Exception("Server didn't respond 200 OK, so there was a problem");
-        }
-
         return http;
     }
 
     // returns a string version of the response body so that Gson can convert that into whatever we need later
-    private static String receiveResponse(HttpURLConnection http) throws IOException {
+    private static String receiveResponse(HttpURLConnection http) throws Exception {
         var statusCode = http.getResponseCode();
         var statusMessage = http.getResponseMessage();
+
+        // Print why when it can't connect
+        var status = http.getResponseCode();
+        if ( status <= 200 || status > 300) {
+            throw new Exception("Server didn't respond 200 OK, so there was a problem");
+        }
 
         String responseBody = readResponseBody(http);
         System.out.printf("= Response =========\n[%d] %s\n\n%s\n\n", statusCode, statusMessage, responseBody);

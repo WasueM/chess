@@ -20,9 +20,9 @@ public class Main {
 
         // make the client
         try {
-            serverFacade = new ServerFacade("https://localhost:8080/");
+            serverFacade = new ServerFacade("http://localhost:8080/");
         } catch (Exception error) {
-            System.out.println("Couldn't connect to the server at \"https://localhost:8080\"");
+            System.out.println("Couldn't connect to the server at \"http://localhost:8080\"");
             System.exit(0);
         }
 
