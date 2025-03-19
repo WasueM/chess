@@ -189,4 +189,40 @@ public class Main {
             System.out.println("Couldn't get a list of games. Sorry, that's our bad.");
         }
     }
+
+    private static void createGame() {
+        System.out.println("Great! Let's make you a new game. Tell us the game name: ");
+        System.out.print(">>> ");
+
+        Scanner scanner = new Scanner(System.in);
+        String gameName = scanner.nextLine();
+
+        try {
+            serverFacade.createGame(gameName);
+
+            // if it didn't throw an error, it worked, so let them know
+            System.out.println("Awesome! That game has been created.");
+
+        } catch (Exception error) {
+            System.out.println("Couldn't make a game, we're sorry!");
+        }
+    }
+
+    private static void playGame() {
+        System.out.println("Sounds good! Which game do you want to play?");
+        System.out.print(">>> ");
+
+        Scanner scanner = new Scanner(System.in);
+        String gameToJoinName = scanner.nextLine();
+
+        try {
+            serverFacade.createGame(gameToJoinName);
+
+            // if it didn't throw an error, it worked, so let them know
+            System.out.println("Awesome! You've joined the game. Happy playing!");
+
+        } catch (Exception error) {
+            System.out.println("Couldn't join that game. Was the game name correct?");
+        }
+    }
 }

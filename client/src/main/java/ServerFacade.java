@@ -19,7 +19,7 @@ public class ServerFacade {
     private String authToken = "emptyDefaultToken";
 
     // the same as the one used on the server side
-    private final Gson gson = new GsonBuilder()
+    private static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ChessBoard.class, new ChessBoardJSONAdapter())
             .create();
 
@@ -44,7 +44,7 @@ public class ServerFacade {
         String response = receiveResponse(http);
 
         // turn the response into our auth data model so we can use it
-        AuthData authData = new Gson().fromJson(response, AuthData.class);
+        AuthData authData = gson.fromJson(response, AuthData.class);
 
         // store the auth token here in the facade so we can easily use it whenever we need to
         this.authToken = authData.authToken();
@@ -59,7 +59,7 @@ public class ServerFacade {
         String response = receiveResponse(http);
 
         // turn the response into our auth data model so we can use it
-        AuthData authData = new Gson().fromJson(response, AuthData.class);
+        AuthData authData = gson.fromJson(response, AuthData.class);
 
         // store the auth token here in the facade so we can easily use it whenever we need to
         this.authToken = authData.authToken();
@@ -75,24 +75,36 @@ public class ServerFacade {
         String response = receiveResponse(http);
 
         // turn the response into our game data models so we can use it
-        GameData[] games = new GameData[]{new Gson().fromJson(response, GameData.class)};
+        GameData[] games = new GameData[]{gson.fromJson(response, GameData.class)};
 
         return games;
     }
 
-    public void createGame(String gameName) throws Exception {
+    public GameData createGame(String gameName) throws Exception {
         JsonObject body = new JsonObject();
         body.addProperty("gameName", gameName);
 
-        sendRequest(serverURL + "game", "POST", this.authToken, body.toString());
+        HttpURLConnection http = sendRequest(serverURL + "game", "POST", this.authToken, body.toString());
+        String response = receiveResponse(http);
+
+        // make the response into a Game object
+        GameData game = gson.fromJson(response, GameData.class);
+
+        return game;
     }
 
-    public void joinGame(String playerColor, int gameID) throws Exception {
+    public GameData joinGame(String playerColor, int gameID) throws Exception {
         JsonObject body = new JsonObject();
         body.addProperty("playerColor", playerColor);
         body.addProperty("gameID", gameID);
 
-        sendRequest(serverURL + "game", "PUT", this.authToken, body.toString());
+        HttpURLConnection http = sendRequest(serverURL + "game", "PUT", this.authToken, body.toString());
+        String response = receiveResponse(http);
+
+        // make the response into a Game object
+        GameData game = gson.fromJson(response, GameData.class);
+
+        return game;
     }
 
     public void clearDatabase() throws Exception {
@@ -128,11 +140,11 @@ public class ServerFacade {
         var status = http.getResponseCode();
         if ( status >= 200 && status < 300) {
             try (InputStream in = http.getInputStream()) {
-                System.out.println(new Gson().fromJson(new InputStreamReader(in), Map.class));
+                System.out.println(gson.fromJson(new InputStreamReader(in), Map.class));
             }
         } else {
             try (InputStream in = http.getErrorStream()) {
-                System.out.println(new Gson().fromJson(new InputStreamReader(in), Map.class));
+                System.out.println(gson.fromJson(new InputStreamReader(in), Map.class));
             }
             throw new Exception("Server didn't respond 200 OK, so there was a problem");
         }
