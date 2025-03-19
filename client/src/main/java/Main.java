@@ -245,12 +245,18 @@ public class Main {
         System.out.println("Sounds good! Which game do you want to play? (Number)");
         System.out.print(">>> ");
 
+        int gameToJoinNumber = 9999;
         Scanner scanner = new Scanner(System.in);
-        int gameToJoinNumber = Integer.parseInt(scanner.nextLine());
+        try {
+            gameToJoinNumber = Integer.parseInt(scanner.nextLine());
+        } catch (Exception error) {
+            System.out.println("Please enter a number next time! \n" + error.getMessage());
+            gameToJoinNumber = 9999;
+        }
 
         if (gameToJoinNumber > gameList.length) {
             // this is an error, so just return and tell the user to input something better next time
-            System.out.println("That number is too high, there's no game for that. Please enter a smaller number next time.");
+            System.out.println("That number is too high or not a number at all, there's no game for that. Please enter a smaller number next time.");
 
             // return true that we should keep accepting input in the loop
             return true;
@@ -282,7 +288,7 @@ public class Main {
             // no need to get more input right now, we're in-game
             return false;
         } catch (Exception error) {
-            System.out.println("Couldn't join that game. Was the game name correct?");
+            System.out.println("Couldn't join that game. Was the game name correct? \n" + error.getMessage());
             return true; // can keep getting input
         }
     }

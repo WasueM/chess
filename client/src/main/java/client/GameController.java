@@ -19,10 +19,10 @@ public class GameController {
     public void show() {
         if (playerColor == ChessGame.TeamColor.WHITE) {
             // draw it with white at the bottom
-            System.out.print(game);
+            System.out.print(game.game().chessBoard);
         } else {
             // draw it with black at the bottom
-            System.out.print(game);
+            System.out.print(game.game().chessBoard);
         }
     }
 }
