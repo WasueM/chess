@@ -1,7 +1,9 @@
 import chess.*;
+import client.GameController;
 import client.ServerFacade;
 import model.GameData;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -11,6 +13,8 @@ public class Main {
 
     static ServerFacade serverFacade;
     static int appState = 0; // 0 is not logged in, 1 in logged in, // 2 for in-game
+    static GameData[] gameList; // store the games list in an array
+    static GameController gameController;
 
     public static void main(String[] args) {
         // for testing locally, make the local server
@@ -138,6 +142,11 @@ public class Main {
 
             // if it makes it this far, it means the server responded 200 so the login worked. Change the app state accordingly
             appState = 1;
+            System.out.println("You're logged in!");
+
+            // list the games immediately
+            System.out.println();
+            listGames();
         } catch (Exception error) {
             System.out.println("Couldn't log you in. Is your username and password correct?");
         }
@@ -175,6 +184,12 @@ public class Main {
 
             // if it makes it this far, it means the server responded 200 so the login worked. Change the app state accordingly
             appState = 1;
+            System.out.println("You're all registered!");
+
+            // list the games immediately
+            System.out.println();
+            listGames();
+
         } catch (Exception error) {
             System.out.println("Couldn't register you. Is the username and email already in use? " + error.getMessage());
         }
@@ -182,7 +197,7 @@ public class Main {
 
     private static void listGames() {
         try {
-            GameData[] games = serverFacade.listGames();
+            gameList = serverFacade.listGames();
 
             System.out.println("Active Games: ");
 
@@ -211,23 +226,35 @@ public class Main {
             // if it didn't throw an error, it worked, so let them know
             System.out.println("Awesome! That game has been created.");
 
+            // switch to game mode
+            appState = 2;
+            gameController = new GameController(game);
+            gameController.show();
+
         } catch (Exception error) {
             System.out.println("Couldn't make a game, we're sorry!");
         }
     }
 
     private static void playGame() {
-        System.out.println("Sounds good! Which game do you want to play?");
+        System.out.println("Sounds good! Which game do you want to play? (Number)");
         System.out.print(">>> ");
 
         Scanner scanner = new Scanner(System.in);
-        String gameToJoinName = scanner.nextLine();
+        String gameToJoinNumber = scanner.nextLine();
+
+
 
         try {
-            GameData game = serverFacade.createGame(gameToJoinName);
+            GameData game = serverFacade.joinGame(playerColor, gameID);
 
             // if it didn't throw an error, it worked, so let them know
             System.out.println("Awesome! You've joined the game. Happy playing!");
+
+            // switch to game mode
+            appState = 2;
+            gameController = new GameController(game);
+            gameController.show();
 
         } catch (Exception error) {
             System.out.println("Couldn't join that game. Was the game name correct?");
@@ -243,7 +270,6 @@ public class Main {
 
         try {
             // won't do anything since it says to get this working only in phase 6
-            // GameData game = serverFacade.(gameToJoinName);
 
             // if it didn't throw an error, it worked, so let them know
             System.out.println("We'll get this up and running in phase 6 so nothing for now");
