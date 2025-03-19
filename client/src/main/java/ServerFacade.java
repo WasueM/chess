@@ -18,7 +18,7 @@ public class ServerFacade {
 
     public void connectToServer(String url) throws Exception {
         serverURL = url;
-        HttpURLConnection http = sendRequest(url, "GET", null);
+        HttpURLConnection http = sendRequest(url, "GET", null, null);
         System.out.println("Connected to server!");
         receiveResponse(http);
     }
