@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.*;
 import java.util.Map;
 
@@ -22,28 +23,80 @@ public class ServerFacade {
         receiveResponse(http);
     }
 
-    public void register(String username, String password, String email) {
+    public void register(String username, String password, String email) throws Exception {
         JsonObject body = new JsonObject();
         body.addProperty("username", username);
         body.addProperty("password", password);
         body.addProperty("email", email);
 
-        HttpURLConnection http = sendRequest(serverURL + "POST", null, body);
+        HttpURLConnection http = sendRequest(serverURL + "user", "POST", null, body.toString());
+        receiveResponse(http);
     }
 
-    public void login(String username, String password) {
+    public void login(String username, String password) throws Exception {
+        JsonObject body = new JsonObject();
+        body.addProperty("username", username);
+        body.addProperty("password", password);
 
+        HttpURLConnection http = sendRequest(serverURL + "session", "POST", null, body.toString());
+        receiveResponse(http);
+    }
+
+    public void logout(String authToken) throws Exception {
+        HttpURLConnection http = sendRequest(serverURL + "session", "DELETE", authToken, null);
+        receiveResponse(http);
+    }
+
+    public void listGames(String authToken) throws Exception {
+        HttpURLConnection http = sendRequest(serverURL + "game", "GET", authToken, null);
+        receiveResponse(http);
+    }
+
+    public void createGame(String authToken, String gameName) throws Exception {
+        JsonObject bodyJson = new JsonObject();
+        bodyJson.addProperty("gameName", gameName);
+
+        HttpURLConnection http = sendRequest(serverURL + "game", "POST", authToken, bodyJson.toString());
+        receiveResponse(http);
+    }
+
+    public void joinGame(String authToken, String playerColor, int gameID) throws Exception {
+        JsonObject body = new JsonObject();
+        body.addProperty("playerColor", playerColor);
+        body.addProperty("gameID", gameID);
+
+        HttpURLConnection http = sendRequest(serverURL + "game", "PUT", authToken, body.toString());
+        receiveResponse(http);
+    }
+
+    public void clearDatabase() throws Exception {
+        HttpURLConnection http = sendRequest(serverURL + "db", "DELETE", null, null);
+        receiveResponse(http);
     }
 
     private static HttpURLConnection sendRequest(String url, String method, String authToken, String body) throws URISyntaxException, IOException {
         URI uri = new URI(url);
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod(method);
-        writeRequestBody(body, http);
-        http.connect();
-        System.out.printf("= Request =========\n[%s] %s\n\n%s\n\n", method, url, body);
+        http.setRequestProperty("Content-Type", "application/json");
 
-        // Handle bad HTTP status
+        // if we have an auth token then add it to the request
+        if (authToken != null) {
+            http.setRequestProperty("Authorization", authToken);
+        }
+
+        // put the body into the request
+        if (body != null && !body.isEmpty()) {
+            http.setDoOutput(true);
+            try (OutputStream os = http.getOutputStream()) {
+                os.write(body.getBytes());
+            }
+        }
+
+        // debug
+        System.out.printf("= Request =========\n[%s] %s\n\n%s\n\n", method, url, body != null ? body : "");
+
+        // Handle when it can't connect
         var status = http.getResponseCode();
         if ( status >= 200 && status < 300) {
             try (InputStream in = http.getInputStream()) {
@@ -58,29 +111,11 @@ public class ServerFacade {
         return http;
     }
 
-    private static void writeRequestBody(String body, HttpURLConnection http) throws IOException {
-        if (!body.isEmpty()) {
-            http.setDoOutput(true);
-            try (var outputStream = http.getOutputStream()) {
-                outputStream.write(body.getBytes());
-            }
-        }
-    }
-
     private static void receiveResponse(HttpURLConnection http) throws IOException {
         var statusCode = http.getResponseCode();
         var statusMessage = http.getResponseMessage();
 
         Object responseBody = readResponseBody(http);
         System.out.printf("= Response =========\n[%d] %s\n\n%s\n\n", statusCode, statusMessage, responseBody);
-    }
-
-    private static Object readResponseBody(HttpURLConnection http) throws IOException {
-        Object responseBody = "";
-        try (InputStream respBody = http.getInputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            responseBody = new Gson().fromJson(inputStreamReader, Map.class);
-        }
-        return responseBody;
     }
 }
