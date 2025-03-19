@@ -4,15 +4,23 @@ import model.GameData;
 import java.util.Objects;
 import java.util.Scanner;
 
+import org.junit.jupiter.api.*;
+import server.Server;
+
 public class Main {
 
     static ServerFacade serverFacade;
     static int appState = 0; // 0 is not logged in, 1 in logged in, // 2 for in-game
 
     public static void main(String[] args) {
-        // connect to the server
+        // for testing locally, make the local server
+        Server server = new Server();
+        var port = server.run(8080);
+        System.out.println("Started local HTTP server on " + port);
+
+        // make the client
         try {
-            serverFacade = new ServerFacade("https://localhost:8080");
+            serverFacade = new ServerFacade("https://localhost:8080/");
         } catch (Exception error) {
             System.out.println("Couldn't connect to the server at \"https://localhost:8080\"");
             System.exit(0);
@@ -168,7 +176,7 @@ public class Main {
             // if it makes it this far, it means the server responded 200 so the login worked. Change the app state accordingly
             appState = 1;
         } catch (Exception error) {
-            System.out.println("Couldn't register you. Is the username and email already in use?");
+            System.out.println("Couldn't register you. Is the username and email already in use? " + error.getMessage());
         }
     }
 
