@@ -99,7 +99,7 @@ public class ServerFacade {
         sendRequest(serverURL + "db", "DELETE", null, null);
     }
 
-    private static HttpURLConnection sendRequest(String url, String method, String authToken, String body) throws URISyntaxException, IOException {
+    private static HttpURLConnection sendRequest(String url, String method, String authToken, String body) throws Exception {
         URI uri = new URI(url);
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod(method);
@@ -134,6 +134,7 @@ public class ServerFacade {
             try (InputStream in = http.getErrorStream()) {
                 System.out.println(new Gson().fromJson(new InputStreamReader(in), Map.class));
             }
+            throw new Exception("Server didn't respond 200 OK, so there was a problem");
         }
 
         return http;
