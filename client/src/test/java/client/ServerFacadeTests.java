@@ -26,7 +26,7 @@ public class ServerFacadeTests {
 
     @Test
     void register() throws Exception {
-        var authData = facade.register("player1", "password", "p1@email.com");
+        var authData = facade.register("testUser", "1234", "testEmail");
         assertTrue(authData.length() > 10);
     }
 

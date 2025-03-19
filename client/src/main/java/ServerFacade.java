@@ -1,5 +1,9 @@
+import chess.ChessBoard;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import model.AuthData;
+import model.GameData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +15,12 @@ import java.util.Map;
 public class ServerFacade {
 
     private String serverURL = "http://localhost:8080/";
+    private String authToken = "emptyDefaultToken";
+
+    // the same as the one used on the server side
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ChessBoard.class, new ChessBoardJSONAdapter())
+            .create();
 
     public ServerFacade(String url) throws Exception {
         serverURL = url;
@@ -20,7 +30,9 @@ public class ServerFacade {
         serverURL = url;
         HttpURLConnection http = sendRequest(url, "GET", null, null);
         System.out.println("Connected to server!");
-        receiveResponse(http);
+
+        JsonObject response = receiveResponse(http);
+        authToken = response.;
     }
 
     public void register(String username, String password, String email) throws Exception {
@@ -30,7 +42,13 @@ public class ServerFacade {
         body.addProperty("email", email);
 
         HttpURLConnection http = sendRequest(serverURL + "user", "POST", null, body.toString());
-        receiveResponse(http);
+        String response = receiveResponse(http);
+
+        // turn the response into our auth data model so we can use it
+        AuthData authData = new Gson().fromJson(response, AuthData.class);
+
+        // store the auth token here in the facade so we can easily use it whenever we need to
+        this.authToken = authData.authToken();
     }
 
     public void login(String username, String password) throws Exception {
@@ -39,17 +57,29 @@ public class ServerFacade {
         body.addProperty("password", password);
 
         HttpURLConnection http = sendRequest(serverURL + "session", "POST", null, body.toString());
-        receiveResponse(http);
+        String response = receiveResponse(http);
+
+        // turn the response into our auth data model so we can use it
+        AuthData authData = new Gson().fromJson(response, AuthData.class);
+
+        // store the auth token here in the facade so we can easily use it whenever we need to
+        this.authToken = authData.authToken();
     }
 
     public void logout(String authToken) throws Exception {
-        HttpURLConnection http = sendRequest(serverURL + "session", "DELETE", authToken, null);
-        receiveResponse(http);
+        sendRequest(serverURL + "session", "DELETE", authToken, null);
+        this.authToken = "loggedOutSoNoTokenHere";
     }
 
     public void listGames(String authToken) throws Exception {
         HttpURLConnection http = sendRequest(serverURL + "game", "GET", authToken, null);
-        receiveResponse(http);
+        String response = receiveResponse(http);
+
+        // turn the response into our game data models so we can use it
+        GameData[] games = new GameData[]{new Gson().fromJson(response, GameData.class)};
+
+        // store the auth token here in the facade so we can easily use it whenever we need to
+        this.authToken = authData.authToken();
     }
 
     public void createGame(String authToken, String gameName) throws Exception {
@@ -114,21 +144,26 @@ public class ServerFacade {
         return http;
     }
 
-    // recieving response code from the github example
-    private static void receiveResponse(HttpURLConnection http) throws IOException {
+    // returns a string version of the response body so that Gson can convert that into whatever we need later
+    private static String receiveResponse(HttpURLConnection http) throws IOException {
         var statusCode = http.getResponseCode();
         var statusMessage = http.getResponseMessage();
 
-        Object responseBody = readResponseBody(http);
+        String responseBody = readResponseBody(http);
         System.out.printf("= Response =========\n[%d] %s\n\n%s\n\n", statusCode, statusMessage, responseBody);
+        return responseBody;
     }
 
-    private static Object readResponseBody(HttpURLConnection http) throws IOException {
-        Object responseBody = "";
-        try (InputStream respBody = http.getInputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            responseBody = new Gson().fromJson(inputStreamReader, Map.class);
+    // using StringBuilder and string readers to understand the response and make it a string for Gson
+    private static String readResponseBody(HttpURLConnection http) throws IOException {
+        StringBuilder responseBuilder = new StringBuilder();
+        try (InputStream respBody = http.getInputStream();
+             InputStreamReader reader = new InputStreamReader(respBody)) {
+            int c;
+            while ((c = reader.read()) != -1) {
+                responseBuilder.append((char) c);
+            }
         }
-        return responseBody;
+        return responseBuilder.toString();
     }
 }

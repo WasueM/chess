@@ -1,8 +1,5 @@
-package dataaccess;
+package chess;
 
-import chess.ChessBoard;
-import chess.ChessPiece;
-import chess.ChessPosition;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
