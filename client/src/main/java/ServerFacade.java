@@ -1,4 +1,5 @@
 import chess.ChessBoard;
+import chess.ChessBoardJSONAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -27,12 +28,10 @@ public class ServerFacade {
     }
 
     public void connectToServer(String url) throws Exception {
+        // this function just proves that we can connect to it at all and print, we can probably delete this later
         serverURL = url;
         HttpURLConnection http = sendRequest(url, "GET", null, null);
         System.out.println("Connected to server!");
-
-        JsonObject response = receiveResponse(http);
-        authToken = response.;
     }
 
     public void register(String username, String password, String email) throws Exception {
@@ -71,15 +70,14 @@ public class ServerFacade {
         this.authToken = "loggedOutSoNoTokenHere";
     }
 
-    public void listGames(String authToken) throws Exception {
+    public GameData[] listGames(String authToken) throws Exception {
         HttpURLConnection http = sendRequest(serverURL + "game", "GET", authToken, null);
         String response = receiveResponse(http);
 
         // turn the response into our game data models so we can use it
         GameData[] games = new GameData[]{new Gson().fromJson(response, GameData.class)};
 
-        // store the auth token here in the facade so we can easily use it whenever we need to
-        this.authToken = authData.authToken();
+        return games;
     }
 
     public void createGame(String authToken, String gameName) throws Exception {
