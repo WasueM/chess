@@ -73,16 +73,14 @@ public class Main {
                     logout();
                     return true;
                 case "create game":
-                    createGame();
-                    return false;
+                    return createGame();
                 case "list games":
                     listGames();
                     return true;
                 case "play game":
                     return playGame(); // will return true if it doesn't work (keep getting input) or false otherwise
                 case "observe game":
-                    observeGame();
-                    return false;
+                    return observeGame();
             }
         }
         // quitting should always be available, logged in or not:
@@ -198,6 +196,11 @@ public class Main {
         try {
             gameList = serverFacade.listGames();
 
+            if (gameList.length == 0) {
+                System.out.println("There are no active games. Make one with 'create game'");
+                return;
+            }
+
             System.out.println("Active Games: ");
 
             int counter = 0;
@@ -212,7 +215,7 @@ public class Main {
         }
     }
 
-    private static void createGame() {
+    private static boolean createGame() {
         System.out.println("Great! Let's make you a new game. Tell us the game name: ");
         System.out.print(">>> ");
 
@@ -230,8 +233,11 @@ public class Main {
             gameController = new GameController(game);
             gameController.show();
 
+            return false; // no more input for now
+
         } catch (Exception error) {
             System.out.println("Couldn't make a game, we're sorry!");
+            return true; // keep accepting input
         }
     }
 
@@ -281,7 +287,7 @@ public class Main {
         }
     }
 
-    private static void observeGame() {
+    private static boolean observeGame() {
         System.out.println("Sounds good! Which game do you want to observe?");
         System.out.print(">>> ");
 
@@ -293,9 +299,11 @@ public class Main {
 
             // if it didn't throw an error, it worked, so let them know
             System.out.println("We'll get this up and running in phase 6 so nothing for now");
+            return true;
 
         } catch (Exception error) {
             System.out.println("Couldn't join that game. Was the game name correct?");
+            return true;
         }
     }
 }
