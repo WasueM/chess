@@ -236,7 +236,7 @@ public class Main {
             return false; // no more input for now
 
         } catch (Exception error) {
-            System.out.println("Couldn't make a game, we're sorry!");
+            System.out.println("Couldn't make a game, we're sorry! \n" + error.getMessage());
             return true; // keep accepting input
         }
     }
@@ -282,6 +282,7 @@ public class Main {
 
             // switch to game mode
             appState = 2;
+            System.out.println(game);
             gameController = new GameController(game);
             gameController.show();
 
