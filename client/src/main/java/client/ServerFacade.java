@@ -1,3 +1,5 @@
+package client;
+
 import chess.ChessBoard;
 import chess.ChessBoardJSONAdapter;
 import com.google.gson.Gson;
@@ -11,7 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.*;
-import java.util.Map;
 
 public class ServerFacade {
 

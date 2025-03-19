@@ -9,14 +9,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ServerFacadeTests {
 
     private static Server server;
-    private static ServerFacade facade;
+    static ServerFacade facade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(8080);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade("http://localhost:8080");
+        try {
+            facade = new ServerFacade("http://localhost:" + port + "/");
+        } catch (Exception error) {
+            System.out.println("Couldn't connect to the server at \"http://localhost:" + port + "/\"");
+        }
     }
 
     @AfterAll

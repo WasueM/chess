@@ -1,10 +1,10 @@
 import chess.*;
+import client.ServerFacade;
 import model.GameData;
 
 import java.util.Objects;
 import java.util.Scanner;
 
-import org.junit.jupiter.api.*;
 import server.Server;
 
 public class Main {
@@ -20,9 +20,9 @@ public class Main {
 
         // make the client
         try {
-            serverFacade = new ServerFacade("http://localhost:8080/");
+            serverFacade = new ServerFacade("http://localhost:" + port + "/");
         } catch (Exception error) {
-            System.out.println("Couldn't connect to the server at \"http://localhost:8080\"");
+            System.out.println("Couldn't connect to the server at \"http://localhost:" + port + "/\"");
             System.exit(0);
         }
 
