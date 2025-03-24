@@ -101,18 +101,24 @@ public class Main {
 
     private static void helpTextPreLogin() {
         System.out.println();
-        System.out.println("You can type 'quit' to leave,\n'login' to log in, and\n'register' to make a new account.");
+        System.out.println("You can type" +
+                "\n'quit' to leave," +
+                "\n'login' to log in, " +
+                "\n'register' to make a new account, and" +
+                "\n'help' to bring up this list.");
         System.out.println();
     }
 
     private static void helpTextPostLogin() {
         System.out.println();
-        System.out.println("You can type 'quit' to leave," +
+        System.out.println("You can type" +
+                "\n'quit' to leave," +
                 "\n'logout' to log out," +
                 "\n'create game' to make a new game," +
                 "\n'list games' to see active games," +
-                "\n'play game' to join a game, or " +
-                "\n'observe game' to spectate.");
+                "\n'play game' to join a game," +
+                "\n'observe game' to spectate, or" +
+                "\n'help' to bring up this list.");
         System.out.println();
     }
 
@@ -207,12 +213,20 @@ public class Main {
             for (GameData game : gameList) {
                 counter++;
                 // print the game name, then the white player, then the black play
-                System.out.println(counter + ". " + game.gameName() + ", WHITE: " + game.whiteUsername() + ", BLACK: " + game.blackUsername());
+                System.out.println(counter + ". " + game.gameName() + ", WHITE: " + printUsernameOrAvailable(game.whiteUsername()) + ", BLACK: " + printUsernameOrAvailable(game.blackUsername()));
             }
             System.out.println();
 
         } catch (Exception error) {
             System.out.println("Couldn't get a list of games. Sorry, that's our bad. \n");
+        }
+    }
+
+    private static String printUsernameOrAvailable(String username) {
+        if (username == null) {
+            return "available";
+        } else {
+            return username;
         }
     }
 
