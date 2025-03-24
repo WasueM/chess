@@ -11,6 +11,7 @@ public class ChessBoard {
 
     public HashMap<ChessPosition, ChessPiece> pieces = new HashMap<>();
     public int numPieces = 0;
+    char[] letterMapping = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
     public ChessBoard() {
 
@@ -208,14 +209,22 @@ public class ChessBoard {
     public String toString() {
         StringBuilder finalString = new StringBuilder();
 
+        // at the top, put all the letters
+        finalString.append(printLetters(false));
+
         // go through each row and column and add them
         for (int i = 8; i > 0; i--) { // row, from 8 to 1
+            finalString.append(i).append(" ");
             for (int j = 1; j < 9; j++) { // column, from 1 to 8
                 finalString.append(printPosition(i, j));
             }
             // new line after each row
+            finalString.append(" ").append(i);
             finalString.append("\n");
         }
+
+        // at the bottom, put all the letters again
+        finalString.append(printLetters(false));
 
         return finalString.toString();
     }
@@ -224,14 +233,47 @@ public class ChessBoard {
     public String toStringInverted() {
         StringBuilder finalString = new StringBuilder();
 
+        // at the top, put all the letters
+        finalString.append(printLetters(true));
+
         for (int i = 1; i < 9; i++) {
+            finalString.append(i).append(" ");
             for (int j = 8; j > 0; j--) {
                 finalString.append(printPosition(i, j));
             }
+            finalString.append(" ").append(i);
             finalString.append("\n");
         }
 
+        // at the bottom, put all the letters
+        finalString.append(printLetters(true));
+
         return finalString.toString();
+    }
+
+    private String printLetters(boolean inverted) {
+        StringBuilder newString = new StringBuilder();
+
+        if (inverted) {
+            newString.append("  ");
+            for (int j = 8; j > 0; j--) {
+                newString.append(normalCharacter(letterMapping[j - 1]));
+            }
+            newString.append("\n");
+        } else {
+            newString.append("  ");
+            for (int j = 1; j < 9; j++) {
+                newString.append(normalCharacter(letterMapping[j - 1]));
+            }
+            newString.append("\n");
+        }
+
+        return newString.toString();
+    }
+
+    private String normalCharacter(char character) {
+        StringBuilder newString = new StringBuilder();
+        return newString.append(" ").append(character).append(" ").toString();
     }
 
     private String printPosition(int i, int j) {
