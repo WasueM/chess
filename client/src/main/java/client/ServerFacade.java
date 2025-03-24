@@ -94,8 +94,9 @@ public class ServerFacade {
         HttpURLConnection http = sendRequest(serverURL + "game", "POST", this.authToken, body.toString());
         String response = receiveResponse(http);
 
-        // make the response into a Game object
-        int gameID = Integer.parseInt(response.trim());
+        // make the response into a game id
+        JsonObject json = gson.fromJson(response, JsonObject.class);
+        int gameID = json.get("gameID").getAsInt();
 
         return gameID;
     }
@@ -145,9 +146,6 @@ public class ServerFacade {
 
     // returns a string version of the response body so that Gson can convert that into whatever we need later
     private static String receiveResponse(HttpURLConnection http) throws Exception {
-        var statusCode = http.getResponseCode();
-        var statusMessage = http.getResponseMessage();
-
         // Print why when it can't connect
         var status = http.getResponseCode();
         if ( status < 200 || status >= 300) {
