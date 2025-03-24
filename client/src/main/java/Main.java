@@ -270,9 +270,9 @@ public class Main {
             gameToJoinNumber = 9999;
         }
 
-        if (gameToJoinNumber > gameList.length) {
+        if ((gameToJoinNumber > gameList.length) || (gameToJoinNumber < 1)) {
             // this is an error, so just return and tell the user to input something better next time
-            System.out.println("That number is too high or not a number at all, there's no game for that. Please enter a smaller number next time.");
+            System.out.println("That number is too high, too low, or not a number at all, there's no game for that. Please enter a smaller number next time.");
 
             // return true that we should keep accepting input in the loop
             return true;
@@ -344,9 +344,9 @@ public class Main {
             gameToObserveNumber = 9999;
         }
 
-        if (gameToObserveNumber > gameList.length) {
+        if ((gameToObserveNumber > gameList.length) || (gameToObserveNumber < 1)) {
             // this is an error, so just return and tell the user to input something better next time
-            System.out.println("That number is too high or not a number at all, there's no game for that. Please enter a smaller number next time.");
+            System.out.println("That number is too high, too low, or not a number at all, there's no game for that. Please enter a smaller number next time.");
 
             // return true that we should keep accepting input in the loop
             return true;
