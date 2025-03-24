@@ -290,7 +290,7 @@ public class Main {
                     gameController = new GameController(game);
 
                     // switch to game mode
-                    appState = 2;
+                    appState = 1; // will set to 2 later, but 1 for convenience now
                     gameController = new GameController(game);
 
                     // set the team color
