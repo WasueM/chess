@@ -137,9 +137,6 @@ public class ServerFacade {
             }
         }
 
-        // debug
-        System.out.printf("= Request =========\n[%s] %s\n\n%s\n\n", method, url, body != null ? body : "");
-
         // make the request
         http.connect();
 
@@ -159,7 +156,6 @@ public class ServerFacade {
         }
 
         String responseBody = readResponseBody(http);
-        System.out.printf("= Response =========\n[%d] %s\n\n%s\n\n", statusCode, statusMessage, responseBody);
         return responseBody;
     }
 

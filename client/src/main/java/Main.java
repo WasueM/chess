@@ -240,7 +240,6 @@ public class Main {
 
                     // switch to game mode
                     appState = 2;
-                    System.out.println("THE GAME HAS A WHITE USERNAME OF: " + game.whiteUsername());
                     gameController = new GameController(game);
                     gameController.show();
 
