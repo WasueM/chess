@@ -213,7 +213,7 @@ public class Main {
             System.out.println();
 
         } catch (Exception error) {
-            System.out.println("Couldn't get a list of games. Sorry, that's our bad. \n" + error.getMessage());
+            System.out.println("Couldn't get a list of games. Sorry, that's our bad. \n");
         }
     }
 
@@ -243,7 +243,7 @@ public class Main {
                     gameController = new GameController(game);
                     gameController.show();
 
-                    return false; // no more input for now, since they'll be in a game
+                    return true; // no more input for now, since they'll be in a game //false but for now it's easy true
                 }
             }
 
@@ -252,7 +252,7 @@ public class Main {
             return true;
 
         } catch (Exception error) {
-            System.out.println("Couldn't make a game, we're sorry! \n" + error.getMessage());
+            System.out.println("Couldn't make a game, we're sorry! \n");
             return true; // keep accepting input
         }
     }
@@ -266,7 +266,7 @@ public class Main {
         try {
             gameToJoinNumber = Integer.parseInt(scanner.nextLine());
         } catch (Exception error) {
-            System.out.println("Please enter a number next time! \n" + error.getMessage());
+            System.out.println("Please enter a number next time! \n");
             gameToJoinNumber = 9999;
         }
 
@@ -310,7 +310,7 @@ public class Main {
                     gameController = new GameController(game);
                     gameController.show();
 
-                    return false; // no more input for now, since they'll be in a game
+                    return true; // no more input for now, since they'll be in a game //false but for now it's easy true
                 }
             }
 
@@ -319,7 +319,7 @@ public class Main {
             return true;
 
         } catch (Exception error) {
-            System.out.println("Couldn't join that game. Was the game name correct? \n" + error.getMessage());
+            System.out.println("Couldn't join that game. Was the game name correct? Or was that color already taken? \n");
             return true; // can keep getting input
         }
     }
@@ -336,7 +336,7 @@ public class Main {
 
             // if it didn't throw an error, it worked, so let them know
             System.out.println("We'll get this up and running in phase 6 so nothing for now");
-            return true;
+            return true; // false later but for now it's easier true
 
         } catch (Exception error) {
             System.out.println("Couldn't join that game. Was the game name correct?");
