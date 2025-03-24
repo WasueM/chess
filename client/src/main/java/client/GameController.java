@@ -22,7 +22,7 @@ public class GameController {
             System.out.print(game.game().chessBoard);
         } else {
             // draw it with black at the bottom
-            System.out.print(game.game().chessBoard);
+            System.out.print(game.game().chessBoard.toStringInverted());
         }
     }
 }

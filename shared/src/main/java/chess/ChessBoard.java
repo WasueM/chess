@@ -226,4 +226,24 @@ public class ChessBoard {
 
         return finalString;
     }
+
+    // the exact same as to string but from black's perspective
+    public String toStringInverted() {
+        String finalString = "";
+
+        for (int i = 1; i < 9; i++) {
+            for (int j = 8; j > 0; j--) {
+                ChessPosition positionIWantToRetrieve = new ChessPosition(i, j);
+                ChessPiece pieceAtPosition = this.getPiece(positionIWantToRetrieve);
+                if (pieceAtPosition != null) {
+                    finalString = finalString + pieceAtPosition.toString();
+                } else {
+                    finalString = finalString + " \u2003 ";
+                }
+            }
+            finalString = finalString + "\n";
+        }
+
+        return finalString;
+    }
 }

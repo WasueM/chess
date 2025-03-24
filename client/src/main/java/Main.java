@@ -233,22 +233,7 @@ public class Main {
             // if it didn't throw an error, it worked, so let them know
             System.out.println("Awesome! That game has been created.");
 
-            // grab the actual game data for that game ID
-            for (GameData game : gameList) {
-                if (game.gameID() == gameID) {
-                    gameController = new GameController(game);
-
-                    // switch to game mode
-                    appState = 2;
-                    gameController = new GameController(game);
-                    gameController.show();
-
-                    return true; // no more input for now, since they'll be in a game //false but for now it's easy true
-                }
-            }
-
-            // there was no game found
-            System.out.println("Failed to create the game,");
+            // keep accepting input
             return true;
 
         } catch (Exception error) {
@@ -307,6 +292,14 @@ public class Main {
                     // switch to game mode
                     appState = 2;
                     gameController = new GameController(game);
+
+                    // set the team color
+                    ChessGame.TeamColor teamColor = ChessGame.TeamColor.WHITE;
+                    if (Objects.equals(color, "BLACK")) {
+                        teamColor = ChessGame.TeamColor.BLACK;
+                    }
+
+                    gameController.setPlayer(teamColor);
                     gameController.show();
 
                     return true; // no more input for now, since they'll be in a game //false but for now it's easy true
