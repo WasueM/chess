@@ -1,5 +1,6 @@
 package client;
 
+import model.AuthData;
 import org.junit.jupiter.api.*;
 import server.Server;
 
@@ -30,7 +31,7 @@ public class ServerFacadeTests {
 
     @Test
     void register() throws Exception {
-        var authData = facade.register("testUser", "1234", "testEmail");
+        AuthData authData = facade.register("testUser", "1234", "testEmail");
         assertTrue(authData.length() > 10);
     }
 

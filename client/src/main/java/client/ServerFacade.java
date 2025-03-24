@@ -30,14 +30,7 @@ public class ServerFacade {
         serverURL = url;
     }
 
-    public void connectToServer(String url) throws Exception {
-        // this function just proves that we can connect to it at all and print, we can probably delete this later
-        serverURL = url;
-        HttpURLConnection http = sendRequest(url, "GET", null, null);
-        System.out.println("Connected to server!");
-    }
-
-    public void register(String username, String password, String email) throws Exception {
+    public AuthData register(String username, String password, String email) throws Exception {
         JsonObject body = new JsonObject();
         body.addProperty("username", username);
         body.addProperty("password", password);
@@ -51,9 +44,12 @@ public class ServerFacade {
 
         // store the auth token here in the facade so we can easily use it whenever we need to
         this.authToken = authData.authToken();
+
+        // return the auth data
+        return authData;
     }
 
-    public void login(String username, String password) throws Exception {
+    public AuthData login(String username, String password) throws Exception {
         JsonObject body = new JsonObject();
         body.addProperty("username", username);
         body.addProperty("password", password);
@@ -66,11 +62,20 @@ public class ServerFacade {
 
         // store the auth token here in the facade so we can easily use it whenever we need to
         this.authToken = authData.authToken();
+
+        // return auth data
+        return authData;
     }
 
-    public void logout() throws Exception {
-        sendRequest(serverURL + "session", "DELETE", this.authToken, null);
-        this.authToken = "loggedOutSoNoTokenHere";
+    public boolean logout() throws Exception {
+        try {
+            sendRequest(serverURL + "session", "DELETE", this.authToken, null);
+            this.authToken = "loggedOutSoNoTokenHere";
+
+            return true; // successful
+        } catch (Exception error) {
+            return false; // failed
+        }
     }
 
     public GameData[] listGames() throws Exception {

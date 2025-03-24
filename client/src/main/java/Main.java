@@ -81,6 +81,8 @@ public class Main {
                     return playGame(); // will return true if it doesn't work (keep getting input) or false otherwise
                 case "observe game":
                     return observeGame();
+                case "clear database":
+                    return clearDatabase();
             }
         }
         // quitting should always be available, logged in or not:
@@ -333,6 +335,17 @@ public class Main {
         } catch (Exception error) {
             System.out.println("Couldn't join that game. Was the game name correct?");
             return true;
+        }
+    }
+
+    private static boolean clearDatabase() {
+        try {
+            serverFacade.clearDatabase();
+            System.out.println("Database deleted!");
+            return true; // keep accepting input
+        } catch (Exception error) {
+            System.out.println("Error clearing the database.");
+            return true; // still keep accepting input
         }
     }
 }
