@@ -120,8 +120,14 @@ public class ServerFacade {
         return id;
     }
 
-    public void clearDatabase() throws Exception {
-        sendRequest(serverURL + "db", "DELETE", null, null);
+    public boolean clearDatabase() throws Exception {
+        HttpURLConnection http = sendRequest(serverURL + "db", "DELETE", null, null);
+        String response = receiveResponse(http);
+        if (response != null) {
+            return true; // yes it was deleted
+        } else {
+            return false; // failed to delete
+        }
     }
 
     private static HttpURLConnection sendRequest(String url, String method, String authToken, String body) throws Exception {
