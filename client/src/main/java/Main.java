@@ -107,7 +107,12 @@ public class Main {
 
     private static void helpTextPostLogin() {
         System.out.println();
-        System.out.println("You can type 'quit' to leave,\n'logout' to log out,\n'create game' to make a new game,\n'list games' to see active games,\n'play game' to join a game, or \n'observe game' to spectate.");
+        System.out.println("You can type 'quit' to leave," +
+                "\n'logout' to log out," +
+                "\n'create game' to make a new game," +
+                "\n'list games' to see active games," +
+                "\n'play game' to join a game, or " +
+                "\n'observe game' to spectate.");
         System.out.println();
     }
 
