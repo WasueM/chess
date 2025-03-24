@@ -13,6 +13,15 @@ public class ChessBoard {
     public int numPieces = 0;
     char[] letterMapping = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
+    // important things for making the checkered background of the board
+    private static final String UNICODE_ESCAPE = "\u001b";
+    public static final String SET_BG_COLOR_LIGHT_GREY = UNICODE_ESCAPE + "[48;5;242m";
+    public static final String SET_BG_COLOR_DARK_GREY = UNICODE_ESCAPE + "[48;5;235m";
+    public static final String RESET_BG_COLOR = UNICODE_ESCAPE + "[49m";
+    public static final String LIGHT_SQUARE = SET_BG_COLOR_LIGHT_GREY;
+    public static final String DARK_SQUARE = SET_BG_COLOR_DARK_GREY;
+    public boolean isSquareChecked = true;
+
     public ChessBoard() {
 
     }
@@ -221,6 +230,7 @@ public class ChessBoard {
             // new line after each row
             finalString.append(" ").append(i);
             finalString.append("\n");
+            flipChecker();
         }
 
         // at the bottom, put all the letters again
@@ -243,12 +253,22 @@ public class ChessBoard {
             }
             finalString.append(" ").append(i);
             finalString.append("\n");
+            flipChecker();
         }
 
         // at the bottom, put all the letters
         finalString.append(printLetters(true));
 
         return finalString.toString();
+    }
+
+    private void flipChecker() {
+        if (isSquareChecked == true) {
+            isSquareChecked = false;
+        }
+        else {
+            isSquareChecked = true;
+        }
     }
 
     private String printLetters(boolean inverted) {
@@ -277,12 +297,25 @@ public class ChessBoard {
     }
 
     private String printPosition(int i, int j) {
+
+        String backgroundColor = "";
+        if (isSquareChecked) {
+            // set the background to darker
+            backgroundColor = SET_BG_COLOR_LIGHT_GREY;
+        } else {
+            // set the background to lighter
+            backgroundColor = SET_BG_COLOR_DARK_GREY;
+        }
+
+        // flip the checkers for next time, if not at end of row
+        flipChecker();
+
         ChessPosition positionIWantToRetrieve = new ChessPosition(i, j);
         ChessPiece pieceAtPosition = this.getPiece(positionIWantToRetrieve);
         if (pieceAtPosition != null) {
-            return pieceAtPosition.toString();
+            return backgroundColor + pieceAtPosition.toString() + RESET_BG_COLOR;
         } else {
-            return " \u2003 ";
+            return backgroundColor + " \u2003 " + RESET_BG_COLOR;
         }
     }
 }
