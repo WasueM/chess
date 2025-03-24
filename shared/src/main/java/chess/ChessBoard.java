@@ -216,7 +216,7 @@ public class ChessBoard {
                 if (pieceAtPosition != null) {
                     finalString = finalString + pieceAtPosition.toString();
                 } else {
-                    finalString = finalString + "--";
+                    finalString = finalString + " \u2003 ";
                 }
 
             }
