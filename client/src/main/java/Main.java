@@ -2,7 +2,6 @@ import chess.*;
 import client.GameController;
 import client.ServerFacade;
 import model.GameData;
-import server.Server;
 
 import java.util.Objects;
 import java.util.Scanner;
@@ -15,16 +14,11 @@ public class Main {
     static GameController gameController;
 
     public static void main(String[] args) {
-        // for testing locally, make the local server
-        Server server = new Server();
-        var port = server.run(8080);
-        System.out.println("Started local HTTP server on " + port);
-
         // make the client
         try {
-            serverFacade = new ServerFacade("http://localhost:" + port + "/");
+            serverFacade = new ServerFacade("http://localhost:" + 8080 + "/");
         } catch (Exception error) {
-            System.out.println("Couldn't connect to the server at \"http://localhost:" + port + "/\"");
+            System.out.println("Couldn't connect to the server at \"http://localhost:" + 8080 + "/\"");
             System.exit(0);
         }
 
