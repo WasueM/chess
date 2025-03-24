@@ -22,7 +22,7 @@ public class ServerFacade {
     private String authToken = "emptyDefaultToken";
 
     // the same as the one used on the server side
-    private static final Gson gson = new GsonBuilder()
+    private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(ChessBoard.class, new ChessBoardJSONAdapter())
             .create();
 
@@ -40,7 +40,7 @@ public class ServerFacade {
         String response = receiveResponse(http);
 
         // turn the response into our auth data model so we can use it
-        AuthData authData = gson.fromJson(response, AuthData.class);
+        AuthData authData = GSON.fromJson(response, AuthData.class);
 
         // store the auth token here in the facade so we can easily use it whenever we need to
         this.authToken = authData.authToken();
@@ -58,7 +58,7 @@ public class ServerFacade {
         String response = receiveResponse(http);
 
         // turn the response into our auth data model so we can use it
-        AuthData authData = gson.fromJson(response, AuthData.class);
+        AuthData authData = GSON.fromJson(response, AuthData.class);
 
         // store the auth token here in the facade so we can easily use it whenever we need to
         this.authToken = authData.authToken();
@@ -84,7 +84,7 @@ public class ServerFacade {
 
         // since the games come wrapped in another level of json, we need this to help gson get the games out
         var type = new TypeToken<Map<String, GameData[]>>(){}.getType();
-        Map<String, GameData[]> map = gson.fromJson(response, type);
+        Map<String, GameData[]> map = GSON.fromJson(response, type);
 
         // get the games from the wrapped data structure
         GameData[] games = map.get("games");
@@ -100,7 +100,7 @@ public class ServerFacade {
         String response = receiveResponse(http);
 
         // make the response into a game id
-        JsonObject json = gson.fromJson(response, JsonObject.class);
+        JsonObject json = GSON.fromJson(response, JsonObject.class);
         int gameID = json.get("gameID").getAsInt();
 
         return gameID;
@@ -114,7 +114,7 @@ public class ServerFacade {
         HttpURLConnection http = sendRequest(serverURL + "game", "PUT", this.authToken, body.toString());
         String response = receiveResponse(http);
 
-        JsonObject json = gson.fromJson(response, JsonObject.class);
+        JsonObject json = GSON.fromJson(response, JsonObject.class);
         int id = json.get("gameID").getAsInt();
 
         return id;

@@ -206,44 +206,41 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        String finalString = "";
+        StringBuilder finalString = new StringBuilder();
 
         // go through each row and column and add them
         for (int i = 8; i > 0; i--) { // row, from 8 to 1
             for (int j = 1; j < 9; j++) { // column, from 1 to 8
-                ChessPosition positionIWantToRetrieve = new ChessPosition(i, j);
-                ChessPiece pieceAtPosition = this.getPiece(positionIWantToRetrieve);
-                if (pieceAtPosition != null) {
-                    finalString = finalString + pieceAtPosition.toString();
-                } else {
-                    finalString = finalString + " \u2003 ";
-                }
-
+                finalString.append(printPosition(i, j));
             }
             // new line after each row
-            finalString = finalString + "\n";
+            finalString.append("\n");
         }
 
-        return finalString;
+        return finalString.toString();
     }
 
     // the exact same as to string but from black's perspective
     public String toStringInverted() {
-        String finalString = "";
+        StringBuilder finalString = new StringBuilder();
 
         for (int i = 1; i < 9; i++) {
             for (int j = 8; j > 0; j--) {
-                ChessPosition positionIWantToRetrieve = new ChessPosition(i, j);
-                ChessPiece pieceAtPosition = this.getPiece(positionIWantToRetrieve);
-                if (pieceAtPosition != null) {
-                    finalString = finalString + pieceAtPosition.toString();
-                } else {
-                    finalString = finalString + " \u2003 ";
-                }
+                finalString.append(printPosition(i, j));
             }
-            finalString = finalString + "\n";
+            finalString.append("\n");
         }
 
-        return finalString;
+        return finalString.toString();
+    }
+
+    private String printPosition(int i, int j) {
+        ChessPosition positionIWantToRetrieve = new ChessPosition(i, j);
+        ChessPiece pieceAtPosition = this.getPiece(positionIWantToRetrieve);
+        if (pieceAtPosition != null) {
+            return pieceAtPosition.toString();
+        } else {
+            return " \u2003 ";
+        }
     }
 }
