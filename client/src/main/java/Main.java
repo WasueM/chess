@@ -92,7 +92,7 @@ public class Main {
 
         // if it hasn't return by now, it doesn't match anything, so we should tell them that.
         System.out.println();
-        System.out.println("Looks like you typed something that wasn't a commend. Need help? Just type 'help'.");
+        System.out.println("Looks like you typed something that wasn't a command. Need help? Just type 'help'.");
         System.out.println();
         return true;
     }
@@ -225,17 +225,32 @@ public class Main {
         String gameName = scanner.nextLine();
 
         try {
-            GameData game = serverFacade.createGame(gameName);
+            int gameID = serverFacade.createGame(gameName);
+
+            // update the list of games now that it's created the game
+            listGames();
 
             // if it didn't throw an error, it worked, so let them know
             System.out.println("Awesome! That game has been created.");
 
-            // switch to game mode
-            appState = 2;
-            gameController = new GameController(game);
-            gameController.show();
+            // grab the actual game data for that game ID
+            for (GameData game : gameList) {
+                if (game.gameID() == gameID) {
+                    gameController = new GameController(game);
 
-            return false; // no more input for now
+                    // switch to game mode
+                    appState = 2;
+                    System.out.println("THE GAME HAS A WHITE USERNAME OF: " + game.whiteUsername());
+                    gameController = new GameController(game);
+                    gameController.show();
+
+                    return false; // no more input for now, since they'll be in a game
+                }
+            }
+
+            // there was no game found
+            System.out.println("Failed to create the game,");
+            return true;
 
         } catch (Exception error) {
             System.out.println("Couldn't make a game, we're sorry! \n" + error.getMessage());
@@ -277,19 +292,33 @@ public class Main {
         }
 
         try {
-            GameData game = serverFacade.joinGame(color, gameIDToJoin);
+            int gameID = serverFacade.joinGame(color, gameIDToJoin);
+
+            // update the list of games now that it's created the game
+            listGames();
 
             // if it didn't throw an error, it worked, so let them know
             System.out.println("Awesome! You've joined the game. Happy playing!");
 
-            // switch to game mode
-            appState = 2;
-            System.out.println(game);
-            gameController = new GameController(game);
-            gameController.show();
+            // grab the actual game data for that game ID
+            for (GameData game : gameList) {
+                if (game.gameID() == gameID) {
+                    gameController = new GameController(game);
 
-            // no need to get more input right now, we're in-game
-            return false;
+                    // switch to game mode
+                    appState = 2;
+                    System.out.println("THE GAME HAS A WHITE USERNAME OF: " + game.whiteUsername());
+                    gameController = new GameController(game);
+                    gameController.show();
+
+                    return false; // no more input for now, since they'll be in a game
+                }
+            }
+
+            // there was no game found
+            System.out.println("Failed to join the game,");
+            return true;
+
         } catch (Exception error) {
             System.out.println("Couldn't join that game. Was the game name correct? \n" + error.getMessage());
             return true; // can keep getting input

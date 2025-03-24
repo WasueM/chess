@@ -87,7 +87,7 @@ public class ServerFacade {
         return games;
     }
 
-    public GameData createGame(String gameName) throws Exception {
+    public int createGame(String gameName) throws Exception {
         JsonObject body = new JsonObject();
         body.addProperty("gameName", gameName);
 
@@ -95,12 +95,12 @@ public class ServerFacade {
         String response = receiveResponse(http);
 
         // make the response into a Game object
-        GameData game = gson.fromJson(response, GameData.class);
+        int gameID = Integer.parseInt(response.trim());
 
-        return game;
+        return gameID;
     }
 
-    public GameData joinGame(String playerColor, int gameID) throws Exception {
+    public int joinGame(String playerColor, int gameID) throws Exception {
         JsonObject body = new JsonObject();
         body.addProperty("playerColor", playerColor);
         body.addProperty("gameID", gameID);
@@ -108,10 +108,10 @@ public class ServerFacade {
         HttpURLConnection http = sendRequest(serverURL + "game", "PUT", this.authToken, body.toString());
         String response = receiveResponse(http);
 
-        // make the response into a Game object
-        GameData game = gson.fromJson(response, GameData.class);
+        JsonObject json = gson.fromJson(response, JsonObject.class);
+        int id = json.get("gameID").getAsInt();
 
-        return game;
+        return id;
     }
 
     public void clearDatabase() throws Exception {
