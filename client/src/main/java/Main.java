@@ -107,13 +107,13 @@ public class Main {
 
     private static void helpTextPreLogin() {
         System.out.println();
-        System.out.println("You can type 'quit' to leave, 'login' to log in, and 'register' to make a new account.");
+        System.out.println("You can type 'quit' to leave,\n'login' to log in, and\n'register' to make a new account.");
         System.out.println();
     }
 
     private static void helpTextPostLogin() {
         System.out.println();
-        System.out.println("You can type 'quit' to leave, 'logout' to log out, and 'create game' to make a new game, 'list games' to see active games, 'play game' to join a game, or 'observe game' to spectate.");
+        System.out.println("You can type 'quit' to leave,\n'logout' to log out,\n'create game' to make a new game,\n'list games' to see active games,\n'play game' to join a game, or \n'observe game' to spectate.");
         System.out.println();
     }
 
