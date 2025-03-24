@@ -213,7 +213,9 @@ public class Main {
             for (GameData game : gameList) {
                 counter++;
                 // print the game name, then the white player, then the black play
-                System.out.println(counter + ". " + game.gameName() + ", WHITE: " + printUsernameOrAvailable(game.whiteUsername()) + ", BLACK: " + printUsernameOrAvailable(game.blackUsername()));
+                System.out.println(counter + ". " + game.gameName() +
+                        ", WHITE: " + printUsernameOrAvailable(game.whiteUsername()) +
+                        ", BLACK: " + printUsernameOrAvailable(game.blackUsername()));
             }
             System.out.println();
 
