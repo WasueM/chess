@@ -153,6 +153,7 @@ public class Main {
         try {
             serverFacade.logout();
             appState = 0;
+            System.out.println("You're now logged out!");
         } catch (Exception error ){
             System.out.println("Couldn't log you out. How odd. Just quit instead to restart.");
         }
