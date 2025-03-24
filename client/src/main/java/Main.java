@@ -330,17 +330,52 @@ public class Main {
     }
 
     private static boolean observeGame() {
-        System.out.println("Sounds good! Which game do you want to observe?");
+        System.out.println("Sounds good! Which game do you want to observe? (Number)");
         System.out.print(">>> ");
 
+        int gameToObserveNumber = 9999;
         Scanner scanner = new Scanner(System.in);
-        String gameToObserveName = scanner.nextLine();
+        try {
+            gameToObserveNumber = Integer.parseInt(scanner.nextLine());
+        } catch (Exception error) {
+            System.out.println("Please enter a number next time! \n");
+            gameToObserveNumber = 9999;
+        }
+
+        if (gameToObserveNumber > gameList.length) {
+            // this is an error, so just return and tell the user to input something better next time
+            System.out.println("That number is too high or not a number at all, there's no game for that. Please enter a smaller number next time.");
+
+            // return true that we should keep accepting input in the loop
+            return true;
+        }
+
+        GameData gameToJoin = gameList[gameToObserveNumber - 1];
+        int gameIDToObserve = gameToJoin.gameID();
 
         try {
             // won't do anything since it says to get this working only in phase 6
+            // grab the actual game data for that game ID
+            for (GameData game : gameList) {
+                if (game.gameID() == gameIDToObserve) {
+                    gameController = new GameController(game);
+
+                    // switch to game mode
+                    appState = 1; // will set to 2 later, but 1 for convenience now
+                    gameController = new GameController(game);
+
+                    // set the team color to white for observe
+                    ChessGame.TeamColor teamColor = ChessGame.TeamColor.WHITE;
+
+                    gameController.setPlayer(teamColor);
+                    gameController.show();
+
+                    return true; // no more input for now, since they'll be in a game //false but for now it's easy true
+                }
+            }
 
             // if it didn't throw an error, it worked, so let them know
-            System.out.println("We'll get this up and running in phase 6 so nothing for now");
+            System.out.println("We'll get this up and running in phase 6 so nothing else for now");
             return true; // false later but for now it's easier true
 
         } catch (Exception error) {
