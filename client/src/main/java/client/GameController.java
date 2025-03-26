@@ -70,7 +70,7 @@ public class GameController {
             System.out.print(game.game().chessBoard.toStringHighlighted(startingPosition, validMoves));
         } else {
             // draw it with black at the bottom
-            System.out.print(game.game().chessBoard.toStringHighlightedInverted(startingPosition, validMoves));
+            System.out.print(game.game().chessBoard.toStringInvertedHighlighted(startingPosition, validMoves));
         }
     }
 }
