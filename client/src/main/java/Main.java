@@ -440,4 +440,9 @@ public class Main {
             return true; // still keep accepting input
         }
     }
+
+    private static void redrawChessBoard() {
+        // just call show again to redow the drawing
+        gameController.show();
+    }
 }
