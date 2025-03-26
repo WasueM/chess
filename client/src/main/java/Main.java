@@ -144,6 +144,28 @@ public class Main {
         System.out.println();
     }
 
+    private static void helpTextPlayingGame() {
+        System.out.println();
+        System.out.println("You can type" +
+                "\n'quit' to quit the application," +
+                "\n'redraw chess board' to redraw the board," +
+                "\n'leave' to leave the game," +
+                "\n'make move' to make a move," +
+                "\n'resign' to forfeit the match," +
+                "\n'highlight legal moves' to highlight your possible moves, or" +
+                "\n'help' to bring up this list.");
+        System.out.println();
+    }
+
+    private static void helpTextObservingGame() {
+        System.out.println();
+        System.out.println("You can type" +
+                "\n'quit' to quite the application," +
+                "\n'leave' to to leave the game, or" +
+                "\n'help' to bring up this list.");
+        System.out.println();
+    }
+
     private static void quit() {
         System.exit(0);
     }
