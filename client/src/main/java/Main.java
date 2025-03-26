@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Main {
 
     static ServerFacade serverFacade;
-    static int appState = 0; // 0 is not logged in, 1 in logged in, // 2 for in-game
+    static int appState = 0; // 0 is not logged in, 1 in logged in, // 2 for playing game, // 3 for observing game
     static GameData[] gameList; // store the games list in an array
     static GameController gameController;
 
@@ -43,7 +43,7 @@ public class Main {
     }
 
     private static boolean handleInput(String input) {
-        // different switch statements based on the app state, logged in or not?
+        // different switch statements based on the app state, logged in or not? playing game? observing?
         if (appState == 0) {
             switch (input) {
                 case "help":
@@ -75,6 +75,28 @@ public class Main {
                     return observeGame();
                 case "clear database":
                     return clearDatabase();
+            }
+        } else if (appState == 2) { // playing game
+            switch (input) {
+                case "help":
+                    helpTextPlayingGame();
+                case "redraw chess board":
+                    redrawChessBoard();
+                case "leave":
+                    leaveGame();
+                case "make move":
+                    makeMove();
+                case "resign":
+                    resign();
+                case "highlight legal moves":
+                    highlightLegalMoves();
+            }
+        } else if (appState == 3) {
+            switch (input) {
+                case "help":
+                    helpTextObservingGame();
+                case "leave":
+                    leaveGame();
             }
         }
         // quitting should always be available, logged in or not:
@@ -305,7 +327,7 @@ public class Main {
                     gameController = new GameController(game);
 
                     // switch to game mode
-                    appState = 1; // will set to 2 later, but 1 for convenience now
+                    appState = 2;
                     gameController = new GameController(game);
 
                     // set the team color
@@ -363,7 +385,7 @@ public class Main {
                     gameController = new GameController(game);
 
                     // switch to game mode
-                    appState = 1; // will set to 2 later, but 1 for convenience now
+                    appState = 3;
                     gameController = new GameController(game);
 
                     // set the team color to white for observe
