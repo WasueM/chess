@@ -1,7 +1,11 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import model.GameData;
+
+import java.util.Collection;
 
 public class GameController {
 
@@ -56,7 +60,17 @@ public class GameController {
         }
     }
 
-    public void highlightLegalMoves() {
+    public void highlightLegalMoves(int row, int column) {
+        // first, we need the valid moves starting at that location
+        ChessPosition startingPosition = new ChessPosition(row, column);
+        Collection<ChessMove> validMoves = this.game.game().validMoves(startingPosition);
 
+        if (playerColor == ChessGame.TeamColor.WHITE) {
+            // draw it with white at the bottom
+            System.out.print(game.game().chessBoard.toStringHighlighted(startingPosition, validMoves));
+        } else {
+            // draw it with black at the bottom
+            System.out.print(game.game().chessBoard.toStringHighlightedInverted(startingPosition, validMoves));
+        }
     }
 }

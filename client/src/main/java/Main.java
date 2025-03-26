@@ -442,7 +442,11 @@ public class Main {
     }
 
     private static void redrawChessBoard() {
-        // just call show again to redow the drawing
+        // just call show again to redo the drawing
         gameController.show();
+    }
+
+    private static void highlightLegalMoves() {
+        gameController.highlightLegalMoves();
     }
 }
