@@ -311,7 +311,7 @@ public class Main {
             gameToJoinNumber = Integer.parseInt(scanner.nextLine());
         } catch (Exception error) {
             System.out.println("Please enter a number next time! \n");
-            gameToJoinNumber = 9999;
+            return true;
         }
 
         if ((gameToJoinNumber > gameList.length) || (gameToJoinNumber < 1)) {
@@ -385,7 +385,7 @@ public class Main {
             gameToObserveNumber = Integer.parseInt(scanner.nextLine());
         } catch (Exception error) {
             System.out.println("Please enter a number next time! \n");
-            gameToObserveNumber = 9999;
+            return true;
         }
 
         if ((gameToObserveNumber > gameList.length) || (gameToObserveNumber < 1)) {
@@ -441,12 +441,72 @@ public class Main {
         }
     }
 
-    private static void redrawChessBoard() {
+    private static boolean redrawChessBoard() {
         // just call show again to redo the drawing
         gameController.show();
+        return true;
     }
 
-    private static void highlightLegalMoves() {
-        gameController.highlightLegalMoves();
+    private static boolean highlightLegalMoves() {
+        int row = readInValidRow();
+        int column = readInValidColumn();
+
+        if ((row > 8) || (row > 8)) {
+            // just amking sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
+            return true;
+        }
+
+        gameController.highlightLegalMoves(row, column);
+    }
+
+    private static int readInValidRow() {
+        System.out.println("Enter the row: (Number)");
+        System.out.print(">>> ");
+
+        int row = 9999;
+        Scanner scanner = new Scanner(System.in);
+        try {
+            row = Integer.parseInt(scanner.nextLine());
+        } catch (Exception error) {
+            System.out.println("Please enter a number next time! \n");
+            return 9999;
+        }
+
+        if ((row > 8) || (row < 1)) {
+            // this is an error, so just return and tell the user to input something better next time
+            System.out.println("That number is too high, too low, or not a number at all, there's no row for that. Please enter a better number next time.");
+
+            // return true that we should keep accepting input in the loop
+            return 9999;
+        }
+
+        return row;
+    }
+
+    private static int readInValidColumn() {
+        System.out.println("Enter the column: (Letter)");
+        System.out.print(">>> ");
+
+        String character = "a";
+        Scanner scanner = new Scanner(System.in);
+        try {
+            character = scanner.nextLine();
+        } catch (Exception error) {
+            System.out.println("Please enter a letter from 'a' to 'h' next time! \n");
+            return 9999;
+        }
+
+        char charCharacter = character.toCharArray()[0];
+        int column = charCharacter - 'a' + 1;
+
+        if ((column > 8) || (column < 1)) {
+            // this is an error, so just return and tell the user to input something better next time
+            System.out.println("That column is too high, too low, or not a column at all, there's no column for that. Please enter a valid letter next time.");
+
+            // return true that we should keep accepting input in the loop
+            return 9999;
+        }
+
+        return column;
     }
 }
