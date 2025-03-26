@@ -252,9 +252,16 @@ public class ChessBoard {
             for (int j = 1; j < 9; j++) { // column, from 1 to 8
                 // figure out if it should be highlighted or not
                 ChessPosition currentSquare = new ChessPosition(i, j);
+
+                // make positions out of the moves
+                Collection<ChessPosition> validPositions = new ArrayList<>();
+                for (ChessMove move : validMoves) {
+                    validPositions.add(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn()));
+                }
+
                 if (currentSquare.equals(startingPosition)) {
                     finalString.append(printPosition(i, j, 3)); // print it bright yellow, it's the starting position
-                } else if (validMoves.contains(currentSquare)) {
+                } else if (validPositions.contains(currentSquare)) {
                     finalString.append(printPosition(i, j, 2)); // print it a dulled color but still highlighted color, as you can move there
                 } else {
                     finalString.append(printPosition(i, j, 1));
@@ -283,6 +290,44 @@ public class ChessBoard {
             finalString.append(i).append(" ");
             for (int j = 8; j > 0; j--) {
                 finalString.append(printPosition(i, j, 1));
+            }
+            finalString.append(" ").append(i);
+            finalString.append("\n");
+            flipChecker();
+        }
+
+        // at the bottom, put all the letters
+        finalString.append(printLetters(true));
+
+        return finalString.toString();
+    }
+
+    // the exact same as to string but from black's perspective
+    public String toStringInvertedHighlighted(ChessPosition startingPosition, Collection<ChessMove> validMoves) {
+        StringBuilder finalString = new StringBuilder();
+
+        // at the top, put all the letters
+        finalString.append(printLetters(true));
+
+        for (int i = 1; i < 9; i++) {
+            finalString.append(i).append(" ");
+            for (int j = 8; j > 0; j--) {
+                // figure out if it should be highlighted or not
+                ChessPosition currentSquare = new ChessPosition(i, j);
+
+                // make positions out of the moves
+                Collection<ChessPosition> validPositions = new ArrayList<>();
+                for (ChessMove move : validMoves) {
+                    validPositions.add(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn()));
+                }
+
+                if (currentSquare.equals(startingPosition)) {
+                    finalString.append(printPosition(i, j, 3)); // print it bright yellow, it's the starting position
+                } else if (validPositions.contains(currentSquare)) {
+                    finalString.append(printPosition(i, j, 2)); // print it a dulled color but still highlighted color, as you can move there
+                } else {
+                    finalString.append(printPosition(i, j, 1));
+                }
             }
             finalString.append(" ").append(i);
             finalString.append("\n");
