@@ -17,9 +17,10 @@ public class ChessBoard {
     private static final String UNICODE_ESCAPE = "\u001b";
     public static final String SET_BG_COLOR_LIGHT_GREY = UNICODE_ESCAPE + "[48;5;242m";
     public static final String SET_BG_COLOR_DARK_GREY = UNICODE_ESCAPE + "[48;5;235m";
+    public static final String SET_BG_COLOR_BRIGHT_YELLOW = UNICODE_ESCAPE + "[48;5;226m";
+    public static final String SET_BG_COLOR_LIGHT_YELLOWISH = UNICODE_ESCAPE + "[48;5;187m";
+    public static final String SET_BG_COLOR_DARK_YELLOWISH = UNICODE_ESCAPE + "[48;5;101m";
     public static final String RESET_BG_COLOR = UNICODE_ESCAPE + "[49m";
-    public static final String LIGHT_SQUARE = SET_BG_COLOR_LIGHT_GREY;
-    public static final String DARK_SQUARE = SET_BG_COLOR_DARK_GREY;
     public boolean isSquareChecked = true;
 
     public ChessBoard() {
@@ -225,7 +226,39 @@ public class ChessBoard {
         for (int i = 8; i > 0; i--) { // row, from 8 to 1
             finalString.append(i).append(" ");
             for (int j = 1; j < 9; j++) { // column, from 1 to 8
-                finalString.append(printPosition(i, j));
+                finalString.append(printPosition(i, j, 1));
+            }
+            // new line after each row
+            finalString.append(" ").append(i);
+            finalString.append("\n");
+            flipChecker();
+        }
+
+        // at the bottom, put all the letters again
+        finalString.append(printLetters(false));
+
+        return finalString.toString();
+    }
+
+    public String toStringHighlighted(ChessPosition startingPosition, Collection<ChessMove> validMoves) {
+        StringBuilder finalString = new StringBuilder();
+
+        // at the top, put all the letters
+        finalString.append(printLetters(false));
+
+        // go through each row and column and add them
+        for (int i = 8; i > 0; i--) { // row, from 8 to 1
+            finalString.append(i).append(" ");
+            for (int j = 1; j < 9; j++) { // column, from 1 to 8
+                // figure out if it should be highlighted or not
+                ChessPosition currentSquare = new ChessPosition(i, j);
+                if (currentSquare.equals(startingPosition)) {
+                    finalString.append(printPosition(i, j, 3)); // print it bright yellow, it's the starting position
+                } else if (validMoves.contains(currentSquare)) {
+                    finalString.append(printPosition(i, j, 2)); // print it a dulled color but still highlighted color, as you can move there
+                } else {
+                    finalString.append(printPosition(i, j, 1));
+                }
             }
             // new line after each row
             finalString.append(" ").append(i);
@@ -249,7 +282,7 @@ public class ChessBoard {
         for (int i = 1; i < 9; i++) {
             finalString.append(i).append(" ");
             for (int j = 8; j > 0; j--) {
-                finalString.append(printPosition(i, j));
+                finalString.append(printPosition(i, j, 1));
             }
             finalString.append(" ").append(i);
             finalString.append("\n");
@@ -296,15 +329,25 @@ public class ChessBoard {
         return newString.append(" ").append(character).append(" ").toString();
     }
 
-    private String printPosition(int i, int j) {
+    private String printPosition(int i, int j, int highlightState) {
 
         String backgroundColor = "";
         if (isSquareChecked) {
             // set the background to darker
             backgroundColor = SET_BG_COLOR_LIGHT_GREY;
+            if (highlightState == 2) {
+                backgroundColor = SET_BG_COLOR_LIGHT_YELLOWISH; // highlight it but maintain that it's a white square
+            }
         } else {
             // set the background to lighter
             backgroundColor = SET_BG_COLOR_DARK_GREY;
+            if (highlightState == 2) {
+                backgroundColor = SET_BG_COLOR_DARK_YELLOWISH; // highlight it but maintain that it's a black square
+            }
+        }
+
+        if (highlightState == 3) { // then we don't care, overwrite with bright yellow
+            backgroundColor = SET_BG_COLOR_BRIGHT_YELLOW;
         }
 
         // flip the checkers for next time, if not at end of row
