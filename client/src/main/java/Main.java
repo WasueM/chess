@@ -47,28 +47,22 @@ public class Main {
         if (appState == 0) {
             switch (input) {
                 case "help":
-                    helpTextPreLogin();
-                    return true;
+                    return helpTextPreLogin();
                 case "login":
-                    login();
-                    return true;
+                    return login();
                 case "register":
-                    register();
-                    return true;
+                    return register();
             }
         } else if (appState == 1) {
             switch (input) {
                 case "help":
-                    helpTextPostLogin();
-                    return true;
+                    return helpTextPostLogin();
                 case "logout":
-                    logout();
-                    return true;
+                    return logout();
                 case "create game":
                     return createGame();
                 case "list games":
-                    listGames();
-                    return true;
+                    return listGames();
                 case "play game":
                     return playGame(); // will return true if it doesn't work (keep getting input) or false otherwise
                 case "observe game":
@@ -79,24 +73,24 @@ public class Main {
         } else if (appState == 2) { // playing game
             switch (input) {
                 case "help":
-                    helpTextPlayingGame();
+                    return helpTextPlayingGame();
                 case "redraw chess board":
-                    redrawChessBoard();
+                    return redrawChessBoard();
                 case "leave":
-                    leaveGame();
+                    return leaveGame();
                 case "make move":
-                    makeMove();
+                    return makeMove();
                 case "resign":
-                    resign();
+                    return resign();
                 case "highlight legal moves":
-                    highlightLegalMoves();
+                    return highlightLegalMoves();
             }
         } else if (appState == 3) {
             switch (input) {
                 case "help":
-                    helpTextObservingGame();
+                    return helpTextObservingGame();
                 case "leave":
-                    leaveGame();
+                    return leaveGame();
             }
         }
         // quitting should always be available, logged in or not:
@@ -121,7 +115,7 @@ public class Main {
         System.out.println("\033" + "[0;33mTo get started, type 'help'");
     }
 
-    private static void helpTextPreLogin() {
+    private static boolean helpTextPreLogin() {
         System.out.println();
         System.out.println("You can type" +
                 "\n'quit' to leave," +
@@ -129,9 +123,11 @@ public class Main {
                 "\n'register' to make a new account, and" +
                 "\n'help' to bring up this list.");
         System.out.println();
+
+        return true;
     }
 
-    private static void helpTextPostLogin() {
+    private static boolean helpTextPostLogin() {
         System.out.println();
         System.out.println("You can type" +
                 "\n'quit' to leave," +
@@ -142,9 +138,11 @@ public class Main {
                 "\n'observe game' to spectate, or" +
                 "\n'help' to bring up this list.");
         System.out.println();
+
+        return true;
     }
 
-    private static void helpTextPlayingGame() {
+    private static boolean helpTextPlayingGame() {
         System.out.println();
         System.out.println("You can type" +
                 "\n'quit' to quit the application," +
@@ -155,22 +153,26 @@ public class Main {
                 "\n'highlight legal moves' to highlight your possible moves, or" +
                 "\n'help' to bring up this list.");
         System.out.println();
+
+        return true;
     }
 
-    private static void helpTextObservingGame() {
+    private static boolean helpTextObservingGame() {
         System.out.println();
         System.out.println("You can type" +
                 "\n'quit' to quite the application," +
                 "\n'leave' to to leave the game, or" +
                 "\n'help' to bring up this list.");
         System.out.println();
+
+        return true;
     }
 
     private static void quit() {
         System.exit(0);
     }
 
-    private static void login() {
+    private static boolean login() {
         System.out.println("Great, let's get you logged in! First, type your username:");
         System.out.print(">>> ");
 
@@ -193,22 +195,28 @@ public class Main {
             // list the games immediately
             System.out.println();
             listGames();
+
+            return true;
+
         } catch (Exception error) {
             System.out.println("Couldn't log you in. Is your username and password correct?");
+            return true;
         }
     }
 
-    private static void logout() {
+    private static boolean logout() {
         try {
             serverFacade.logout();
             appState = 0;
             System.out.println("You're now logged out!");
+            return true;
         } catch (Exception error ){
             System.out.println("Couldn't log you out. How odd. Just quit instead to restart.");
+            return true;
         }
     }
 
-    private static void register() {
+    private static boolean register() {
         System.out.println("Great, let's get you logged in! First, type your username:");
         System.out.print(">>> ");
 
@@ -237,18 +245,21 @@ public class Main {
             System.out.println();
             listGames();
 
+            return true;
+
         } catch (Exception error) {
             System.out.println("Couldn't register you. Is the username and email already in use? ");
+            return true;
         }
     }
 
-    private static void listGames() {
+    private static boolean listGames() {
         try {
             gameList = serverFacade.listGames();
 
             if (gameList.length == 0) {
                 System.out.println("There are no active games. Make one with 'create game'");
-                return;
+                return true;
             }
 
             System.out.println("Active Games: ");
@@ -263,8 +274,11 @@ public class Main {
             }
             System.out.println();
 
+            return true;
+
         } catch (Exception error) {
             System.out.println("Couldn't get a list of games. Sorry, that's our bad. \n");
+            return true;
         }
     }
 
@@ -452,11 +466,13 @@ public class Main {
         int column = readInValidColumn();
 
         if ((row > 8) || (row > 8)) {
-            // just amking sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
+            // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
             return true;
         }
 
         gameController.highlightLegalMoves(row, column);
+
+        return true;
     }
 
     private static int readInValidRow() {
@@ -474,7 +490,8 @@ public class Main {
 
         if ((row > 8) || (row < 1)) {
             // this is an error, so just return and tell the user to input something better next time
-            System.out.println("That number is too high, too low, or not a number at all, there's no row for that. Please enter a better number next time.");
+            System.out.println("That number is too high, too low, or not a number at all, " +
+                    "there's no row for that. Please enter a better number next time.");
 
             // return true that we should keep accepting input in the loop
             return 9999;
@@ -501,12 +518,46 @@ public class Main {
 
         if ((column > 8) || (column < 1)) {
             // this is an error, so just return and tell the user to input something better next time
-            System.out.println("That column is too high, too low, or not a column at all, there's no column for that. Please enter a valid letter next time.");
+            System.out.println("That column is too high, too low, or not a column at all, " +
+                    "there's no column for that. Please enter a valid letter next time.");
 
             // return true that we should keep accepting input in the loop
             return 9999;
         }
 
         return column;
+    }
+
+    private static boolean leaveGame() {
+        appState = 2; // return to the logged in version
+        return true;
+    }
+
+    private static boolean makeMove() {
+        System.out.println("Please enter where you want to move from");
+        int fromRow = readInValidRow();
+        int fromColumn = readInValidColumn();
+
+        if ((fromRow > 8) || (fromColumn > 8)) {
+            // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
+            return true;
+        }
+
+        System.out.println("Please enter where you want to move to");
+        int toRow = readInValidRow();
+        int toColumn = readInValidColumn();
+
+        if ((toRow > 8) || (toColumn > 8)) {
+            // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
+            return true;
+        }
+
+        gameController.makeMove(fromRow, fromColumn, toRow, toColumn);
+        return true;
+    }
+
+    private static boolean resign() {
+        gameController.resign();
+        return true;
     }
 }

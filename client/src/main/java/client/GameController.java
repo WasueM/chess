@@ -73,4 +73,12 @@ public class GameController {
             System.out.print(game.game().chessBoard.toStringInvertedHighlighted(startingPosition, validMoves));
         }
     }
+
+    public void makeMove(int fromRow, int fromColumn, int toRow, int toColumn) {
+
+    }
+
+     public void resign() {
+
+     }
 }
