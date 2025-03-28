@@ -1,3 +1,5 @@
+package client;
+
 import javax.websocket.*;
 import java.net.URI;
 import java.util.Scanner;
