@@ -17,11 +17,14 @@ public class Server {
     private UserService userService;
     private GameService gameService;
 
+    public WSServer websocketServer;
+
     private Handlers handlers;
 
     public Server() {
         this.handlers = new Handlers(userService, gameService, authService);
         this.wakeupDatabase();
+        this.websocketServer = new WSServer();
     }
 
     public void wakeupDatabase() {
@@ -75,6 +78,9 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         createEndpoints();
+
+        // Start the websocket server
+        this.websocketServer.start(desiredPort);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
