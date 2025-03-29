@@ -14,7 +14,6 @@ import services.results.GamesListResult;
 import services.results.JoinGameResult;
 import services.results.MoveResult;
 
-import javax.xml.crypto.Data;
 import java.util.Random;
 
 public class GameService {
@@ -153,7 +152,7 @@ public class GameService {
 
             gameDataAccess.updateGameWithNewData(modifiedGameData);
 
-            return new MoveResult(moveRequest.gameID());
+            return new MoveResult(moveRequest.gameID(), modifiedGameData);
 
         } else {
             return null;

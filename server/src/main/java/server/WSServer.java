@@ -1,7 +1,9 @@
 package server;
 
 import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.*;
@@ -9,6 +11,7 @@ import services.AuthService;
 import services.GameService;
 import services.UserService;
 import services.requests.MoveRequest;
+import services.results.MoveResult;
 import spark.Spark;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
@@ -42,7 +45,7 @@ public class WSServer {
                 int gameID = command.getGameID();
                 String authToken = command.getAuthToken();
                 System.out.println("CONNECT: " + gameID + " " + authToken);
-                connections.add(authToken, session);
+                connections.add(authToken, session, gameID);
             }
             case LEAVE -> {
                 int gameID = command.getGameID();
@@ -52,8 +55,10 @@ public class WSServer {
             }
             case MAKE_MOVE -> {
                 ChessMove move = command.getChessMove();
+                int gameID = command.getGameID();
+                String authToken = command.getAuthToken();
                 System.out.println("Got chess move: " + move);
-                this.handleMove(move);
+                this.handleMove(move, gameID, authToken);
             }
             case RESIGN -> {
                 int gameID = command.getGameID();
@@ -63,12 +68,13 @@ public class WSServer {
         }
     }
 
-
-
-    public void handleMove(ChessMove move) {
+    public void handleMove(ChessMove move, int gameID, String authToken) throws DataAccessException, InvalidMoveException {
         // find which game its from
-        GameData updatedGame = gameService.handleMove(new MoveRequest(gameID, move));
-        connections.broadcastToGame(gameID, ServerMessage.loadGame(updatedGame));
-        connections.broadcastToGame(gameID, ServerMessage.notification(userName + " moved from ... to ..."));
+        MoveResult result = gameService.handleMove(new MoveRequest(authToken, gameID, move));
+        GameData updatedGame = result.game();
+        ServerMessage gameUpdateMessage = ServerMessage.loadGame(updatedGame);
+        connections.broadcastToAll(gameID, ServerMessage.loadGame(updatedGame));
+        ServerMessage chessMoveNotification = ServerMessage.error(ServerMessage.notification(authService.getUserByAuthToken(authToken)) + " moved from ... to ...");
+        connections.broadcastToAll(gameID, chessMoveNotification);
     }
 }

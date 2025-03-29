@@ -16,8 +16,8 @@ public class ConnectionManager {
     public final ConcurrentHashMap<String, WSConnection> connections = new ConcurrentHashMap<>();
     private static final Gson gson = new Gson();
 
-    public void add(String authToken, Session session) {
-        var connection = new WSConnection(authToken, session);
+    public void add(String authToken, Session session, int gameID) {
+        var connection = new WSConnection(authToken, session, gameID);
         connections.put(authToken, connection);
     }
 
@@ -25,11 +25,11 @@ public class ConnectionManager {
         connections.remove(authToken);
     }
 
-    public void broadcastToAll(Notification notification) throws IOException {
+    public void broadcastToAll(ServerMessage serverMessage) throws IOException {
         var removeList = new ArrayList<WSConnection>();
         for (WSConnection c : connections.values()) {
             if (c.session.isOpen()) {
-                    c.send(notification.toString());
+                    c.send(serverMessage.toString());
             } else {
                 removeList.add(c);
             }
@@ -41,12 +41,12 @@ public class ConnectionManager {
         }
     }
 
-    public void broadcastToAllExcluding(String excludeAuthToken, Notification notification) throws IOException {
+    public void broadcastToAllExcluding(String excludeAuthToken, ServerMessage serverMessage) throws IOException {
         var removeList = new ArrayList<WSConnection>();
         for (WSConnection c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.authToken.equals(excludeAuthToken)) {
-                    c.send(notification.toString());
+                    c.send(serverMessage.toString());
                 }
             } else {
                 removeList.add(c);
@@ -59,12 +59,12 @@ public class ConnectionManager {
         }
     }
 
-    public void broadcastToSpecificConnection(String specificAuthToken, Notification notification) throws IOException {
+    public void broadcastToSpecificConnection(String specificAuthToken, ServerMessage serverMessage) throws IOException {
         var removeList = new ArrayList<WSConnection>();
         for (WSConnection c : connections.values()) {
             if (c.session.isOpen()) {
                 if (c.authToken.equals(specificAuthToken)) {
-                    c.send(notification.toString());
+                    c.send(serverMessage.toString());
                 }
             } else {
                 removeList.add(c);
