@@ -1,5 +1,7 @@
 package websocket.messages;
 
+import model.GameData;
+
 import java.util.Objects;
 
 /**
@@ -15,6 +17,34 @@ public class ServerMessage {
         LOAD_GAME,
         ERROR,
         NOTIFICATION
+    }
+
+    private GameData game;
+
+    private String errorMessage;
+
+    private String message;
+
+    public static ServerMessage loadGame(GameData updatedGame) {
+        ServerMessage msg = new ServerMessage(ServerMessageType.LOAD_GAME);
+        msg.game = updatedGame;
+        return msg;
+    }
+
+    public static ServerMessage error(String errorMessage) {
+        ServerMessage msg = new ServerMessage(ServerMessageType.ERROR);
+        msg.errorMessage = errorMessage;
+        return msg;
+    }
+
+    public static ServerMessage notification(String notificationMessage) {
+        ServerMessage msg = new ServerMessage(ServerMessageType.NOTIFICATION);
+        msg.message = notificationMessage;
+        return msg;
+    }
+
+    public GameData getGame() {
+        return this.game;
     }
 
     public ServerMessage(ServerMessageType type) {

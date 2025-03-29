@@ -1,15 +1,22 @@
 package server;
 
+import chess.ChessGame;
+import chess.ChessMove;
 import dataaccess.*;
+import model.GameData;
 import services.AuthService;
 import services.GameService;
 import services.Handlers;
 import services.UserService;
 import spark.*;
+import websocket.messages.ServerMessage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
 
@@ -18,6 +25,11 @@ public class Server {
     private GameService gameService;
 
     public WSServer websocketServer;
+    private static final Map<Integer, Set<Session>> gameSessions = new ConcurrentHashMap<>();
+    private static final Map<Session, PlayerSessionInfo> sessionInfo = new ConcurrentHashMap<>();
+
+    private record PlayerSessionInfo(String username, int gameID, boolean isPlayer, ChessGame.TeamColor color) {}
+
 
     private Handlers handlers;
 
@@ -169,5 +181,11 @@ public class Server {
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException("Error configuring database: " + e.getMessage(), e);
         }
+    }
+
+    public handleMove(ChessMove move) {
+        GameData updatedGame = gameService.applyMove(gameID, userName, move);  // Example method
+        websocketServer.broadcastToGame(gameID, ServerMessage.loadGame(updatedGame));
+        websocketServer.broadcastToGame(gameID, ServerMessage.notification(userName + " moved from ... to ..."));
     }
 }

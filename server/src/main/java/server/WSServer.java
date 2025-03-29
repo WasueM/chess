@@ -1,11 +1,16 @@
 package server;
 
 import com.google.gson.Gson;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.*;
 import spark.Spark;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 @WebSocket
 public class WSServer {
@@ -18,28 +23,41 @@ public class WSServer {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws Exception {
-        System.out.printf("Received: %s", message);
+    public void onMessage(String message) {
+        ServerMessage sm = gson.fromJson(message, ServerMessage.class);
+        switch (sm.getServerMessageType()) {
+            case LOAD_GAME -> {
+                GameData gameData = sm.getGame();
 
-        // figure out what command was send
-        UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
-
-        switch (command.getCommandType()) {
-            case CONNECT:
-                session.getRemote().sendString(gson.toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION)));
-                break;
-            case MAKE_MOVE:
-                // Handle making a move (You will integrate this with game logic)
-                session.getRemote().sendString("Move received");
-                break;
-            case LEAVE:
-                session.getRemote().sendString("User left the game");
-                break;
-            case RESIGN:
-                session.getRemote().sendString("User resigned");
-                break;
+            }
+            case ERROR -> {
+                System.err.println("Received error: " + sm.getErrorMessage());
+            }
+            case NOTIFICATION -> {
+                System.out.println("Notification: " + sm.getMessage());
+            }
         }
+    }
 
-        session.getRemote().sendString("WebSocket response: " + message);
+
+    private void broadcastToGame(int gameID, ServerMessage serverMessage, Map<Integer, Set<spark.Session>> gameSessions) {
+        String json = gson.toJson(serverMessage);
+        Set<spark.Session> sessions = gameSessions.getOrDefault(gameID, Set.of());
+        for (spark.Session s : sessions) {
+            try {
+                s.getRemote().sendString(json);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void sendToUser(Session session, Object serverMessageObj) {
+        String json = gson.toJson(serverMessageObj);
+        try {
+            session.getRemote().sendString(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
