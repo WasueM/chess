@@ -201,7 +201,7 @@ public class ServerFacade {
         this.websocketClient.sendCommand(command);
     }
 
-    public void sendResign(int gameID) {
+    public void sendResign(int gameID) throws Exception {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, "auth-token-placeholder", gameID);
         this.websocketClient.sendCommand(command);
     }
