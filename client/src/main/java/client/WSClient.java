@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 
 import javax.websocket.*;
 import java.net.URI;
-import java.util.Scanner;
 
-import com.google.gson.Gson;
 import websocket.commands.UserGameCommand;
 
 public class WSClient extends Endpoint {
@@ -23,10 +21,6 @@ public class WSClient extends Endpoint {
                 System.out.println(message);
             }
         });
-    }
-
-    public void send(String msg) throws Exception {
-        this.session.getBasicRemote().sendText(msg);
     }
 
     public void sendCommand(UserGameCommand command) throws Exception {

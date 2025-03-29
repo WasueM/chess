@@ -8,6 +8,7 @@ import services.AuthService;
 import services.GameService;
 import services.Handlers;
 import services.UserService;
+import services.requests.MoveRequest;
 import spark.*;
 import websocket.messages.ServerMessage;
 
@@ -183,8 +184,12 @@ public class Server {
         }
     }
 
-    public handleMove(ChessMove move) {
-        GameData updatedGame = gameService.applyMove(gameID, userName, move);  // Example method
+    public void handleMove(ChessMove move) {
+        // find which game its from
+
+
+
+        GameData updatedGame = gameService.handleMove(new MoveRequest(gameID, move));  // Example method
         websocketServer.broadcastToGame(gameID, ServerMessage.loadGame(updatedGame));
         websocketServer.broadcastToGame(gameID, ServerMessage.notification(userName + " moved from ... to ..."));
     }

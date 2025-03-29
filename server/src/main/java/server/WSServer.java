@@ -28,7 +28,7 @@ public class WSServer {
         switch (sm.getServerMessageType()) {
             case LOAD_GAME -> {
                 GameData gameData = sm.getGame();
-
+                
             }
             case ERROR -> {
                 System.err.println("Received error: " + sm.getErrorMessage());

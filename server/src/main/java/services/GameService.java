@@ -1,16 +1,20 @@
 package services;
 
 import chess.ChessGame;
+import chess.InvalidMoveException;
 import dataaccess.*;
 
 import model.GameData;
 import services.requests.CreateGameRequest;
 import services.requests.GamesListRequest;
 import services.requests.JoinGameRequest;
+import services.requests.MoveRequest;
 import services.results.CreateGameResult;
 import services.results.GamesListResult;
 import services.results.JoinGameResult;
+import services.results.MoveResult;
 
+import javax.xml.crypto.Data;
 import java.util.Random;
 
 public class GameService {
@@ -110,5 +114,50 @@ public class GameService {
             else {
                 return null;
             }
+    }
+
+    public MoveResult handleMove(MoveRequest moveRequest) throws DataAccessException, InvalidMoveException {
+
+        boolean validAuth = authService.verifyAuthToken(moveRequest.authToken());
+
+        if (validAuth) {
+
+            GameData[] allGames = gameDataAccess.getActiveGames();
+
+            GameData gameToModify = null;
+            for (GameData game : allGames) {
+                if (game.gameID() == moveRequest.gameID()) {
+                    gameToModify = game;
+                }
+            }
+
+            if (gameToModify == null) {
+                throw new DataAccessException("Game ID doesn't exist");
+            }
+
+            // get the needed information
+            String gameName = gameToModify.gameName();
+            ChessGame chessGame = gameToModify.game();
+            String currentWhiteUser = gameToModify.whiteUsername();
+            String currentBlackUser = gameToModify.blackUsername();
+
+            // modify the game
+            chessGame.makeMove(moveRequest.move());
+
+            // make a modified game with the modified game
+            GameData modifiedGameData = new GameData(moveRequest.gameID(), currentWhiteUser, currentBlackUser, gameName, chessGame);
+
+            if (modifiedGameData == null) {
+                throw new DataAccessException("Failed to handle the chess move");
+            }
+
+            gameDataAccess.updateGameWithNewData(modifiedGameData);
+
+            return new MoveResult(moveRequest.gameID());
+
+        } else {
+            return null;
+        }
+
     }
 }
