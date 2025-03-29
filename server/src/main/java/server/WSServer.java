@@ -5,6 +5,9 @@ import com.google.gson.Gson;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.*;
+import services.AuthService;
+import services.GameService;
+import services.UserService;
 import services.requests.MoveRequest;
 import spark.Spark;
 import websocket.commands.UserGameCommand;
@@ -13,6 +16,9 @@ import websocket.messages.ServerMessage;
 @WebSocket
 public class WSServer {
     private static final Gson gson = new Gson();
+    private AuthService authService;
+    private GameService gameService;
+    private UserService userService;
 
     private final ConnectionManager connections = new ConnectionManager();
 
@@ -20,6 +26,12 @@ public class WSServer {
         Spark.port(port);
         Spark.webSocket("/ws", WSServer.class);
         Spark.get("/echo/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
+    }
+
+    public void setServices(AuthService authService, GameService gameService, UserService userService) {
+        this.authService = authService;
+        this.gameService = gameService;
+        this.userService = userService;
     }
 
     @OnWebSocketMessage
@@ -51,9 +63,11 @@ public class WSServer {
         }
     }
 
+
+
     public void handleMove(ChessMove move) {
         // find which game its from
-        GameData updatedGame = gameService.handleMove(new MoveRequest(gameID, move));  // Example method
+        GameData updatedGame = gameService.handleMove(new MoveRequest(gameID, move));
         connections.broadcastToGame(gameID, ServerMessage.loadGame(updatedGame));
         connections.broadcastToGame(gameID, ServerMessage.notification(userName + " moved from ... to ..."));
     }

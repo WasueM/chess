@@ -25,15 +25,12 @@ public class Server {
 
     public WSServer websocketServer;
 
-    private record PlayerSessionInfo(String username, int gameID, boolean isPlayer, ChessGame.TeamColor color) {}
-
-
     private Handlers handlers;
 
     public Server() {
         this.handlers = new Handlers(userService, gameService, authService);
-        this.wakeupDatabase();
         this.websocketServer = new WSServer();
+        this.wakeupDatabase();
     }
 
     public void wakeupDatabase() {
@@ -49,6 +46,7 @@ public class Server {
         this.userService = new UserService(userDataAccessMemory, authService);
 
         this.handlers.reset(userService, gameService, authService);
+        this.websocketServer.setServices(authService, gameService, userService);
     }
 
     public void resetDatabase() {
@@ -78,6 +76,7 @@ public class Server {
         this.userService = new UserService(userDataAccessMemory, authService);
 
         this.handlers.reset(userService, gameService, authService);
+        this.websocketServer.setServices(authService, gameService, userService);
     }
 
     public int run(int desiredPort) {
