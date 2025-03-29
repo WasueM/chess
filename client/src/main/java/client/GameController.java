@@ -12,7 +12,7 @@ public class GameController {
     GameData game;
     ChessGame.TeamColor playerColor;
 
-    public GameController(GameData game) {
+    public GameController(GameData game) throws Exception {
         this.game = game;
     }
 

@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import model.AuthData;
 import model.GameData;
+import server.WSServer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +21,7 @@ public class ServerFacade {
 
     private String serverURL = "http://localhost:8080/";
     private String authToken = "emptyDefaultToken";
+    WSClient websocketClient;
 
     // the same as the one used on the server side
     private static final Gson GSON = new GsonBuilder()
@@ -28,6 +30,7 @@ public class ServerFacade {
 
     public ServerFacade(String url) throws Exception {
         serverURL = url;
+        this.websocketClient = new WSClient(url);
     }
 
     public AuthData register(String username, String password, String email) throws Exception {

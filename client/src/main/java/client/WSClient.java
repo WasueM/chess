@@ -1,23 +1,20 @@
 package client;
 
+import com.google.gson.Gson;
+
 import javax.websocket.*;
 import java.net.URI;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
+import websocket.commands.UserGameCommand;
+
 public class WSClient extends Endpoint {
-
-    public static void main(String[] args) throws Exception {
-        var ws = new WSClient();
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Enter a message you want to echo");
-        while (true) ws.send(scanner.nextLine());
-    }
-
+    private static final Gson gson = new Gson();
     public Session session;
 
-    public WSClient() throws Exception {
-        URI uri = new URI("ws://localhost:8080/ws");
+    public WSClient(String url) throws Exception {
+        URI uri = new URI(url + "/ws");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
 
@@ -30,6 +27,11 @@ public class WSClient extends Endpoint {
 
     public void send(String msg) throws Exception {
         this.session.getBasicRemote().sendText(msg);
+    }
+
+    public void sendCommand(UserGameCommand command) throws Exception {
+        String json = gson.toJson(command);
+        this.session.getBasicRemote().sendText(json);
     }
 
     public void onOpen(Session session, EndpointConfig endpointConfig) {
