@@ -76,6 +76,7 @@ public class GameController {
         }
     }
 
+    // this is something it sends
     public void makeMove(int fromRow, int fromColumn, int toRow, int toColumn) throws Exception {
         ChessMove move = new ChessMove(
                 new ChessPosition(fromRow, fromColumn),
@@ -85,7 +86,19 @@ public class GameController {
         serverFacade.sendMakeMove(move, game.gameID());
     }
 
-     public void resign() {
+    // this is something it sends
+     public void resign() throws Exception {
+        System.out.println("YOU LOSE!");
+        serverFacade.sendResign(game.gameID());
+     }
 
+     // this is something we receive
+     public void showNotication(String notificationMessage) {
+        System.out.println("NOTIFICATION: " + notificationMessage);
+     }
+
+     // this is something we recieve
+     public void showError(String errorMessage) {
+        System.out.println("ERROR: " + errorMessage);
      }
 }

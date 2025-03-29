@@ -11,6 +11,7 @@ import websocket.messages.ServerMessage;
 public class WSClient extends Endpoint {
     private static final Gson gson = new Gson();
     public Session session;
+    private GameController gameController;
 
     public WSClient(String url) throws Exception {
         URI uri = new URI(url + "/ws");
@@ -24,21 +25,31 @@ public class WSClient extends Endpoint {
                 switch (message.getServerMessageType()) {
                     case LOAD_GAME -> {
                         if (message.getGame() != null) {
-                            System.out.println("LOAD_GAME received: "
-                                    + message.getGame().gameName());
+                            System.out.println("LOAD_GAME received: " + message.getGame().gameName());
+
+                            // update the board with the new one
+                            gameController.show();
                         } else {
                             System.out.println("LOAD_GAME received with no game data!");
                         }
                     }
                     case ERROR -> {
-                        System.err.println("ERROR: " + message.getServerErrorMessage());
+                        String errorMessage = message.getServerErrorMessage();
+                        System.err.println("ERROR: " + errorMessage);
+                        gameController.showError(errorMessage);
                     }
                     case NOTIFICATION -> {
-                        System.out.println("NOTIFICATION: " + message.getServerMessage());
+                        String notificationMessage = message.getServerMessage();
+                        System.out.println("NOTIFICATION: " + notificationMessage);
+                        gameController.showNotication(notificationMessage);
                     }
                 }
             }
         });
+    }
+
+    public setGameController(GameController gameController) {
+        this.gameController = gameController;
     }
 
     public void sendCommand(UserGameCommand command) throws Exception {

@@ -556,7 +556,7 @@ public class Main {
         return true;
     }
 
-    private static boolean resign() {
+    private static boolean resign() throws Exception {
         gameController.resign();
         return true;
     }
