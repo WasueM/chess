@@ -16,6 +16,8 @@ import spark.Spark;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
+import java.io.IOException;
+
 @WebSocket
 public class WSServer {
     private static final Gson gson = new Gson();
@@ -38,7 +40,7 @@ public class WSServer {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) {
+    public void onMessage(Session session, String message) throws DataAccessException, InvalidMoveException {
         UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> {
@@ -68,7 +70,7 @@ public class WSServer {
         }
     }
 
-    public void handleMove(ChessMove move, int gameID, String authToken) throws DataAccessException, InvalidMoveException {
+    public void handleMove(ChessMove move, int gameID, String authToken) throws DataAccessException, InvalidMoveException, IOException {
         // find which game its from
         MoveResult result = gameService.handleMove(new MoveRequest(authToken, gameID, move));
         GameData updatedGame = result.game();

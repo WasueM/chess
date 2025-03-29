@@ -25,11 +25,16 @@ public class ConnectionManager {
         connections.remove(authToken);
     }
 
-    public void broadcastToAll(ServerMessage serverMessage) throws IOException {
+    public void broadcastToAll(int gameID, ServerMessage serverMessage) throws IOException {
+
+        String json = gson.toJson(serverMessage);
+
         var removeList = new ArrayList<WSConnection>();
         for (WSConnection c : connections.values()) {
             if (c.session.isOpen()) {
-                    c.send(serverMessage.toString());
+                if (c.gameID == gameID) {
+                    c.send(json);
+                }
             } else {
                 removeList.add(c);
             }
@@ -41,12 +46,17 @@ public class ConnectionManager {
         }
     }
 
-    public void broadcastToAllExcluding(String excludeAuthToken, ServerMessage serverMessage) throws IOException {
+    public void broadcastToAllExcluding(int gameID, String excludeAuthToken, ServerMessage serverMessage) throws IOException {
+
+        String json = gson.toJson(serverMessage);
+
         var removeList = new ArrayList<WSConnection>();
         for (WSConnection c : connections.values()) {
             if (c.session.isOpen()) {
-                if (!c.authToken.equals(excludeAuthToken)) {
-                    c.send(serverMessage.toString());
+                if (c.gameID == gameID) {
+                    if (!c.authToken.equals(excludeAuthToken)) {
+                        c.send(json);
+                    }
                 }
             } else {
                 removeList.add(c);
@@ -60,11 +70,14 @@ public class ConnectionManager {
     }
 
     public void broadcastToSpecificConnection(String specificAuthToken, ServerMessage serverMessage) throws IOException {
+
+        String json = gson.toJson(serverMessage);
+
         var removeList = new ArrayList<WSConnection>();
         for (WSConnection c : connections.values()) {
             if (c.session.isOpen()) {
                 if (c.authToken.equals(specificAuthToken)) {
-                    c.send(serverMessage.toString());
+                    c.send(json);
                 }
             } else {
                 removeList.add(c);
