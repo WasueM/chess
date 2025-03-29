@@ -11,9 +11,11 @@ public class GameController {
 
     GameData game;
     ChessGame.TeamColor playerColor;
+    ServerFacade serverFacade;
 
-    public GameController(GameData game) throws Exception {
+    public GameController(GameData game, ServerFacade serverFacade) throws Exception {
         this.game = game;
+        this.serverFacade = serverFacade;
     }
 
     public void setPlayer(ChessGame.TeamColor color) {
@@ -74,8 +76,13 @@ public class GameController {
         }
     }
 
-    public void makeMove(int fromRow, int fromColumn, int toRow, int toColumn) {
-
+    public void makeMove(int fromRow, int fromColumn, int toRow, int toColumn) throws Exception {
+        ChessMove move = new ChessMove(
+                new ChessPosition(fromRow, fromColumn),
+                new ChessPosition(toRow, toColumn),
+                null
+        );
+        serverFacade.sendMakeMove(move, game.gameID());
     }
 
      public void resign() {
