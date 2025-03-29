@@ -6,6 +6,7 @@ import javax.websocket.*;
 import java.net.URI;
 
 import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 public class WSClient extends Endpoint {
     private static final Gson gson = new Gson();
@@ -17,8 +18,25 @@ public class WSClient extends Endpoint {
         this.session = container.connectToServer(this, uri);
 
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-            public void onMessage(String message) {
-                System.out.println(message);
+            public void onMessage(String jsonMessage) {
+                ServerMessage message = gson.fromJson(jsonMessage, ServerMessage.class);
+
+                switch (message.getServerMessageType()) {
+                    case LOAD_GAME -> {
+                        if (message.getGame() != null) {
+                            System.out.println("LOAD_GAME received: "
+                                    + message.getGame().gameName());
+                        } else {
+                            System.out.println("LOAD_GAME received with no game data!");
+                        }
+                    }
+                    case ERROR -> {
+                        System.err.println("ERROR: " + message.getServerErrorMessage());
+                    }
+                    case NOTIFICATION -> {
+                        System.out.println("NOTIFICATION: " + message.getServerMessage());
+                    }
+                }
             }
         });
     }

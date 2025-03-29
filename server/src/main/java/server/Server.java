@@ -2,6 +2,7 @@ package server;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import com.google.gson.Gson;
 import dataaccess.*;
 import model.GameData;
 import services.AuthService;
@@ -26,8 +27,6 @@ public class Server {
     private GameService gameService;
 
     public WSServer websocketServer;
-    private static final Map<Integer, Set<Session>> gameSessions = new ConcurrentHashMap<>();
-    private static final Map<Session, PlayerSessionInfo> sessionInfo = new ConcurrentHashMap<>();
 
     private record PlayerSessionInfo(String username, int gameID, boolean isPlayer, ChessGame.TeamColor color) {}
 
@@ -182,15 +181,5 @@ public class Server {
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException("Error configuring database: " + e.getMessage(), e);
         }
-    }
-
-    public void handleMove(ChessMove move) {
-        // find which game its from
-
-
-
-        GameData updatedGame = gameService.handleMove(new MoveRequest(gameID, move));  // Example method
-        websocketServer.broadcastToGame(gameID, ServerMessage.loadGame(updatedGame));
-        websocketServer.broadcastToGame(gameID, ServerMessage.notification(userName + " moved from ... to ..."));
     }
 }
