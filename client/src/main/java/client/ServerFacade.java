@@ -187,22 +187,22 @@ public class ServerFacade {
     }
 
     public void sendConnect(int gameID) throws Exception {
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, this.authToken, gameID);
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, this.authToken, gameID, null);
         this.websocketClient.sendCommand(command);
     }
 
     public void sendLeave(int gameID) throws Exception {
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, this.authToken, gameID);
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, this.authToken, gameID, null);
         this.websocketClient.sendCommand(command);
     }
 
     public void sendMakeMove(ChessMove move, int gameID) throws Exception {
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, this.authToken, gameID);
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, this.authToken, gameID, move);
         this.websocketClient.sendCommand(command);
     }
 
     public void sendResign(int gameID) throws Exception {
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, "auth-token-placeholder", gameID);
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, "auth-token-placeholder", gameID, null);
         this.websocketClient.sendCommand(command);
     }
 }
