@@ -533,7 +533,7 @@ public class Main {
         return true;
     }
 
-    private static boolean makeMove() {
+    private static boolean makeMove() throws Exception {
         System.out.println("Please enter where you want to move from");
         int fromRow = readInValidRow();
         int fromColumn = readInValidColumn();
