@@ -2,6 +2,7 @@ package client;
 
 import chess.ChessBoard;
 import chess.ChessBoardJSONAdapter;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -9,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import model.AuthData;
 import model.GameData;
 import server.WSServer;
+import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +23,7 @@ public class ServerFacade {
 
     private String serverURL = "http://localhost:8080/";
     private String authToken = "emptyDefaultToken";
-    WSClient websocketClient;
+    private WSClient websocketClient;
 
     // the same as the one used on the server side
     private static final Gson GSON = new GsonBuilder()
@@ -182,5 +184,25 @@ public class ServerFacade {
             }
         }
         return responseBuilder.toString();
+    }
+
+    public void sendConnect(int gameID) throws Exception {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, this.authToken, gameID);
+        this.websocketClient.sendCommand(command);
+    }
+
+    public void sendLeave(int gameID) throws Exception {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, this.authToken, gameID);
+        this.websocketClient.sendCommand(command);
+    }
+
+    public void sendMakeMove(ChessMove move, int gameID) throws Exception {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, this.authToken, gameID);
+        this.websocketClient.sendCommand(command);
+    }
+
+    public void sendResign(int gameID) {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, "auth-token-placeholder", gameID);
+        this.websocketClient.sendCommand(command);
     }
 }
