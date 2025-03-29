@@ -13,23 +13,39 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, WSConnection> connections = new ConcurrentHashMap<>();
     private static final Gson gson = new Gson();
 
-    public void add(String visitorName, Session session) {
-        var connection = new Connection(visitorName, session);
-        connections.put(visitorName, connection);
+    public void add(String authToken, Session session) {
+        var connection = new WSConnection(authToken, session);
+        connections.put(authToken, connection);
     }
 
     public void remove(String visitorName) {
         connections.remove(visitorName);
     }
 
-    public void broadcast(String excludeVisitorName, Notification notification) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        for (Connection c : connections.values()) {
+    public void broadcastToAll(Notification notification) throws IOException {
+        var removeList = new ArrayList<WSConnection>();
+        for (WSConnection c : connections.values()) {
             if (c.session.isOpen()) {
-                if (!c.visitorName.equals(excludeVisitorName)) {
+                    c.send(notification.toString());
+            } else {
+                removeList.add(c);
+            }
+        }
+
+        // Clean up any connections that were left open.
+        for (var c : removeList) {
+            connections.remove(c.authToken);
+        }
+    }
+
+    public void broadcastToAllExcluding(String excludeAuthToken, Notification notification) throws IOException {
+        var removeList = new ArrayList<WSConnection>();
+        for (WSConnection c : connections.values()) {
+            if (c.session.isOpen()) {
+                if (!c.authToken.equals(excludeAuthToken)) {
                     c.send(notification.toString());
                 }
             } else {
@@ -39,28 +55,25 @@ public class ConnectionManager {
 
         // Clean up any connections that were left open.
         for (var c : removeList) {
-            connections.remove(c.visitorName);
+            connections.remove(c.authToken);
         }
     }
 
-    private void broadcastToGame(int gameID, ServerMessage serverMessage, Map<Integer, Set<spark.Session>> gameSessions) {
-        String json = gson.toJson(serverMessage);
-        Set<spark.Session> sessions = gameSessions.getOrDefault(gameID, Set.of());
-        for (Connection c : connections.values()) {
-            try {
-                s.getRemote().sendString(json);
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void broadcastToSpecificConnection(String specificAuthToken, Notification notification) throws IOException {
+        var removeList = new ArrayList<WSConnection>();
+        for (WSConnection c : connections.values()) {
+            if (c.session.isOpen()) {
+                if (c.authToken.equals(specificAuthToken)) {
+                    c.send(notification.toString());
+                }
+            } else {
+                removeList.add(c);
             }
         }
-    }
 
-    private void sendToUser(Session session, Object serverMessageObj) {
-        String json = gson.toJson(serverMessageObj);
-        try {
-            session.getRemote().sendString(json);
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Clean up any connections that were left open.
+        for (var c : removeList) {
+            connections.remove(c.authToken);
         }
     }
 }

@@ -10,12 +10,6 @@ import spark.Spark;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-
-import static websocket.commands.UserGameCommand.CommandType.RESIGN;
-
 @WebSocket
 public class WSServer {
     private static final Gson gson = new Gson();
@@ -36,17 +30,18 @@ public class WSServer {
                 int gameID = command.getGameID();
                 String authToken = command.getAuthToken();
                 System.out.println("CONNECT: " + gameID + " " + authToken);
-                connections.add(visitorName, session);
-            }
-            case MAKE_MOVE -> {
-                ChessMove move = command.getChessMove();
-                System.out.println("Got chess move: " + move);
-                this.handleMove(move);
+                connections.add(authToken, session);
             }
             case LEAVE -> {
                 int gameID = command.getGameID();
                 String authToken = command.getAuthToken();
                 System.out.println("LEAVE: " + gameID + " " + authToken);
+                connections.remove(authToken);
+            }
+            case MAKE_MOVE -> {
+                ChessMove move = command.getChessMove();
+                System.out.println("Got chess move: " + move);
+                this.handleMove(move);
             }
             case RESIGN -> {
                 int gameID = command.getGameID();
