@@ -528,8 +528,9 @@ public class Main {
         return column;
     }
 
-    private static boolean leaveGame() {
+    private static boolean leaveGame() throws Exception {
         appState = 2; // return to the logged in version
+        gameController.endWebSocketConnection();
         return true;
     }
 

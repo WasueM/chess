@@ -305,13 +305,63 @@ public class WebSocketTests {
                         context, serverFacade.getStatusCode(), result.getMessage()));
     }
 
+//    private void connectToGame(WebsocketUser sender, int gameID, boolean expectSuccess,
+//                               Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
+//        TestCommand connectCommand = new TestCommand(UserGameCommand.CommandType.CONNECT, sender.authToken(), gameID);
+//        Map<String, Integer> numExpectedMessages = expectedMessages(sender, 1, inGame, (expectSuccess ? 1 : 0), otherClients);
+//        Map<String, List<TestMessage>> actualMessages = environment.exchange(sender.username(), connectCommand, numExpectedMessages, waitTime);
+//
+//
+//
+//        assertCommandMessages(actualMessages, expectSuccess, sender, types(LOAD_GAME), inGame, types(NOTIFICATION), otherClients);
+//    }
+
     private void connectToGame(WebsocketUser sender, int gameID, boolean expectSuccess,
                                Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
+        // Build the connect command
         TestCommand connectCommand = new TestCommand(UserGameCommand.CommandType.CONNECT, sender.authToken(), gameID);
-        Map<String, Integer> numExpectedMessages = expectedMessages(sender, 1, inGame, (expectSuccess ? 1 : 0), otherClients);
-        Map<String, List<TestMessage>> actualMessages = environment.exchange(sender.username(), connectCommand, numExpectedMessages, waitTime);
 
-        assertCommandMessages(actualMessages, expectSuccess, sender, types(LOAD_GAME), inGame, types(NOTIFICATION), otherClients);
+        // Calculate how many messages we expect for each user
+        Map<String, Integer> numExpectedMessages = expectedMessages(
+                sender,
+                1,                      // number expected for the sender
+                inGame,
+                (expectSuccess ? 1 : 0),  // number expected for the inGame set
+                otherClients
+        );
+
+        // Get the actual messages from the environment
+        Map<String, List<TestMessage>> actualMessages = environment.exchange(
+                sender.username(),
+                connectCommand,
+                numExpectedMessages,
+                waitTime
+        );
+
+        // --- PRINTS for Debugging ---
+        System.out.println("===== DEBUG: connectToGame =====");
+        System.out.println("Sender: " + sender.username() + " (authToken=" + sender.authToken() + ")");
+        System.out.println("Game ID: " + gameID);
+        System.out.println("Expected success? " + expectSuccess);
+        System.out.println("Expected message counts: " + numExpectedMessages);
+        System.out.println("\n--- Actual Messages Received ---");
+        for (Map.Entry<String, List<TestMessage>> entry : actualMessages.entrySet()) {
+            String user = entry.getKey();
+            List<TestMessage> messages = entry.getValue();
+            System.out.println("User: " + user + " => " + messages);
+        }
+        System.out.println("================================\n");
+
+        // Now run the assertion on the actual vs. expected results
+        assertCommandMessages(
+                actualMessages,
+                expectSuccess,
+                sender,
+                types(ServerMessage.ServerMessageType.LOAD_GAME),
+                inGame,
+                types(ServerMessage.ServerMessageType.NOTIFICATION),
+                otherClients
+        );
     }
 
     private void makeMove(WebsocketUser sender, int gameID, ChessMove move, boolean expectSuccess,

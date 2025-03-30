@@ -10,7 +10,9 @@ import org.eclipse.jetty.websocket.api.*;
 import services.AuthService;
 import services.GameService;
 import services.UserService;
+import services.requests.GamesListRequest;
 import services.requests.MoveRequest;
+import services.results.GamesListResult;
 import services.results.MoveResult;
 import spark.Spark;
 import websocket.commands.UserGameCommand;
@@ -47,6 +49,32 @@ public class WSServer {
                 String authToken = command.getAuthToken();
                 System.out.println("CONNECT: " + gameID + " " + authToken);
                 connections.add(authToken, session, gameID);
+
+                // get the player name
+                String joinerName = authService.getUserByAuthToken(authToken);
+
+                // get the game
+                GamesListRequest request = new GamesListRequest(authToken);
+                GamesListResult gameListResult = gameService.getGamesList(request);
+                GameData[] games = gameListResult.games();
+                GameData game = null;
+                for (GameData g : games) {
+                    if (g.gameID() == gameID) {
+                        game = g;
+                    }
+                }
+
+                // figure out what color they joined
+                String teamJoined = "NONE";
+                if (game.blackUsername().equals(joinerName)) {
+                    teamJoined = "BLACK";
+                } else if (game.whiteUsername().equals(joinerName)) {
+                    teamJoined = "WHITE";
+                }
+
+                // make the message to send back
+                ServerMessage chessMoveNotification = ServerMessage.notification(joinerName + " joined the " + teamJoined + "  team.");
+                connections.broadcastToAll(gameID, chessMoveNotification);
             }
             case LEAVE -> {
                 int gameID = command.getGameID();
@@ -74,8 +102,8 @@ public class WSServer {
         MoveResult result = gameService.handleMove(new MoveRequest(authToken, gameID, move));
         GameData updatedGame = result.game();
         ServerMessage gameUpdateMessage = ServerMessage.loadGame(updatedGame);
-        connections.broadcastToAll(gameID, ServerMessage.loadGame(updatedGame));
-        ServerMessage chessMoveNotification = ServerMessage.error(ServerMessage.notification(authService.getUserByAuthToken(authToken)) + " moved from ... to ...");
+        connections.broadcastToAll(gameID, gameUpdateMessage);
+        ServerMessage chessMoveNotification = ServerMessage.notification(authService.getUserByAuthToken(authToken) + " moved from ... to ...");
         connections.broadcastToAll(gameID, chessMoveNotification);
     }
 }

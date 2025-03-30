@@ -16,6 +16,8 @@ public class GameController {
     public GameController(GameData game, ServerFacade serverFacade) throws Exception {
         this.game = game;
         this.serverFacade = serverFacade;
+
+        this.createWebsocketConnection();
     }
 
     public void setPlayer(ChessGame.TeamColor color) {
@@ -100,5 +102,13 @@ public class GameController {
      // this is something we recieve
      public void showError(String errorMessage) {
         System.out.println("ERROR: " + errorMessage);
+     }
+
+     public void createWebsocketConnection() throws Exception {
+         serverFacade.sendConnect(this.game.gameID());
+     }
+
+     public void endWebSocketConnection() throws Exception {
+        serverFacade.sendLeave(this.game.gameID());
      }
 }
