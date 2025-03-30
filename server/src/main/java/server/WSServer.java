@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
@@ -149,6 +150,28 @@ public class WSServer {
                 + move.getStartPosition().getRow() + "," + columnToLetter(move.getStartPosition().getColumn()) + ") to ("
                 + move.getEndPosition().getRow() + "," + columnToLetter(move.getEndPosition().getColumn()) + ").");
         connections.broadcastToAll(gameID, chessMoveNotification);
+
+        // check for check and checkmate
+        boolean isInCheckWhite = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
+        if (isInCheckWhite) {
+            ServerMessage checkNotification = ServerMessage.notification(updatedGame.whiteUsername() + " is in check!");
+            connections.broadcastToAll(gameID, checkNotification);
+        }
+        boolean isInCheckBlack = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
+        if (isInCheckBlack) {
+            ServerMessage checkNotification = ServerMessage.notification(updatedGame.blackUsername() + " is in check!");
+            connections.broadcastToAll(gameID, checkNotification);
+        }
+        boolean isInCheckMateWhite = updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE);
+        if (isInCheckMateWhite) {
+            ServerMessage checkNotification = ServerMessage.notification(updatedGame.whiteUsername() + " is in checkmate!");
+            connections.broadcastToAll(gameID, checkNotification);
+        }
+        boolean isInCheckMateBlack = updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE);
+        if (isInCheckMateBlack) {
+            ServerMessage checkNotification = ServerMessage.notification(updatedGame.blackUsername() + " is in checkmate!");
+            connections.broadcastToAll(gameID, checkNotification);
+        }
     }
 
     public static String columnToLetter(int column) {
