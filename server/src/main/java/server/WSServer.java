@@ -50,6 +50,14 @@ public class WSServer {
                 System.out.println("CONNECT: " + gameID + " " + authToken);
                 connections.add(authToken, session, gameID);
 
+                // if its an invalid token, stop right there
+                boolean isTokenValid = authService.verifyAuthToken(authToken);
+                if (!isTokenValid) {
+                    ServerMessage errorMessage = ServerMessage.error("Error: Bad Auth Token");
+                    connections.broadcastToSpecificConnection(authToken, errorMessage);
+                    return;
+                }
+
                 // get the player name
                 String joinerName = authService.getUserByAuthToken(authToken);
 
@@ -62,6 +70,13 @@ public class WSServer {
                     if (g.gameID() == gameID) {
                         game = g;
                     }
+                }
+
+                // if the game is still null, return an error to the sender
+                if (game == null) {
+                    ServerMessage errorMessage = ServerMessage.error("Error: Bad Game ID");
+                    connections.broadcastToSpecificConnection(authToken, errorMessage);
+                    return;
                 }
 
                 // figure out what color they joined
@@ -94,6 +109,13 @@ public class WSServer {
                 String authToken = command.getAuthToken();
                 System.out.println("LEAVE: " + gameID + " " + authToken);
                 connections.remove(authToken);
+
+                // get the player name
+                String leaverName = authService.getUserByAuthToken(authToken);
+
+                // make the message to everyone
+                ServerMessage playerJoinedNotification = ServerMessage.notification(leaverName + " left the game.");
+                connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
             }
             case MAKE_MOVE -> {
                 ChessMove move = command.getChessMove();
@@ -106,6 +128,13 @@ public class WSServer {
                 int gameID = command.getGameID();
                 String authToken = command.getAuthToken();
                 System.out.println("RESIGN: " + gameID + " " + authToken);
+
+                // get the player name
+                String resignerName = authService.getUserByAuthToken(authToken);
+
+                // make the message to everyone
+                ServerMessage playerJoinedNotification = ServerMessage.notification(resignerName + " RESIGNED! Game over!");
+                connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
             }
         }
     }
@@ -116,7 +145,18 @@ public class WSServer {
         GameData updatedGame = result.game();
         ServerMessage gameUpdateMessage = ServerMessage.loadGame(updatedGame);
         connections.broadcastToAll(gameID, gameUpdateMessage);
-        ServerMessage chessMoveNotification = ServerMessage.notification(authService.getUserByAuthToken(authToken) + " moved from ... to ...");
+        ServerMessage chessMoveNotification = ServerMessage.notification(authService.getUserByAuthToken(authToken) + " moved from ("
+                + move.getStartPosition().getRow() + "," + columnToLetter(move.getStartPosition().getColumn()) + ") to ("
+                + move.getEndPosition().getRow() + "," + columnToLetter(move.getEndPosition().getColumn()) + ").");
         connections.broadcastToAll(gameID, chessMoveNotification);
+    }
+
+    public static String columnToLetter(int column) {
+        if (column < 1 || column > 8) {
+            return "FAILED TO GET THE COLUMN LETTER";
+        }
+
+        char letter = (char) ('a' + (column - 1));
+        return String.valueOf(letter);
     }
 }
