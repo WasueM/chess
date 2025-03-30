@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
     public final ConcurrentHashMap<String, WSConnection> connections = new ConcurrentHashMap<>();
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
 
     public void add(String authToken, Session session, int gameID) {
         var connection = new WSConnection(authToken, session, gameID);
@@ -27,7 +27,7 @@ public class ConnectionManager {
 
     public void broadcastToAll(int gameID, ServerMessage serverMessage) throws IOException {
 
-        String json = gson.toJson(serverMessage);
+        String json = GSON.toJson(serverMessage);
 
         var removeList = new ArrayList<WSConnection>();
         for (WSConnection c : connections.values()) {
@@ -48,7 +48,7 @@ public class ConnectionManager {
 
     public void broadcastToAllExcluding(int gameID, String excludeAuthToken, ServerMessage serverMessage) throws IOException {
 
-        String json = gson.toJson(serverMessage);
+        String json = GSON.toJson(serverMessage);
 
         var removeList = new ArrayList<WSConnection>();
         for (WSConnection c : connections.values()) {
@@ -71,7 +71,7 @@ public class ConnectionManager {
 
     public void broadcastToSpecificConnection(String specificAuthToken, ServerMessage serverMessage) throws IOException {
 
-        String json = gson.toJson(serverMessage);
+        String json = GSON.toJson(serverMessage);
 
         var removeList = new ArrayList<WSConnection>();
         for (WSConnection c : connections.values()) {

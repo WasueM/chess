@@ -9,7 +9,7 @@ import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 public class WSClient extends Endpoint {
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
     public Session session;
     private GameController gameController;
 
@@ -20,7 +20,7 @@ public class WSClient extends Endpoint {
 
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String jsonMessage) {
-                ServerMessage message = gson.fromJson(jsonMessage, ServerMessage.class);
+                ServerMessage message = GSON.fromJson(jsonMessage, ServerMessage.class);
 
                 switch (message.getServerMessageType()) {
                     case LOAD_GAME -> {
@@ -53,7 +53,7 @@ public class WSClient extends Endpoint {
     }
 
     public void sendCommand(UserGameCommand command) throws Exception {
-        String json = gson.toJson(command);
+        String json = GSON.toJson(command);
         this.session.getBasicRemote().sendText(json);
     }
 

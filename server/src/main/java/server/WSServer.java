@@ -24,7 +24,7 @@ import java.util.List;
 
 @WebSocket
 public class WSServer {
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
     private static AuthService authService;
     private static GameService gameService;
     private static UserService userService;
@@ -48,7 +48,7 @@ public class WSServer {
     public void onMessage(Session session, String message) throws DataAccessException, InvalidMoveException, IOException {
         System.out.println("DEBUG: Received raw JSON: " + message);
 
-        UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
+        UserGameCommand command = GSON.fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> {
                 int gameID = command.getGameID();
@@ -166,7 +166,7 @@ public class WSServer {
                 if (!isTokenValid) {
                     // send an error directly to the sending session
                     ServerMessage errorMessage = ServerMessage.error("Error: Recieved Bad Auth Token for Make Move");
-                    String json = gson.toJson(errorMessage);
+                    String json = GSON.toJson(errorMessage);
                     session.getRemote().sendString(json);
                     return;
                 }
