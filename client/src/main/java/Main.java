@@ -23,10 +23,14 @@ public class Main {
         }
 
         // on launch, show the menus
-        runConsoleMenus();
+        try {
+            runConsoleMenus();
+        } catch (Exception error) {
+            System.out.println("ERROR somewhere in the app!");
+        }
     }
 
-    private static void runConsoleMenus() {
+    private static void runConsoleMenus() throws Exception {
         // print the initial welcome text
         introText();
 
@@ -42,7 +46,7 @@ public class Main {
         }
     }
 
-    private static boolean handleInput(String input) {
+    private static boolean handleInput(String input) throws Exception {
         // different switch statements based on the app state, logged in or not? playing game? observing?
         if (appState == 0) {
             switch (input) {
