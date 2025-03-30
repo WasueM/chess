@@ -51,167 +51,183 @@ public class WSServer {
         UserGameCommand command = GSON.fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> {
-                int gameID = command.getGameID();
-                String authToken = command.getAuthToken();
-                System.out.println("CONNECT: " + gameID + " " + authToken);
-                connections.add(authToken, session, gameID);
-
-                // if its an invalid token, stop right there
-                boolean isTokenValid = authService.verifyAuthToken(authToken);
-                if (!isTokenValid) {
-                    ServerMessage errorMessage = ServerMessage.error("Error: Bad Auth Token");
-                    connections.broadcastToSpecificConnection(authToken, errorMessage);
-                    return;
-                }
-
-                // get the player name
-                String joinerName = authService.getUserByAuthToken(authToken);
-
-                // get the game
-                GameData game = this.getGame(authToken, gameID);
-                if (game == null) {
-                    return; // the error notification is handled inside get game, so nothing else needed
-                }
-
-                // figure out what color they joined
-                String teamJoined = "NONE";
-                boolean observing = true;
-                if (game.blackUsername().equals(joinerName)) {
-                    teamJoined = "BLACK";
-                    observing = false;
-                } else if (game.whiteUsername().equals(joinerName)) {
-                    teamJoined = "WHITE";
-                    observing = false;
-                }
-
-                // make the message to send to the original sender
-                ServerMessage loadGameMessage = ServerMessage.loadGame(game);
-                connections.broadcastToSpecificConnection(authToken, loadGameMessage);
-
-                if (observing == true) {
-                    ServerMessage playerJoinedNotification = ServerMessage.notification(joinerName + " joined the game as an observer.");
-                    connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
-                } else {
-                    // make the message to send to all the others
-                    ServerMessage playerJoinedNotification = ServerMessage.notification(joinerName + " joined the " + teamJoined + "  team.");
-                    connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
-                }
+                this.handleConnect(command, session);
             }
             case LEAVE -> {
-                int gameID = command.getGameID();
-                String authToken = command.getAuthToken();
-                System.out.println("LEAVE: " + gameID + " " + authToken);
-                connections.remove(authToken);
-
-                // get the player name
-                String leaverName = authService.getUserByAuthToken(authToken);
-
-                // update the game so it has null there instead of username, so others can join
-                GamesListRequest request = new GamesListRequest(authToken);
-                GamesListResult gameListResult = gameService.getGamesList(request);
-                GameData[] games = gameListResult.games();
-                GameData game = null;
-                for (GameData g : games) {
-                    if (g.gameID() == gameID) {
-                        game = g;
-                    }
-                }
-
-                // if the game is still null, return an error to the sender
-                if (game == null) {
-                    ServerMessage errorMessage = ServerMessage.error("Error: Bad Game ID");
-                    connections.broadcastToSpecificConnection(authToken, errorMessage);
-                    return;
-                }
-
-                // figure out what color they joined
-                String senderColor = null;
-                boolean observing = true;
-                if (leaverName.equals(game.blackUsername())) {
-                    senderColor = "BLACK";
-                } else if (leaverName.equals(game.whiteUsername())) {
-                    senderColor = "WHITE";
-                    observing = false;
-                }
-
-                if (!observing) {
-                    // actually leave the game in the database
-                    JoinGameRequest leaveRequest = new JoinGameRequest(authToken, gameID, senderColor);
-                    gameService.leaveGame(leaveRequest);
-                }
-
-                // make the message to everyone
-                ServerMessage playerJoinedNotification = ServerMessage.notification(leaverName + " left the game.");
-                connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
+                this.handleLeave(command, session);
             }
             case MAKE_MOVE -> {
-                ChessMove move = command.getMove();
-                int gameID = command.getGameID();
-                String authToken = command.getAuthToken();
-
-                // if its an invalid token, stop right there
-                boolean isTokenValid = authService.verifyAuthToken(authToken);
-                if (!isTokenValid) {
-                    // send an error directly to the sending session
-                    ServerMessage errorMessage = ServerMessage.error("Error: Recieved Bad Auth Token for Make Move");
-                    String json = GSON.toJson(errorMessage);
-                    session.getRemote().sendString(json);
-                    return;
-                }
-
-                // if this game's already over, don't let them make any moves
-                if (this.finishedGames.contains(gameID)) {
-                    ServerMessage errorMessage = ServerMessage.error("Error: Can't make a move, as someone already lost!");
-                    connections.broadcastToSpecificConnection(authToken, errorMessage);
-                    return;
-                }
-
-                System.out.println("Got chess move: " + move);
-                this.handleMove(move, gameID, authToken);
+                this.handleMakeMove(command, session);
             }
             case RESIGN -> {
-                int gameID = command.getGameID();
-                String authToken = command.getAuthToken();
-                System.out.println("RESIGN: " + gameID + " " + authToken);
-
-                // get the player name
-                String resignerName = authService.getUserByAuthToken(authToken);
-
-                // get the game
-                GameData theGame = this.getGame(authToken, gameID);
-                if (theGame == null) {
-                    return; // the error notification is handled inside get game, so nothing else needed
-                }
-
-                // figure out if they're an observer
-                boolean observing = true;
-                if (theGame.blackUsername().equals(resignerName)) {
-                    observing = false;
-                } else if (theGame.whiteUsername().equals(resignerName)) {
-                    observing = false;
-                }
-
-                if (observing == true) {
-                    // can't resign since this is from an observer!
-                    ServerMessage errorMessage = ServerMessage.error("Error: Can't resign, as you are an observer!");
-                    connections.broadcastToSpecificConnection(authToken, errorMessage);
-                    return;
-                }
-
-                if (this.finishedGames.contains(gameID)) {
-                    // can't resign from it since it's already resigned from!
-                    ServerMessage errorMessage = ServerMessage.error("Error: Can't resign, as someone already lost!");
-                    connections.broadcastToSpecificConnection(authToken, errorMessage);
-                    return;
-                }
-
-                // lock that game so no future things can be sent from it
-                this.finishedGames.add(gameID);
-
-                // make the message to everyone
-                ServerMessage playerJoinedNotification = ServerMessage.notification(resignerName + " RESIGNED! Game over!");
-                connections.broadcastToAll(gameID, playerJoinedNotification);
+                this.handleResign(command, session);
             }
+        }
+    }
+
+    public void handleResign(UserGameCommand command, Session session) throws IOException, DataAccessException {
+        int gameID = command.getGameID();
+        String authToken = command.getAuthToken();
+        System.out.println("RESIGN: " + gameID + " " + authToken);
+
+        // get the player name
+        String resignerName = authService.getUserByAuthToken(authToken);
+
+        // get the game
+        GameData theGame = this.getGame(authToken, gameID);
+        if (theGame == null) {
+            return; // the error notification is handled inside get game, so nothing else needed
+        }
+
+        // figure out if they're an observer
+        boolean observing = true;
+        if (theGame.blackUsername().equals(resignerName)) {
+            observing = false;
+        } else if (theGame.whiteUsername().equals(resignerName)) {
+            observing = false;
+        }
+
+        if (observing == true) {
+            // can't resign since this is from an observer!
+            ServerMessage errorMessage = ServerMessage.error("Error: Can't resign, as you are an observer!");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
+            return;
+        }
+
+        if (this.finishedGames.contains(gameID)) {
+            // can't resign from it since it's already resigned from!
+            ServerMessage errorMessage = ServerMessage.error("Error: Can't resign, as someone already lost!");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
+            return;
+        }
+
+        // lock that game so no future things can be sent from it
+        this.finishedGames.add(gameID);
+
+        // make the message to everyone
+        ServerMessage playerJoinedNotification = ServerMessage.notification(resignerName + " RESIGNED! Game over!");
+        connections.broadcastToAll(gameID, playerJoinedNotification);
+    }
+
+    public void handleMakeMove(UserGameCommand command, Session session) throws DataAccessException, IOException, InvalidMoveException {
+        ChessMove move = command.getMove();
+        int gameID = command.getGameID();
+        String authToken = command.getAuthToken();
+
+        // if its an invalid token, stop right there
+        boolean isTokenValid = authService.verifyAuthToken(authToken);
+        if (!isTokenValid) {
+            // send an error directly to the sending session
+            ServerMessage errorMessage = ServerMessage.error("Error: Recieved Bad Auth Token for Make Move");
+            String json = GSON.toJson(errorMessage);
+            session.getRemote().sendString(json);
+            return;
+        }
+
+        // if this game's already over, don't let them make any moves
+        if (this.finishedGames.contains(gameID)) {
+            ServerMessage errorMessage = ServerMessage.error("Error: Can't make a move, as someone already lost!");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
+            return;
+        }
+
+        System.out.println("Got chess move: " + move);
+        this.handleMove(move, gameID, authToken);
+    }
+
+    public void handleLeave(UserGameCommand command, Session session) throws DataAccessException, IOException {
+        int gameID = command.getGameID();
+        String authToken = command.getAuthToken();
+        System.out.println("LEAVE: " + gameID + " " + authToken);
+        connections.remove(authToken);
+
+        // get the player name
+        String leaverName = authService.getUserByAuthToken(authToken);
+
+        // update the game so it has null there instead of username, so others can join
+        GamesListRequest request = new GamesListRequest(authToken);
+        GamesListResult gameListResult = gameService.getGamesList(request);
+        GameData[] games = gameListResult.games();
+        GameData game = null;
+        for (GameData g : games) {
+            if (g.gameID() == gameID) {
+                game = g;
+            }
+        }
+
+        // if the game is still null, return an error to the sender
+        if (game == null) {
+            ServerMessage errorMessage = ServerMessage.error("Error: Bad Game ID");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
+            return;
+        }
+
+        // figure out what color they joined
+        String senderColor = null;
+        boolean observing = true;
+        if (leaverName.equals(game.blackUsername())) {
+            senderColor = "BLACK";
+        } else if (leaverName.equals(game.whiteUsername())) {
+            senderColor = "WHITE";
+            observing = false;
+        }
+
+        if (!observing) {
+            // actually leave the game in the database
+            JoinGameRequest leaveRequest = new JoinGameRequest(authToken, gameID, senderColor);
+            gameService.leaveGame(leaveRequest);
+        }
+
+        // make the message to everyone
+        ServerMessage playerJoinedNotification = ServerMessage.notification(leaverName + " left the game.");
+        connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
+    }
+
+    public void handleConnect(UserGameCommand command, Session session) throws IOException, DataAccessException {
+        int gameID = command.getGameID();
+        String authToken = command.getAuthToken();
+        System.out.println("CONNECT: " + gameID + " " + authToken);
+        connections.add(authToken, session, gameID);
+
+        // if its an invalid token, stop right there
+        boolean isTokenValid = authService.verifyAuthToken(authToken);
+        if (!isTokenValid) {
+            ServerMessage errorMessage = ServerMessage.error("Error: Bad Auth Token");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
+            return;
+        }
+
+        // get the player name
+        String joinerName = authService.getUserByAuthToken(authToken);
+
+        // get the game
+        GameData game = this.getGame(authToken, gameID);
+        if (game == null) {
+            return; // the error notification is handled inside get game, so nothing else needed
+        }
+
+        // figure out what color they joined
+        String teamJoined = "NONE";
+        boolean observing = true;
+        if (game.blackUsername().equals(joinerName)) {
+            teamJoined = "BLACK";
+            observing = false;
+        } else if (game.whiteUsername().equals(joinerName)) {
+            teamJoined = "WHITE";
+            observing = false;
+        }
+
+        // make the message to send to the original sender
+        ServerMessage loadGameMessage = ServerMessage.loadGame(game);
+        connections.broadcastToSpecificConnection(authToken, loadGameMessage);
+
+        if (observing == true) {
+            ServerMessage playerJoinedNotification = ServerMessage.notification(joinerName + " joined the game as an observer.");
+            connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
+        } else {
+            // make the message to send to all the others
+            ServerMessage playerJoinedNotification = ServerMessage.notification(joinerName + " joined the " + teamJoined + "  team.");
+            connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
         }
     }
 
