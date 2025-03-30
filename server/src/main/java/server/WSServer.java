@@ -43,6 +43,8 @@ public class WSServer {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws DataAccessException, InvalidMoveException, IOException {
+        System.out.println("DEBUG: Received raw JSON: " + message);
+
         UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> {
@@ -97,7 +99,12 @@ public class WSServer {
 
                 if (observing == true) {
                     // make the message to send to all the others
+//                    String output = " WHITE USERNAME: " + game.whiteUsername();
+//                    output = output + (" BLACK USERNAME: " + game.blackUsername());
+//                    output = output + (" USERNAME: " + joinerName);
+
                     ServerMessage playerJoinedNotification = ServerMessage.notification(joinerName + " joined the game as an observer.");
+//                    playerJoinedNotification = ServerMessage.notification(output);
                     connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
                 } else {
                     // make the message to send to all the others
@@ -119,9 +126,11 @@ public class WSServer {
                 connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
             }
             case MAKE_MOVE -> {
-                ChessMove move = command.getChessMove();
+                ChessMove move = command.getMove();
                 int gameID = command.getGameID();
                 String authToken = command.getAuthToken();
+//                ServerMessage playerJoinedNotification = ServerMessage.notification("Move is " + move);
+//                connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
                 System.out.println("Got chess move: " + move);
                 this.handleMove(move, gameID, authToken);
             }
@@ -149,7 +158,7 @@ public class WSServer {
         ServerMessage chessMoveNotification = ServerMessage.notification(authService.getUserByAuthToken(authToken) + " moved from ("
                 + move.getStartPosition().getRow() + "," + columnToLetter(move.getStartPosition().getColumn()) + ") to ("
                 + move.getEndPosition().getRow() + "," + columnToLetter(move.getEndPosition().getColumn()) + ").");
-        connections.broadcastToAll(gameID, chessMoveNotification);
+        connections.broadcastToAllExcluding(gameID, authToken, chessMoveNotification);
 
         // check for check and checkmate
         boolean isInCheckWhite = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
