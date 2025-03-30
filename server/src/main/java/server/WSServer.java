@@ -1,8 +1,6 @@
 package server;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.InvalidMoveException;
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.GameData;
@@ -158,9 +156,49 @@ public class WSServer {
             return;
         }
 
+        // see if the piece to move is from the right color
+        GamesListRequest request = new GamesListRequest(authToken);
+        GamesListResult gameListResult = gameService.getGamesList(request);
+        GameData[] games = gameListResult.games();
+        GameData game = null;
+        for (GameData g : games) {
+            if (g.gameID() == gameID) {
+                game = g;
+            }
+        }
+
+        // figure out the senders' color
+        String senderUsername = authService.getUserByAuthToken(authToken);
+        ChessGame.TeamColor senderColor = null;
+        boolean observing = true;
+        if (game.blackUsername().equals(senderUsername)) {
+            senderColor = ChessGame.TeamColor.BLACK;
+            observing = false;
+        } else if (game.whiteUsername().equals(senderUsername)) {
+            senderColor = ChessGame.TeamColor.WHITE;
+            observing = false;
+        }
+
+        // get the position of the piece, then the piece
+        ChessPosition position = move.getStartPosition();
+        ChessPiece pieceAtPosition = game.game().chessBoard.getPiece(position);
+        if (pieceAtPosition == null) {
+            // they tried to move something that isn't even there
+            ServerMessage errorMessage = ServerMessage.error("Error: There's no piece to move at that location!");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
+            return;
+        }
+        if (!pieceAtPosition.getTeamColor().equals(senderColor)) {
+            // then its the wrong color, so can't do that!
+            ServerMessage errorMessage = ServerMessage.error("Error: Can't move the other team's piece!");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
+            return;
+        }
         try {
-            // find which game its from
+            // handle the move
             MoveResult result = gameService.handleMove(new MoveRequest(authToken, gameID, move));
+
+            // find which game its from
             GameData updatedGame = result.game();
             ServerMessage gameUpdateMessage = ServerMessage.loadGame(updatedGame);
             connections.broadcastToAll(gameID, gameUpdateMessage);
