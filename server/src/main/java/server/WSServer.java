@@ -18,6 +18,8 @@ import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebSocket
 public class WSServer {
@@ -25,6 +27,8 @@ public class WSServer {
     private static AuthService authService;
     private static GameService gameService;
     private static UserService userService;
+
+    List<Integer> finishedGames = new ArrayList<>();
 
     private final ConnectionManager connections = new ConnectionManager();
 
@@ -138,6 +142,13 @@ public class WSServer {
                     return;
                 }
 
+                // if this game's already over, don't let them make any moves
+                if (this.finishedGames.contains(gameID)) {
+                    ServerMessage errorMessage = ServerMessage.error("Error: Can't make a move, as someone already lost!");
+                    connections.broadcastToSpecificConnection(authToken, errorMessage);
+                    return;
+                }
+
                 System.out.println("Got chess move: " + move);
                 this.handleMove(move, gameID, authToken);
             }
@@ -148,6 +159,49 @@ public class WSServer {
 
                 // get the player name
                 String resignerName = authService.getUserByAuthToken(authToken);
+
+                // get the game
+                GamesListRequest request = new GamesListRequest(authToken);
+                GamesListResult gameListResult = gameService.getGamesList(request);
+                GameData[] games = gameListResult.games();
+                GameData game = null;
+                for (GameData g : games) {
+                    if (g.gameID() == gameID) {
+                        game = g;
+                    }
+                }
+
+                // if the game is still null, return an error to the sender
+                if (game == null) {
+                    ServerMessage errorMessage = ServerMessage.error("Error: Bad Game ID");
+                    connections.broadcastToSpecificConnection(authToken, errorMessage);
+                    return;
+                }
+
+                // figure out if they're an observer
+                boolean observing = true;
+                if (game.blackUsername().equals(resignerName)) {
+                    observing = false;
+                } else if (game.whiteUsername().equals(resignerName)) {
+                    observing = false;
+                }
+
+                if (observing == true) {
+                    // can't resign since this is from an observer!
+                    ServerMessage errorMessage = ServerMessage.error("Error: Can't resign, as you are an observer!");
+                    connections.broadcastToSpecificConnection(authToken, errorMessage);
+                    return;
+                }
+
+                if (this.finishedGames.contains(gameID)) {
+                    // can't resign from it since it's already resigned from!
+                    ServerMessage errorMessage = ServerMessage.error("Error: Can't resign, as someone already lost!");
+                    connections.broadcastToSpecificConnection(authToken, errorMessage);
+                    return;
+                }
+
+                // lock that game so no future things can be sent from it
+                this.finishedGames.add(gameID);
 
                 // make the message to everyone
                 ServerMessage playerJoinedNotification = ServerMessage.notification(resignerName + " RESIGNED! Game over!");
