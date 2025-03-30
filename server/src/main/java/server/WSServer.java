@@ -151,7 +151,7 @@ public class WSServer {
 
                 // make the message to everyone
                 ServerMessage playerJoinedNotification = ServerMessage.notification(resignerName + " RESIGNED! Game over!");
-                connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
+                connections.broadcastToAll(gameID, playerJoinedNotification);
             }
         }
     }

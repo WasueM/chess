@@ -444,14 +444,63 @@ public class WebSocketTests {
         }
     }
 
+//    private void resign(WebsocketUser sender, int gameID, boolean expectSuccess,
+//                        Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
+//        TestCommand resignCommand = new TestCommand(UserGameCommand.CommandType.RESIGN, sender.authToken(), gameID);
+//        Map<String, Integer> numExpectedMessages = expectedMessages(sender, 1, inGame, (expectSuccess ? 1 : 0), otherClients);
+//        Map<String, List<TestMessage>> actualMessages = environment.exchange(sender.username(), resignCommand, numExpectedMessages, waitTime);
+//
+//        assertCommandMessages(actualMessages, expectSuccess, sender, types(NOTIFICATION),
+//                inGame, types(NOTIFICATION), otherClients);
+//    }
+
     private void resign(WebsocketUser sender, int gameID, boolean expectSuccess,
                         Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
-        TestCommand resignCommand = new TestCommand(UserGameCommand.CommandType.RESIGN, sender.authToken(), gameID);
-        Map<String, Integer> numExpectedMessages = expectedMessages(sender, 1, inGame, (expectSuccess ? 1 : 0), otherClients);
-        Map<String, List<TestMessage>> actualMessages = environment.exchange(sender.username(), resignCommand, numExpectedMessages, waitTime);
 
-        assertCommandMessages(actualMessages, expectSuccess, sender, types(NOTIFICATION),
-                inGame, types(NOTIFICATION), otherClients);
+        // 1) Build the resign command
+        TestCommand resignCommand = new TestCommand(UserGameCommand.CommandType.RESIGN, sender.authToken(), gameID);
+
+        // 2) Calculate how many messages we expect for each user
+        Map<String, Integer> numExpectedMessages = expectedMessages(
+                sender,
+                1,                         // number expected for the sender
+                inGame,
+                (expectSuccess ? 1 : 0),   // number expected for others in the game
+                otherClients
+        );
+
+        // 3) Exchange the command with the environment, get the actual messages
+        Map<String, List<TestMessage>> actualMessages = environment.exchange(
+                sender.username(),
+                resignCommand,
+                numExpectedMessages,
+                waitTime
+        );
+
+        // --- DEBUG PRINTS ---
+        System.out.println("===== DEBUG: resign =====");
+        System.out.println("Sender: " + sender.username() + " (authToken=" + sender.authToken() + ")");
+        System.out.println("Game ID: " + gameID);
+        System.out.println("Expected success? " + expectSuccess);
+        System.out.println("Expected message counts: " + numExpectedMessages);
+        System.out.println("\n--- Actual Messages Received ---");
+        for (Map.Entry<String, List<TestMessage>> entry : actualMessages.entrySet()) {
+            String user = entry.getKey();
+            List<TestMessage> messages = entry.getValue();
+            System.out.println("User: " + user + " => " + messages);
+        }
+        System.out.println("================================\n");
+
+        // 4) Now run the assertion on the actual vs. expected results
+        assertCommandMessages(
+                actualMessages,
+                expectSuccess,
+                sender,
+                types(ServerMessage.ServerMessageType.NOTIFICATION),
+                inGame,
+                types(ServerMessage.ServerMessageType.NOTIFICATION),
+                otherClients
+        );
     }
 
     private void leave(WebsocketUser sender, int gameID, Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
