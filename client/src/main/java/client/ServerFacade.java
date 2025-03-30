@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import model.AuthData;
 import model.GameData;
-import server.WSServer;
 import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
