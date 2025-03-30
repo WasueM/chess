@@ -215,7 +215,7 @@ public class WSServer {
         }
     }
 
-    public GameData getGame(String authToken, int gameID) throws IOException {
+    public GameData getGame(String authToken, int gameID) throws IOException, DataAccessException {
         GamesListRequest request = new GamesListRequest(authToken);
         GamesListResult gameListResult = gameService.getGamesList(request);
         GameData[] games = gameListResult.games();
