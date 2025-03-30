@@ -14,7 +14,10 @@ public class WSClient extends Endpoint {
     private GameController gameController;
 
     public WSClient(String url) throws Exception {
-        URI uri = new URI(url + "/ws");
+
+        // switch the http url to the websocket version
+        String websocketURL = url.replaceFirst("http", "ws") + "ws";
+        URI uri = new URI(websocketURL);
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
 
