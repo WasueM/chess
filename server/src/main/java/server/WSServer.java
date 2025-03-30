@@ -68,21 +68,9 @@ public class WSServer {
                 String joinerName = authService.getUserByAuthToken(authToken);
 
                 // get the game
-                GamesListRequest request = new GamesListRequest(authToken);
-                GamesListResult gameListResult = gameService.getGamesList(request);
-                GameData[] games = gameListResult.games();
-                GameData game = null;
-                for (GameData g : games) {
-                    if (g.gameID() == gameID) {
-                        game = g;
-                    }
-                }
-
-                // if the game is still null, return an error to the sender
+                GameData game = this.getGame(authToken, gameID);
                 if (game == null) {
-                    ServerMessage errorMessage = ServerMessage.error("Error: Bad Game ID");
-                    connections.broadcastToSpecificConnection(authToken, errorMessage);
-                    return;
+                    return; // the error notification is handled inside get game, so nothing else needed
                 }
 
                 // figure out what color they joined
@@ -190,28 +178,16 @@ public class WSServer {
                 String resignerName = authService.getUserByAuthToken(authToken);
 
                 // get the game
-                GamesListRequest request = new GamesListRequest(authToken);
-                GamesListResult gameListResult = gameService.getGamesList(request);
-                GameData[] games = gameListResult.games();
-                GameData game = null;
-                for (GameData g : games) {
-                    if (g.gameID() == gameID) {
-                        game = g;
-                    }
-                }
-
-                // if the game is still null, return an error to the sender
-                if (game == null) {
-                    ServerMessage errorMessage = ServerMessage.error("Error: Bad Game ID");
-                    connections.broadcastToSpecificConnection(authToken, errorMessage);
-                    return;
+                GameData theGame = this.getGame(authToken, gameID);
+                if (theGame == null) {
+                    return; // the error notification is handled inside get game, so nothing else needed
                 }
 
                 // figure out if they're an observer
                 boolean observing = true;
-                if (game.blackUsername().equals(resignerName)) {
+                if (theGame.blackUsername().equals(resignerName)) {
                     observing = false;
-                } else if (game.whiteUsername().equals(resignerName)) {
+                } else if (theGame.whiteUsername().equals(resignerName)) {
                     observing = false;
                 }
 
@@ -236,6 +212,27 @@ public class WSServer {
                 ServerMessage playerJoinedNotification = ServerMessage.notification(resignerName + " RESIGNED! Game over!");
                 connections.broadcastToAll(gameID, playerJoinedNotification);
             }
+        }
+    }
+
+    public GameData getGame(String authToken, int gameID) throws IOException {
+        GamesListRequest request = new GamesListRequest(authToken);
+        GamesListResult gameListResult = gameService.getGamesList(request);
+        GameData[] games = gameListResult.games();
+        GameData game = null;
+        for (GameData g : games) {
+            if (g.gameID() == gameID) {
+                game = g;
+            }
+        }
+
+        // if the game is still null, return an error to the sender
+        if (game == null) {
+            ServerMessage errorMessage = ServerMessage.error("Error: Bad Game ID");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
+            return null;
+        } else {
+            return game;
         }
     }
 
