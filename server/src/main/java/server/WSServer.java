@@ -23,9 +23,9 @@ import java.io.IOException;
 @WebSocket
 public class WSServer {
     private static final Gson gson = new Gson();
-    private AuthService authService;
-    private GameService gameService;
-    private UserService userService;
+    private static AuthService authService;
+    private static GameService gameService;
+    private static UserService userService;
 
     private final ConnectionManager connections = new ConnectionManager();
 
@@ -66,15 +66,28 @@ public class WSServer {
 
                 // figure out what color they joined
                 String teamJoined = "NONE";
+                boolean observing = true;
                 if (game.blackUsername().equals(joinerName)) {
                     teamJoined = "BLACK";
+                    observing = false;
                 } else if (game.whiteUsername().equals(joinerName)) {
                     teamJoined = "WHITE";
+                    observing = false;
                 }
 
-                // make the message to send back
-                ServerMessage chessMoveNotification = ServerMessage.notification(joinerName + " joined the " + teamJoined + "  team.");
-                connections.broadcastToAll(gameID, chessMoveNotification);
+                // make the message to send to the original sender
+                ServerMessage loadGameMessage = ServerMessage.loadGame(game);
+                connections.broadcastToSpecificConnection(authToken, loadGameMessage);
+
+                if (observing == true) {
+                    // make the message to send to all the others
+                    ServerMessage playerJoinedNotification = ServerMessage.notification(joinerName + " joined the game as an observer.");
+                    connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
+                } else {
+                    // make the message to send to all the others
+                    ServerMessage playerJoinedNotification = ServerMessage.notification(joinerName + " joined the " + teamJoined + "  team.");
+                    connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
+                }
             }
             case LEAVE -> {
                 int gameID = command.getGameID();
