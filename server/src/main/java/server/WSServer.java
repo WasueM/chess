@@ -10,6 +10,7 @@ import services.AuthService;
 import services.GameService;
 import services.UserService;
 import services.requests.GamesListRequest;
+import services.requests.JoinGameRequest;
 import services.requests.MoveRequest;
 import services.results.GamesListResult;
 import services.results.MoveResult;
@@ -100,13 +101,7 @@ public class WSServer {
                 connections.broadcastToSpecificConnection(authToken, loadGameMessage);
 
                 if (observing == true) {
-                    // make the message to send to all the others
-//                    String output = " WHITE USERNAME: " + game.whiteUsername();
-//                    output = output + (" BLACK USERNAME: " + game.blackUsername());
-//                    output = output + (" USERNAME: " + joinerName);
-
                     ServerMessage playerJoinedNotification = ServerMessage.notification(joinerName + " joined the game as an observer.");
-//                    playerJoinedNotification = ServerMessage.notification(output);
                     connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
                 } else {
                     // make the message to send to all the others
@@ -122,6 +117,40 @@ public class WSServer {
 
                 // get the player name
                 String leaverName = authService.getUserByAuthToken(authToken);
+
+                // update the game so it has null there instead of username, so others can join
+                GamesListRequest request = new GamesListRequest(authToken);
+                GamesListResult gameListResult = gameService.getGamesList(request);
+                GameData[] games = gameListResult.games();
+                GameData game = null;
+                for (GameData g : games) {
+                    if (g.gameID() == gameID) {
+                        game = g;
+                    }
+                }
+
+                // if the game is still null, return an error to the sender
+                if (game == null) {
+                    ServerMessage errorMessage = ServerMessage.error("Error: Bad Game ID");
+                    connections.broadcastToSpecificConnection(authToken, errorMessage);
+                    return;
+                }
+
+                // figure out what color they joined
+                String senderColor = null;
+                boolean observing = true;
+                if (leaverName.equals(game.blackUsername())) {
+                    senderColor = "BLACK";
+                } else if (leaverName.equals(game.whiteUsername())) {
+                    senderColor = "WHITE";
+                    observing = false;
+                }
+
+                if (!observing) {
+                    // actually leave the game in the database
+                    JoinGameRequest leaveRequest = new JoinGameRequest(authToken, gameID, senderColor);
+                    gameService.leaveGame(leaveRequest);
+                }
 
                 // make the message to everyone
                 ServerMessage playerJoinedNotification = ServerMessage.notification(leaverName + " left the game.");
@@ -228,12 +257,10 @@ public class WSServer {
         boolean observing = true;
         if (game.blackUsername().equals(senderUsername)) {
             senderColor = ChessGame.TeamColor.BLACK;
-            observing = false;
         } else if (game.whiteUsername().equals(senderUsername)) {
             senderColor = ChessGame.TeamColor.WHITE;
             observing = false;
         }
-        System.out.println("HO2");
 
         // get the position of the piece, then the piece
         ChessPosition position = move.getStartPosition();

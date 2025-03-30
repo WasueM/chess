@@ -115,6 +115,56 @@ public class GameService {
             }
     }
 
+    public JoinGameResult leaveGame(JoinGameRequest joinGameRequest) throws DataAccessException {
+        // authenticate
+        boolean validAuth = authService.verifyAuthToken(joinGameRequest.authToken());
+
+        if (validAuth) {
+            // get the game from the id
+            GameData[] allGames = gameDataAccess.getActiveGames();
+
+            // see if the game ID exists
+            GameData gameToLeave = null;
+            for (GameData game : allGames) {
+                if (game.gameID() == joinGameRequest.gameID()) {
+                    gameToLeave = game;
+                }
+            }
+
+            if (gameToLeave == null) {
+                throw new DataAccessException("Game ID doesn't exist");
+            }
+
+            // get the needed data out of the game
+            String gameName = gameToLeave.gameName();
+            ChessGame chessGame = gameToLeave.game();
+            String currentWhiteUser = gameToLeave.whiteUsername();
+            String currentBlackUser = gameToLeave.blackUsername();
+
+            // get the username of the person whose joining
+            String leaverName = authService.getUserByAuthToken(joinGameRequest.authToken());
+
+            // if the leaving player is black, make black user null, same for white
+            GameData modifiedGame = null;
+            if (joinGameRequest.playerColor().equals("WHITE")) {
+                modifiedGame = new GameData(joinGameRequest.gameID(), null, currentBlackUser, gameName, chessGame);
+            } else if (joinGameRequest.playerColor().equals("BLACK")) {
+                modifiedGame = new GameData(joinGameRequest.gameID(), currentWhiteUser, null, gameName, chessGame);
+            }
+
+            if (modifiedGame == null) {
+                throw new DataAccessException("Failed to leave the game");
+            }
+
+            gameDataAccess.updateGameWithNewData(modifiedGame);
+
+            return new JoinGameResult(gameToLeave.gameID());
+        }
+        else {
+            return null;
+        }
+    }
+
     public MoveResult handleMove(MoveRequest moveRequest) throws DataAccessException, InvalidMoveException {
 
         boolean validAuth = authService.verifyAuthToken(moveRequest.authToken());
