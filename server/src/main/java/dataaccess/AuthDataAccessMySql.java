@@ -109,4 +109,27 @@ public final class AuthDataAccessMySql implements AuthDataAccessObject {
             throw new DataAccessException("Issue getting the user for that auth token, check if it is a valid token");
         }
     }
+
+    @Override
+    public String getAuthTokenByUser(String username) throws DataAccessException {
+        String sqlCommand = "SELECT token FROM AuthData WHERE username = ?";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement(sqlCommand)) {
+
+            // Set the username parameter to search for
+            statement.setString(1, username);
+
+            ResultSet results = statement.executeQuery();
+
+            // if there's any results, we can get the token from it
+            if (results.next()) {
+                return results.getString("token");
+            }
+            return null;
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Issue getting an auth token for that username from the sql database.");
+        }
+    }
 }

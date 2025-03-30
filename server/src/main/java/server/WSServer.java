@@ -127,8 +127,17 @@ public class WSServer {
                 ChessMove move = command.getMove();
                 int gameID = command.getGameID();
                 String authToken = command.getAuthToken();
-//                ServerMessage playerJoinedNotification = ServerMessage.notification("Move is " + move);
-//                connections.broadcastToAllExcluding(gameID, authToken, playerJoinedNotification);
+
+                // if its an invalid token, stop right there
+                boolean isTokenValid = authService.verifyAuthToken(authToken);
+                if (!isTokenValid) {
+                    // send an error directly to the sending session
+                    ServerMessage errorMessage = ServerMessage.error("Error: Recieved Bad Auth Token for Make Move");
+                    String json = gson.toJson(errorMessage);
+                    session.getRemote().sendString(json);
+                    return;
+                }
+
                 System.out.println("Got chess move: " + move);
                 this.handleMove(move, gameID, authToken);
             }
@@ -148,14 +157,6 @@ public class WSServer {
     }
 
     public void handleMove(ChessMove move, int gameID, String authToken) throws DataAccessException, InvalidMoveException, IOException {
-        // if its an invalid token, stop right there
-        boolean isTokenValid = authService.verifyAuthToken(authToken);
-        if (!isTokenValid) {
-            ServerMessage errorMessage = ServerMessage.error("Error: Bad Auth Token");
-            connections.broadcastToSpecificConnection(authToken, errorMessage);
-            return;
-        }
-
         // see if the piece to move is from the right color
         GamesListRequest request = new GamesListRequest(authToken);
         GamesListResult gameListResult = gameService.getGamesList(request);
@@ -178,6 +179,7 @@ public class WSServer {
             senderColor = ChessGame.TeamColor.WHITE;
             observing = false;
         }
+        System.out.println("HO2");
 
         // get the position of the piece, then the piece
         ChessPosition position = move.getStartPosition();
@@ -194,6 +196,7 @@ public class WSServer {
             connections.broadcastToSpecificConnection(authToken, errorMessage);
             return;
         }
+
         try {
             // handle the move
             MoveResult result = gameService.handleMove(new MoveRequest(authToken, gameID, move));

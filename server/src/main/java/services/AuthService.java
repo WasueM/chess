@@ -52,6 +52,10 @@ public class AuthService {
         return authDataAccess.getUserByAuthToken(authToken);
     }
 
+    public String getAuthTokenByUser(String username) throws DataAccessException {
+        return authDataAccess.getAuthTokenByUser(username);
+    }
+
     public static String generateToken() {
         return UUID.randomUUID().toString();
     }

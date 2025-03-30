@@ -42,4 +42,13 @@ public final class AuthDataAccessMemory implements AuthDataAccessObject {
         }
         return null;
     }
+
+    public String getAuthTokenByUser(String username) throws DataAccessException {
+        for (AuthData authData : authTokens) {
+            if (authData.username().equals(username)) {
+                return authData.authToken();
+            }
+        }
+        return null;
+    }
 }
