@@ -150,36 +150,46 @@ public class WSServer {
     }
 
     public void handleMove(ChessMove move, int gameID, String authToken) throws DataAccessException, InvalidMoveException, IOException {
-        // find which game its from
-        MoveResult result = gameService.handleMove(new MoveRequest(authToken, gameID, move));
-        GameData updatedGame = result.game();
-        ServerMessage gameUpdateMessage = ServerMessage.loadGame(updatedGame);
-        connections.broadcastToAll(gameID, gameUpdateMessage);
-        ServerMessage chessMoveNotification = ServerMessage.notification(authService.getUserByAuthToken(authToken) + " moved from ("
-                + move.getStartPosition().getRow() + "," + columnToLetter(move.getStartPosition().getColumn()) + ") to ("
-                + move.getEndPosition().getRow() + "," + columnToLetter(move.getEndPosition().getColumn()) + ").");
-        connections.broadcastToAllExcluding(gameID, authToken, chessMoveNotification);
+        // if its an invalid token, stop right there
+        boolean isTokenValid = authService.verifyAuthToken(authToken);
+        if (!isTokenValid) {
+            ServerMessage errorMessage = ServerMessage.error("Error: Bad Auth Token");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
+            return;
+        }
 
-        // check for check and checkmate
-        boolean isInCheckWhite = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
-        if (isInCheckWhite) {
-            ServerMessage checkNotification = ServerMessage.notification(updatedGame.whiteUsername() + " is in check!");
-            connections.broadcastToAll(gameID, checkNotification);
-        }
-        boolean isInCheckBlack = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
-        if (isInCheckBlack) {
-            ServerMessage checkNotification = ServerMessage.notification(updatedGame.blackUsername() + " is in check!");
-            connections.broadcastToAll(gameID, checkNotification);
-        }
-        boolean isInCheckMateWhite = updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE);
-        if (isInCheckMateWhite) {
-            ServerMessage checkNotification = ServerMessage.notification(updatedGame.whiteUsername() + " is in checkmate!");
-            connections.broadcastToAll(gameID, checkNotification);
-        }
-        boolean isInCheckMateBlack = updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE);
-        if (isInCheckMateBlack) {
-            ServerMessage checkNotification = ServerMessage.notification(updatedGame.blackUsername() + " is in checkmate!");
-            connections.broadcastToAll(gameID, checkNotification);
+        try {
+            // find which game its from
+            MoveResult result = gameService.handleMove(new MoveRequest(authToken, gameID, move));
+            GameData updatedGame = result.game();
+            ServerMessage gameUpdateMessage = ServerMessage.loadGame(updatedGame);
+            connections.broadcastToAll(gameID, gameUpdateMessage);
+            ServerMessage chessMoveNotification = ServerMessage.notification(authService.getUserByAuthToken(authToken) + " moved from ("
+                    + move.getStartPosition().getRow() + "," + columnToLetter(move.getStartPosition().getColumn()) + ") to ("
+                    + move.getEndPosition().getRow() + "," + columnToLetter(move.getEndPosition().getColumn()) + ").");
+            connections.broadcastToAllExcluding(gameID, authToken, chessMoveNotification);
+
+            // check for check and checkmate
+            boolean isInCheckMateWhite = updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE);
+            boolean isInCheckMateBlack = updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE);
+            boolean isInCheckWhite = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
+            boolean isInCheckBlack = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
+            if (isInCheckMateWhite) {
+                ServerMessage checkNotification = ServerMessage.notification(updatedGame.whiteUsername() + " is in checkmate!");
+                connections.broadcastToAll(gameID, checkNotification);
+            } else if (isInCheckMateBlack) {
+                ServerMessage checkNotification = ServerMessage.notification(updatedGame.blackUsername() + " is in checkmate!");
+                connections.broadcastToAll(gameID, checkNotification);
+            } else if (isInCheckWhite) {
+                ServerMessage checkNotification = ServerMessage.notification(updatedGame.whiteUsername() + " is in check!");
+                connections.broadcastToAll(gameID, checkNotification);
+            } else if (isInCheckBlack) {
+                ServerMessage checkNotification = ServerMessage.notification(updatedGame.blackUsername() + " is in check!");
+                connections.broadcastToAll(gameID, checkNotification);
+            }
+        } catch (Exception error) {
+            ServerMessage errorMessage = ServerMessage.error("Error: Invalid Move!");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
         }
     }
 

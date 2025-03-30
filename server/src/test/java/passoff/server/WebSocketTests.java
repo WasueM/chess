@@ -364,19 +364,83 @@ public class WebSocketTests {
         );
     }
 
+//    private void makeMove(WebsocketUser sender, int gameID, ChessMove move, boolean expectSuccess,
+//                          boolean extraNotification, Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
+//        TestCommand moveCommand = new TestCommand(sender.authToken(), gameID, move);
+//        Map<String, Integer> numExpectedMessages = expectedMessages(sender, 1, inGame, (expectSuccess ? 2 : 0), otherClients);
+//        Map<String, List<TestMessage>> actualMessages = environment.exchange(sender.username(), moveCommand, numExpectedMessages, waitTime);
+//
+//        if(extraNotification && actualMessages.get(sender.username()).size() > 1) {
+//            assertCommandMessages(actualMessages, expectSuccess, sender, types(LOAD_GAME, NOTIFICATION),
+//                    inGame, types(LOAD_GAME, NOTIFICATION, NOTIFICATION), otherClients);
+//        }
+//        else {
+//            assertCommandMessages(actualMessages, expectSuccess, sender, types(LOAD_GAME),
+//                    inGame, types(LOAD_GAME, NOTIFICATION), otherClients);
+//        }
+//    }
+
     private void makeMove(WebsocketUser sender, int gameID, ChessMove move, boolean expectSuccess,
                           boolean extraNotification, Set<WebsocketUser> inGame, Set<WebsocketUser> otherClients) {
+        // 1) Build the move command
         TestCommand moveCommand = new TestCommand(sender.authToken(), gameID, move);
-        Map<String, Integer> numExpectedMessages = expectedMessages(sender, 1, inGame, (expectSuccess ? 2 : 0), otherClients);
-        Map<String, List<TestMessage>> actualMessages = environment.exchange(sender.username(), moveCommand, numExpectedMessages, waitTime);
 
-        if(extraNotification && actualMessages.get(sender.username()).size() > 1) {
-            assertCommandMessages(actualMessages, expectSuccess, sender, types(LOAD_GAME, NOTIFICATION),
-                    inGame, types(LOAD_GAME, NOTIFICATION, NOTIFICATION), otherClients);
+        // 2) Calculate how many messages we expect for each user
+        Map<String, Integer> numExpectedMessages = expectedMessages(
+                sender,
+                1,                           // number expected for the sender
+                inGame,
+                (expectSuccess ? 2 : 0),     // number expected for others in the game
+                otherClients
+        );
+
+        // 3) Exchange the command with the environment, get actual messages
+        Map<String, List<TestMessage>> actualMessages = environment.exchange(
+                sender.username(),
+                moveCommand,
+                numExpectedMessages,
+                waitTime
+        );
+
+        // --- DEBUG PRINTS ---
+        System.out.println("===== DEBUG: makeMove =====");
+        System.out.println("Sender: " + sender.username() + " (authToken=" + sender.authToken() + ")");
+        System.out.println("Game ID: " + gameID);
+        System.out.println("Move: " + move);
+        System.out.println("Expected success? " + expectSuccess);
+        System.out.println("Extra notification? " + extraNotification);
+        System.out.println("Expected message counts: " + numExpectedMessages);
+        System.out.println("\n--- Actual Messages Received ---");
+        for (Map.Entry<String, List<TestMessage>> entry : actualMessages.entrySet()) {
+            String user = entry.getKey();
+            List<TestMessage> messages = entry.getValue();
+            System.out.println("User: " + user + " => " + messages);
         }
-        else {
-            assertCommandMessages(actualMessages, expectSuccess, sender, types(LOAD_GAME),
-                    inGame, types(LOAD_GAME, NOTIFICATION), otherClients);
+        System.out.println("================================\n");
+
+        // 4) Now run the assertion on the actual vs. expected results
+        if (extraNotification && actualMessages.get(sender.username()).size() > 1) {
+            // If we expect an extra NOTIFICATION for the sender
+            assertCommandMessages(
+                    actualMessages,
+                    expectSuccess,
+                    sender,
+                    types(ServerMessage.ServerMessageType.LOAD_GAME, ServerMessage.ServerMessageType.NOTIFICATION),
+                    inGame,
+                    types(ServerMessage.ServerMessageType.LOAD_GAME, ServerMessage.ServerMessageType.NOTIFICATION, ServerMessage.ServerMessageType.NOTIFICATION),
+                    otherClients
+            );
+        } else {
+            // Normal case
+            assertCommandMessages(
+                    actualMessages,
+                    expectSuccess,
+                    sender,
+                    types(ServerMessage.ServerMessageType.LOAD_GAME),
+                    inGame,
+                    types(ServerMessage.ServerMessageType.LOAD_GAME, ServerMessage.ServerMessageType.NOTIFICATION),
+                    otherClients
+            );
         }
     }
 
