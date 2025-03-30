@@ -28,7 +28,6 @@ public class WSServer {
     private final ConnectionManager connections = new ConnectionManager();
 
     public static void start(int port) {
-        Spark.port(port);
         Spark.webSocket("/ws", WSServer.class);
         Spark.get("/echo/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
     }
@@ -40,7 +39,7 @@ public class WSServer {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws DataAccessException, InvalidMoveException {
+    public void onMessage(Session session, String message) throws DataAccessException, InvalidMoveException, IOException {
         UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case CONNECT -> {

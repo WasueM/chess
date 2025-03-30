@@ -80,15 +80,16 @@ public class Server {
     }
 
     public int run(int desiredPort) {
-        Spark.port(desiredPort);
-
+        // add the right files
         Spark.staticFiles.location("web");
 
-        // Register your endpoints and handle exceptions here.
-        createEndpoints();
+        Spark.port(desiredPort);
 
         // Start the websocket server
         this.websocketServer.start(desiredPort);
+
+        // Register your endpoints and handle exceptions here.
+        createEndpoints();
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
@@ -139,8 +140,6 @@ public class Server {
         try (Connection conn = DatabaseManager.getConnection();
              Statement statement = conn.createStatement()) {
 
-            System.out.println("Ensuring tables exist...");
-
             // Ensure the database exists
             DatabaseManager.createDatabase();
 
@@ -171,8 +170,6 @@ public class Server {
                 game_json TEXT NOT NULL
             )
         """);
-
-            System.out.println("Database tables ensured successfully.");
 
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException("Error configuring database: " + e.getMessage(), e);
