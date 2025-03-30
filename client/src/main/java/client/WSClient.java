@@ -48,7 +48,7 @@ public class WSClient extends Endpoint {
         });
     }
 
-    public setGameController(GameController gameController) {
+    public void setGameController(GameController gameController) {
         this.gameController = gameController;
     }
 
