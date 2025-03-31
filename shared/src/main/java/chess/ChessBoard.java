@@ -250,7 +250,7 @@ public class ChessBoard {
         for (int i = 8; i > 0; i--) { // row, from 8 to 1
             finalString.append(i).append(" ");
             for (int j = 1; j < 9; j++) { // column, from 1 to 8
-                printLocation(i, j, validMoves, startingPosition);
+                finalString.append(printLocation(i, j, validMoves, startingPosition));
             }
             // new line after each row
             finalString.append(" ").append(i);
@@ -297,7 +297,7 @@ public class ChessBoard {
         for (int i = 1; i < 9; i++) {
             finalString.append(i).append(" ");
             for (int j = 8; j > 0; j--) {
-                printLocation(i, j, validMoves, startingPosition);
+                finalString.append(printLocation(i, j, validMoves, startingPosition));
             }
             finalString.append(" ").append(i);
             finalString.append("\n");
