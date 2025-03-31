@@ -27,6 +27,7 @@ public class Main {
             runConsoleMenus();
         } catch (Exception error) {
             System.out.println("ERROR somewhere in the app! " + error.getMessage());
+            error.printStackTrace();
         }
     }
 

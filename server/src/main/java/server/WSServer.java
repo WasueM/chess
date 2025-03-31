@@ -21,6 +21,7 @@ import websocket.messages.ServerMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @WebSocket
 public class WSServer {
@@ -81,9 +82,9 @@ public class WSServer {
 
         // figure out if they're an observer
         boolean observing = true;
-        if (theGame.blackUsername().equals(resignerName)) {
+        if (Objects.equals(theGame.whiteUsername(), resignerName)) {
             observing = false;
-        } else if (theGame.whiteUsername().equals(resignerName)) {
+        } else if (Objects.equals(theGame.blackUsername(), resignerName)) {
             observing = false;
         }
 
@@ -165,9 +166,9 @@ public class WSServer {
         // figure out what color they joined
         String senderColor = null;
         boolean observing = true;
-        if (leaverName.equals(game.blackUsername())) {
+        if (Objects.equals(game.blackUsername(), leaverName)) {
             senderColor = "BLACK";
-        } else if (leaverName.equals(game.whiteUsername())) {
+        } else if (Objects.equals(game.whiteUsername(), leaverName)) {
             senderColor = "WHITE";
             observing = false;
         }
@@ -209,10 +210,10 @@ public class WSServer {
         // figure out what color they joined
         String teamJoined = "NONE";
         boolean observing = true;
-        if (game.blackUsername().equals(joinerName)) {
+        if (Objects.equals(game.blackUsername(), joinerName)) {
             teamJoined = "BLACK";
             observing = false;
-        } else if (game.whiteUsername().equals(joinerName)) {
+        } else if (Objects.equals(game.whiteUsername(), joinerName)) {
             teamJoined = "WHITE";
             observing = false;
         }
@@ -268,9 +269,9 @@ public class WSServer {
         String senderUsername = authService.getUserByAuthToken(authToken);
         ChessGame.TeamColor senderColor = null;
         boolean observing = true;
-        if (game.blackUsername().equals(senderUsername)) {
+        if (Objects.equals(game.blackUsername(), senderUsername)) {
             senderColor = ChessGame.TeamColor.BLACK;
-        } else if (game.whiteUsername().equals(senderUsername)) {
+        } else if (Objects.equals(game.whiteUsername(), senderUsername)) {
             senderColor = ChessGame.TeamColor.WHITE;
             observing = false;
         }

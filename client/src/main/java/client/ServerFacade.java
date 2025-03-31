@@ -196,6 +196,7 @@ public class ServerFacade {
     }
 
     public void sendMakeMove(ChessMove move, int gameID) throws Exception {
+        System.out.println("SENDING MOVE: " + move.toString());
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, this.authToken, gameID, move);
         this.websocketClient.sendCommand(command);
     }

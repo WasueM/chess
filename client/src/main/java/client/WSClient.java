@@ -23,6 +23,7 @@ public class WSClient extends Endpoint {
 
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String jsonMessage) {
+                System.out.println("MESSAGE RECEIVED");
                 ServerMessage message = GSON.fromJson(jsonMessage, ServerMessage.class);
 
                 switch (message.getServerMessageType()) {
