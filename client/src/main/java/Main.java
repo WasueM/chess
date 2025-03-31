@@ -214,18 +214,26 @@ public class Main {
     private static boolean makeMove() throws Exception {
         System.out.println("Please enter where you want to move from");
         int fromRow = readInValidRow();
-        int fromColumn = readInValidColumn();
+        if (fromRow > 8) {
+            // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
+            return true;
+        }
 
-        if ((fromRow > 8) || (fromColumn > 8)) {
+        int fromColumn = readInValidColumn();
+        if (fromColumn > 8) {
             // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
             return true;
         }
 
         System.out.println("Please enter where you want to move to");
         int toRow = readInValidRow();
-        int toColumn = readInValidColumn();
+        if (toRow > 8) {
+            // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
+            return true;
+        }
 
-        if ((toRow > 8) || (toColumn > 8)) {
+        int toColumn = readInValidColumn();
+        if (toColumn > 8) {
             // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
             return true;
         }

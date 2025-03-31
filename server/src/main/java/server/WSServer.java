@@ -324,7 +324,7 @@ public class WSServer {
                 connections.broadcastToAll(gameID, checkNotification);
             }
         } catch (Exception error) {
-            ServerMessage errorMessage = ServerMessage.error("Error: Invalid Move!");
+            ServerMessage errorMessage = ServerMessage.error("Error: Invalid Move! Wrong turn, or disallowed movement!");
             connections.broadcastToSpecificConnection(authToken, errorMessage);
         }
     }
