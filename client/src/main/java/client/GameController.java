@@ -100,11 +100,13 @@ public class GameController {
      // this is something we receive
      public void showNotication(String notificationMessage) {
         System.out.println("NOTIFICATION: " + notificationMessage);
+        System.out.println(">>> ");
      }
 
      // this is something we recieve
      public void showError(String errorMessage) {
         System.out.println("ERROR: " + errorMessage);
+        System.out.println(">>> ");
      }
 
      public void createWebsocketConnection() throws Exception {

@@ -44,12 +44,10 @@ public class WSClient extends Endpoint {
                     }
                     case ERROR -> {
                         String errorMessage = message.getServerErrorMessage();
-                        System.err.println("ERROR: " + errorMessage);
                         gameController.showError(errorMessage);
                     }
                     case NOTIFICATION -> {
                         String notificationMessage = message.getServerMessage();
-                        System.out.println("NOTIFICATION: " + notificationMessage);
                         gameController.showNotication(notificationMessage);
                     }
                 }
