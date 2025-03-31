@@ -40,6 +40,7 @@ public class WSClient extends Endpoint {
                             System.out.println("LOAD_GAME received: " + message.getGame().gameName());
 
                             // update the board with the new one
+                            gameController.game = message.getGame();
                             gameController.show();
                         } else {
                             System.out.println("LOAD_GAME received with no game data!");
