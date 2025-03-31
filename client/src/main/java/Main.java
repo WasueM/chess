@@ -152,8 +152,8 @@ public class Main {
     }
 
     private static int readInValidRow() {
-        System.out.println("Enter the row: (Number)");
-        System.out.print(">>> ");
+        System.out.print("Enter the row (Number): ");
+        System.out.print(" >>> ");
 
         int row = 9999;
         Scanner scanner = new Scanner(System.in);
@@ -177,8 +177,8 @@ public class Main {
     }
 
     private static int readInValidColumn() {
-        System.out.println("Enter the column: (Letter)");
-        System.out.print(">>> ");
+        System.out.print("Enter the column (Letter): ");
+        System.out.print(" >>> ");
 
         String character = "a";
         Scanner scanner = new Scanner(System.in);
@@ -207,7 +207,10 @@ public class Main {
     private static boolean leaveGame() throws Exception {
         consoleCommands.appState = 1; // return to the logged in version
         consoleCommands.gameController.endWebSocketConnection();
+        System.out.println();
         System.out.println("Left the game!");
+        System.out.println();
+        consoleCommands.listGames();
         return true;
     }
 

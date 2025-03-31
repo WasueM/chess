@@ -28,11 +28,7 @@ public class WSClient extends Endpoint {
 
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String jsonMessage) {
-                System.out.println("MESSAGE RECEIVED");
-                System.out.println(jsonMessage);
                 ServerMessage message = GSON.fromJson(jsonMessage, ServerMessage.class);
-                System.out.println("MESSAGE PARSED");
-                System.out.println(message);
 
                 switch (message.getServerMessageType()) {
                     case LOAD_GAME -> {
