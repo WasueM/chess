@@ -204,8 +204,9 @@ public class Main {
     }
 
     private static boolean leaveGame() throws Exception {
-        consoleCommands.appState = 2; // return to the logged in version
+        consoleCommands.appState = 1; // return to the logged in version
         consoleCommands.gameController.endWebSocketConnection();
+        System.out.println("Left the game!");
         return true;
     }
 
