@@ -33,6 +33,9 @@ public class GameController {
 
         // drawing the board
         this.drawBoard();
+
+        // prepare for new input
+        System.out.print(">>> ");
     }
 
     public void clear() {
@@ -51,7 +54,7 @@ public class GameController {
     }
 
     public void printUsernames() {
-        System.out.print("White: " + this.game.whiteUsername() + " | Black: " + this.game.blackUsername() + "\n");
+        System.out.print("White: " + ConsoleCommands.printUsernameOrAvailable(this.game.whiteUsername()) + " | Black: " + ConsoleCommands.printUsernameOrAvailable(this.game.blackUsername()) + "\n");
     }
 
     public void drawBoard() {

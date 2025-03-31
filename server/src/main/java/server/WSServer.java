@@ -168,6 +168,7 @@ public class WSServer {
         boolean observing = true;
         if (Objects.equals(game.blackUsername(), leaverName)) {
             senderColor = "BLACK";
+            observing = false;
         } else if (Objects.equals(game.whiteUsername(), leaverName)) {
             senderColor = "WHITE";
             observing = false;

@@ -281,7 +281,7 @@ public class ConsoleCommands {
                     gameController.setPlayer(teamColor);
                     gameController.show();
 
-                    return true; // no more input for now, since they'll be in a game //false but for now it's easy true
+                    return true;
                 }
             }
 
