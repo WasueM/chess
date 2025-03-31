@@ -10,7 +10,6 @@ import java.util.Scanner;
 public class Main {
 
     static ServerFacade serverFacade;
-    static GameController gameController;
     static ConsoleCommands consoleCommands;
 
     public static void main(String[] args) {
@@ -29,7 +28,7 @@ public class Main {
         try {
             runConsoleMenus();
         } catch (Exception error) {
-            System.out.println("ERROR somewhere in the app!");
+            System.out.println("ERROR somewhere in the app!" + error.getMessage());
         }
     }
 
@@ -135,7 +134,7 @@ public class Main {
 
     private static boolean redrawChessBoard() {
         // just call show again to redo the drawing
-        gameController.show();
+        consoleCommands.gameController.show();
         return true;
     }
 
@@ -148,7 +147,7 @@ public class Main {
             return true;
         }
 
-        gameController.highlightLegalMoves(row, column);
+        consoleCommands.gameController.highlightLegalMoves(row, column);
 
         return true;
     }
@@ -208,7 +207,7 @@ public class Main {
 
     private static boolean leaveGame() throws Exception {
         consoleCommands.appState = 2; // return to the logged in version
-        gameController.endWebSocketConnection();
+        consoleCommands.gameController.endWebSocketConnection();
         return true;
     }
 
@@ -231,12 +230,12 @@ public class Main {
             return true;
         }
 
-        gameController.makeMove(fromRow, fromColumn, toRow, toColumn);
+        consoleCommands.gameController.makeMove(fromRow, fromColumn, toRow, toColumn);
         return true;
     }
 
     private static boolean resign() throws Exception {
-        gameController.resign();
+        consoleCommands.gameController.resign();
         return true;
     }
 }

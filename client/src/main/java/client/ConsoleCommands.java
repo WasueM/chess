@@ -9,7 +9,7 @@ import java.util.Scanner;
 // this is to help move stuff from the client's main so it doesn't handle so much
 public class ConsoleCommands {
     private static ServerFacade serverFacade;
-    private static GameController gameController;
+    public static GameController gameController;
     public static int appState = 0; // 0 is not logged in, 1 in logged in, // 2 for playing game, // 3 for observing game
     static GameData[] gameList; // store the games list in an array
 
