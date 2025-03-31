@@ -267,11 +267,10 @@ public class ConsoleCommands {
             // grab the actual game data for that game ID
             for (GameData game : gameList) {
                 if (game.gameID() == gameID) {
-                    gameController = new GameController(game, serverFacade);
-
                     // switch to game mode
                     appState = 2;
                     gameController = new GameController(game, serverFacade);
+                    serverFacade.setGameController(gameController);
 
                     // set the team color
                     ChessGame.TeamColor teamColor = ChessGame.TeamColor.WHITE;
@@ -326,11 +325,10 @@ public class ConsoleCommands {
             // grab the actual game data for that game ID
             for (GameData game : gameList) {
                 if (game.gameID() == gameIDToObserve) {
-                    gameController = new GameController(game, serverFacade);
-
                     // switch to game mode
                     appState = 3;
                     gameController = new GameController(game, serverFacade);
+                    serverFacade.setGameController(gameController);
 
                     // set the team color to white for observe
                     ChessGame.TeamColor teamColor = ChessGame.TeamColor.WHITE;

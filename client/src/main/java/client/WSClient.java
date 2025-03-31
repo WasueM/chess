@@ -1,15 +1,20 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessBoardJSONAdapter;
 import com.google.gson.Gson;
 
 import javax.websocket.*;
 import java.net.URI;
 
+import com.google.gson.GsonBuilder;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 public class WSClient extends Endpoint {
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(ChessBoard.class, new ChessBoardJSONAdapter())
+            .create();
     public Session session;
     private GameController gameController;
 
@@ -24,7 +29,10 @@ public class WSClient extends Endpoint {
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String jsonMessage) {
                 System.out.println("MESSAGE RECEIVED");
+                System.out.println(jsonMessage);
                 ServerMessage message = GSON.fromJson(jsonMessage, ServerMessage.class);
+                System.out.println("MESSAGE PARSED");
+                System.out.println(message);
 
                 switch (message.getServerMessageType()) {
                     case LOAD_GAME -> {

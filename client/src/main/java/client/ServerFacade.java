@@ -185,6 +185,10 @@ public class ServerFacade {
         return responseBuilder.toString();
     }
 
+    public void setGameController(GameController gameController) {
+        this.websocketClient.setGameController(gameController);
+    }
+
     public void sendConnect(int gameID) throws Exception {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, this.authToken, gameID, null);
         this.websocketClient.sendCommand(command);
