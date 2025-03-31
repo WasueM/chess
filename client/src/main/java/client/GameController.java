@@ -47,11 +47,11 @@ public class GameController {
     }
 
     public void printGameName() {
-        System.out.print("Game: " + this.game.gameName());
+        System.out.print("Game: " + this.game.gameName() + "\n");
     }
 
     public void printUsernames() {
-        System.out.print("White: " + this.game.whiteUsername() + " | Black: " + this.game.blackUsername());
+        System.out.print("White: " + this.game.whiteUsername() + " | Black: " + this.game.blackUsername() + "\n");
     }
 
     public void drawBoard() {

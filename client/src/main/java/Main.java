@@ -1,8 +1,6 @@
 import chess.*;
 import client.ConsoleCommands;
-import client.GameController;
 import client.ServerFacade;
-import model.GameData;
 
 import java.util.Objects;
 import java.util.Scanner;
@@ -28,7 +26,7 @@ public class Main {
         try {
             runConsoleMenus();
         } catch (Exception error) {
-            System.out.println("ERROR somewhere in the app!" + error.getMessage());
+            System.out.println("ERROR somewhere in the app! " + error.getMessage());
         }
     }
 
