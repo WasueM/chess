@@ -234,12 +234,13 @@ public class Main {
             return true;
         }
 
+        System.out.println("Please enter where you want to move to");
+
         int toColumn = readInValidColumn();
         if (toColumn > 8) {
             // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
             return true;
         }
-        System.out.println("Please enter where you want to move to");
         int toRow = readInValidRow();
         if (toRow > 8) {
             // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop

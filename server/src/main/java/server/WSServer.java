@@ -315,9 +315,9 @@ public class WSServer {
         try {
             // check for check and checkmate
             boolean isInCheckMateWhite = updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE);
-            boolean isInCheckMateBlack = updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE);
+            boolean isInCheckMateBlack = updatedGame.game().isInCheckmate(ChessGame.TeamColor.BLACK);
             boolean isInCheckWhite = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
-            boolean isInCheckBlack = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
+            boolean isInCheckBlack = updatedGame.game().isInCheck(ChessGame.TeamColor.BLACK);
             System.out.println("HEY");
             if (isInCheckMateWhite) {
                 System.out.println("HI");
