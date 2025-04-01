@@ -54,7 +54,8 @@ public class GameController {
     }
 
     public void printUsernames() {
-        System.out.print("White: " + ConsoleCommands.printUsernameOrAvailable(this.game.whiteUsername()) + " | Black: " + ConsoleCommands.printUsernameOrAvailable(this.game.blackUsername()) + "\n");
+        System.out.print("White: " + ConsoleCommands.printUsernameOrAvailable(this.game.whiteUsername()) +
+                " | Black: " + ConsoleCommands.printUsernameOrAvailable(this.game.blackUsername()) + "\n");
     }
 
     public void drawBoard() {
