@@ -293,7 +293,7 @@ public class WSServer {
             return;
         }
 
-        GameData updatedGame = new GameData();
+        GameData updatedGame = null;
 
         try {
             // handle the move
