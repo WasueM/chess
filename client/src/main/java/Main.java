@@ -138,10 +138,13 @@ public class Main {
     }
 
     private static boolean highlightLegalMoves() {
-        int row = readInValidRow();
         int column = readInValidColumn();
-
-        if ((row > 8) || (row > 8)) {
+        if (column > 8) {
+            // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
+            return true;
+        }
+        int row = readInValidRow();
+        if (row > 8) {
             // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
             return true;
         }
@@ -189,6 +192,11 @@ public class Main {
             return 9999;
         }
 
+        if (character.trim().isEmpty()) {
+            System.out.println("You put in nothing at all! Do better next time.");
+            return 9999;
+        }
+
         char charCharacter = character.toCharArray()[0];
         int column = charCharacter - 'a' + 1;
 
@@ -215,27 +223,25 @@ public class Main {
 
     private static boolean makeMove() throws Exception {
         System.out.println("Please enter where you want to move from");
+        int fromColumn = readInValidColumn();
+        if (fromColumn > 8) {
+            // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
+            return true;
+        }
         int fromRow = readInValidRow();
         if (fromRow > 8) {
             // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
             return true;
         }
 
-        int fromColumn = readInValidColumn();
-        if (fromColumn > 8) {
+        int toColumn = readInValidColumn();
+        if (toColumn > 8) {
             // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
             return true;
         }
-
         System.out.println("Please enter where you want to move to");
         int toRow = readInValidRow();
         if (toRow > 8) {
-            // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
-            return true;
-        }
-
-        int toColumn = readInValidColumn();
-        if (toColumn > 8) {
             // just making sure they didn't return 9999, which they do for errors. If they do, just go back to the input loop
             return true;
         }

@@ -293,7 +293,7 @@ public class WSServer {
             return;
         }
 
-        GameData updatedGame = null;
+        GameData updatedGame = new GameData();
 
         try {
             // handle the move
@@ -310,6 +310,7 @@ public class WSServer {
         } catch (Exception error) {
             ServerMessage errorMessage = ServerMessage.error("Error: Invalid Move! Wrong turn, or disallowed movement!");
             connections.broadcastToSpecificConnection(authToken, errorMessage);
+            return;
         }
         try {
             // check for check and checkmate
