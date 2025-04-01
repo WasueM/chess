@@ -293,39 +293,50 @@ public class WSServer {
             return;
         }
 
+        GameData updatedGame = null;
+
         try {
             // handle the move
             MoveResult result = gameService.handleMove(new MoveRequest(authToken, gameID, move));
 
             // find which game its from
-            GameData updatedGame = result.game();
+            updatedGame = result.game();
             ServerMessage gameUpdateMessage = ServerMessage.loadGame(updatedGame);
             connections.broadcastToAll(gameID, gameUpdateMessage);
             ServerMessage chessMoveNotification = ServerMessage.notification(authService.getUserByAuthToken(authToken) + " moved from ("
                     + move.getStartPosition().getRow() + "," + columnToLetter(move.getStartPosition().getColumn()) + ") to ("
                     + move.getEndPosition().getRow() + "," + columnToLetter(move.getEndPosition().getColumn()) + ").");
             connections.broadcastToAllExcluding(gameID, authToken, chessMoveNotification);
-
+        } catch (Exception error) {
+            ServerMessage errorMessage = ServerMessage.error("Error: Invalid Move! Wrong turn, or disallowed movement!");
+            connections.broadcastToSpecificConnection(authToken, errorMessage);
+        }
+        try {
             // check for check and checkmate
             boolean isInCheckMateWhite = updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE);
             boolean isInCheckMateBlack = updatedGame.game().isInCheckmate(ChessGame.TeamColor.WHITE);
             boolean isInCheckWhite = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
             boolean isInCheckBlack = updatedGame.game().isInCheck(ChessGame.TeamColor.WHITE);
+            System.out.println("HEY");
             if (isInCheckMateWhite) {
+                System.out.println("HI");
                 ServerMessage checkNotification = ServerMessage.notification(updatedGame.whiteUsername() + " is in checkmate!");
                 connections.broadcastToAll(gameID, checkNotification);
             } else if (isInCheckMateBlack) {
+                System.out.println("WEE");
                 ServerMessage checkNotification = ServerMessage.notification(updatedGame.blackUsername() + " is in checkmate!");
                 connections.broadcastToAll(gameID, checkNotification);
             } else if (isInCheckWhite) {
+                System.out.println("WOW");
                 ServerMessage checkNotification = ServerMessage.notification(updatedGame.whiteUsername() + " is in check!");
                 connections.broadcastToAll(gameID, checkNotification);
             } else if (isInCheckBlack) {
+                System.out.println("HOWDY");
                 ServerMessage checkNotification = ServerMessage.notification(updatedGame.blackUsername() + " is in check!");
                 connections.broadcastToAll(gameID, checkNotification);
             }
         } catch (Exception error) {
-            ServerMessage errorMessage = ServerMessage.error("Error: Invalid Move! Wrong turn, or disallowed movement!");
+            ServerMessage errorMessage = ServerMessage.error("Error: Check and Checkmate Checking Problem!" + error.getMessage());
             connections.broadcastToSpecificConnection(authToken, errorMessage);
         }
     }
