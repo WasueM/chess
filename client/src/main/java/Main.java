@@ -210,7 +210,6 @@ public class Main {
         System.out.println();
         System.out.println("Left the game!");
         System.out.println();
-        consoleCommands.listGames();
         return true;
     }
 
